@@ -24,6 +24,19 @@ class UserProfile(str, Enum):
     integrador = "integrador"
 
 
+class UserPronouns(str, Enum):
+    """Pronombres declarados por la persona usuaria.
+
+    Se usan para personalizar mensajes clave del UI (saludos, bienvenidas).
+    El default 'prefiero_no_decir' fuerza fraseo neutral. Ver
+    memoria feedback-lenguaje-incluyente."""
+
+    ella = "ella"
+    el = "el"
+    elle = "elle"
+    prefiero_no_decir = "prefiero_no_decir"
+
+
 class User(Base):
     __tablename__ = "users"
 
@@ -44,6 +57,11 @@ class User(Base):
     perfil: Mapped[UserProfile | None] = mapped_column(
         SQLEnum(UserProfile, native_enum=False, length=20),
         nullable=True,
+    )
+    pronombres: Mapped[UserPronouns] = mapped_column(
+        SQLEnum(UserPronouns, native_enum=False, length=20),
+        nullable=False,
+        default=UserPronouns.prefiero_no_decir,
     )
 
     is_admin: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)

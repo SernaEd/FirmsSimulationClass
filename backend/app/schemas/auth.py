@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
-from app.models.user import UserProfile, UserStatus
+from app.models.user import UserProfile, UserPronouns, UserStatus
 
 
 class RegisterIn(BaseModel):
@@ -10,8 +10,9 @@ class RegisterIn(BaseModel):
     apellidos: str = Field(min_length=1, max_length=100)
     numero_cuenta: str = Field(min_length=4, max_length=20)
     nickname: str = Field(min_length=3, max_length=40)
-    pin: str = Field(min_length=6, max_length=32)
+    pin: str = Field(min_length=4, max_length=32)
     correo_institucional: EmailStr | None = None
+    pronombres: UserPronouns = UserPronouns.prefiero_no_decir
     acepta_reglas: bool
 
     @field_validator("acepta_reglas")
@@ -52,6 +53,7 @@ class UserOut(BaseModel):
     correo_institucional: str | None
     estado: UserStatus
     perfil: UserProfile | None
+    pronombres: UserPronouns
     is_admin: bool
     terms_accepted_at: datetime
     created_at: datetime

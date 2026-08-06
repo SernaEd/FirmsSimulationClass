@@ -4,4 +4,4 @@ Cada dominio agrega sus modelos aquí. Actualmente:
 - Dominio 1 (Users + Auth): User
 """
 
-from .user import User, UserProfile, UserStatus  # noqa: F401
+from .user import User, UserProfile, UserPronouns, UserStatus  # noqa: F401

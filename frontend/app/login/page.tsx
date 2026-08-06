@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
+import { Field } from "@/components/Field";
 import { ApiError, api, auth } from "@/lib/api";
 
 type Status =
@@ -46,30 +47,8 @@ export default function Login() {
         </header>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          <label className="block space-y-1.5">
-            <span className="block text-sm text-neutral-300">
-              Número de cuenta <span className="text-ibero-red">*</span>
-            </span>
-            <input
-              name="numero_cuenta"
-              type="text"
-              required
-              autoFocus
-              className="w-full rounded-md border border-surface-border bg-surface-raised px-3 py-2 text-white focus:border-ibero-red focus:outline-none focus:ring-1 focus:ring-ibero-red"
-            />
-          </label>
-
-          <label className="block space-y-1.5">
-            <span className="block text-sm text-neutral-300">
-              PIN <span className="text-ibero-red">*</span>
-            </span>
-            <input
-              name="pin"
-              type="password"
-              required
-              className="w-full rounded-md border border-surface-border bg-surface-raised px-3 py-2 text-white focus:border-ibero-red focus:outline-none focus:ring-1 focus:ring-ibero-red"
-            />
-          </label>
+          <Field label="Número de cuenta" name="numero_cuenta" required autoFocus />
+          <Field label="PIN" name="pin" type="password" required />
 
           {status.kind === "error" && (
             <p className="rounded-md border border-red-800 bg-red-950/40 p-3 text-sm text-red-300">

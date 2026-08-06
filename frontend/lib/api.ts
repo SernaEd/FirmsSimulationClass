@@ -12,6 +12,8 @@ export type UserStatus =
 
 export type UserProfile = "analista" | "modelador" | "integrador";
 
+export type UserPronouns = "ella" | "el" | "elle" | "prefiero_no_decir";
+
 export type UserOut = {
   id: number;
   nombre: string;
@@ -21,6 +23,7 @@ export type UserOut = {
   correo_institucional: string | null;
   estado: UserStatus;
   perfil: UserProfile | null;
+  pronombres: UserPronouns;
   is_admin: boolean;
   terms_accepted_at: string;
   created_at: string;
@@ -33,8 +36,23 @@ export type RegisterPayload = {
   nickname: string;
   pin: string;
   correo_institucional?: string;
+  pronombres?: UserPronouns;
   acepta_reglas: boolean;
 };
+
+// Ajusta un adjetivo o participio pasado al pronombre declarado.
+// Ejemplos: pickByPronoun(user.pronombres, "bienvenida", "bienvenido", "bienvenide")
+// → cuando pronombres = prefiero_no_decir, usa la versión neutra (3er arg).
+export function pickByPronoun(
+  pronombres: UserPronouns,
+  ella: string,
+  el: string,
+  neutro: string,
+): string {
+  if (pronombres === "ella") return ella;
+  if (pronombres === "el") return el;
+  return neutro;
+}
 
 export type LoginPayload = {
   numero_cuenta: string;
@@ -56,6 +74,33 @@ export class ApiError extends Error {
     super(detail);
     this.name = "ApiError";
   }
+}
+
+// FastAPI/Pydantic responde 422 con detail = [{type, loc, msg, input, ctx}, ...].
+// Otros errores propios responden { detail: "texto" } o { error: "texto" }.
+function normalizeDetail(data: unknown): string | null {
+  if (!data || typeof data !== "object") return null;
+  const obj = data as Record<string, unknown>;
+
+  const raw = obj.detail ?? obj.error;
+  if (typeof raw === "string") return raw;
+
+  if (Array.isArray(raw)) {
+    // Errores de validación Pydantic
+    const parts = raw
+      .map((e) => {
+        if (!e || typeof e !== "object") return null;
+        const err = e as { loc?: unknown[]; msg?: string };
+        const field = Array.isArray(err.loc) && err.loc.length > 1
+          ? String(err.loc[err.loc.length - 1])
+          : "campo";
+        return err.msg ? `${field}: ${err.msg}` : null;
+      })
+      .filter((x): x is string => x !== null);
+    if (parts.length > 0) return parts.join(" · ");
+  }
+
+  return null;
 }
 
 // ---- Request helper ----
@@ -81,7 +126,7 @@ async function request<T>(
     let detail = `HTTP ${res.status}`;
     try {
       const data = await res.json();
-      detail = data.detail || data.error || detail;
+      detail = normalizeDetail(data) ?? detail;
     } catch {
       // body no era JSON
     }

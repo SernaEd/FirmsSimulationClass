@@ -42,7 +42,7 @@ Para simular un entorno profesional, aplicamos las siguientes directrices:
 
 ## 2. Registro y autenticación
 
-- Datos almacenados: **nombre, apellidos, número de cuenta, nickname, PIN hasheado con bcrypt**.
+- Datos almacenados: **nombre, apellidos, número de cuenta, nickname, PIN hasheado con bcrypt, pronombres** (opcional; default `prefiero_no_decir`).
 - **Onboarding**: autorregistro abierto. Al completar el formulario, el alumno pasa **inmediatamente** al test de perfil (§3) sin esperar aprobación.
 - **Estados de la cuenta**:
   1. `pending_profile` — registrado pero no ha completado el test.
@@ -697,7 +697,7 @@ Entidades principales y relaciones clave. No es el schema definitivo (se detalla
 
 **Núcleo de usuarios y equipos:**
 
-- `User` — id, nombre, apellidos, numero_cuenta, nickname, pin_hash, correo_institucional, notificaciones_config (JSON), estado (`pending_profile`|`pending_approval`|`active`|`rejected`), perfil (`analista`|`modelador`|`integrador`), created_at.
+- `User` — id, nombre, apellidos, numero_cuenta, nickname, pin_hash, correo_institucional, notificaciones_config (JSON), estado (`pending_profile`|`pending_approval`|`active`|`rejected`), perfil (`analista`|`modelador`|`integrador`), pronombres (`ella`|`el`|`elle`|`prefiero_no_decir`, default `prefiero_no_decir`), created_at.
 - `Team` — id, nombre_firma, estado_nombre (`pendiente`|`aprobado`|`asignado_por_sistema`), created_at.
 - `TeamMember` — user_id, team_id, joined_at, left_at (nullable).
 - `TeamNameProposal` — team_id, propuesta, propuesto_por, votos, estado (`pendiente_mod`|`aprobado`|`rechazado`).
@@ -805,6 +805,17 @@ Relaciones críticas:
 ---
 
 ## 14. Dashboard del alumno y experiencia de usuario
+
+### 14.0 Lenguaje inclusivo
+
+Política aplicada a **todo el UI**, correos automatizados y mensajes de error:
+
+- **Formas neutrales por default**: "Te damos la bienvenida" (no "Bienvenido/a"), "estudiante", "integrantes del equipo", "quien inicia sesión". Evitar `@` y `x` en terminaciones (mala accesibilidad para lectores de pantalla).
+- **Personalización con pronombres declarados**: el registro incluye el campo `pronombres` con opciones `ella | el | elle | prefiero_no_decir`. Cuando la persona los declaró, mensajes clave se ajustan: "Bienvenida Ana", "Bienvenido Carlos", "Bienvenide Sofía". Con `prefiero_no_decir` se mantiene el fraseo neutral.
+- El helper `pickByPronoun(pronombres, ella, el, neutro)` en `frontend/lib/api.ts` centraliza la elección.
+- Los cambios de pronombres desde el perfil se implementan en Iteración 4 (perfil del alumno) o antes si se requiere.
+
+
 
 ### 14.1 Sistema de tutoriales por modal
 

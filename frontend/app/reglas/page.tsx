@@ -115,12 +115,12 @@ export default function Reglas() {
           <li>Intentar explotar bugs para obtener puntos, tickets o privilegios.</li>
           <li>Usar la plataforma para acoso, discriminación o lenguaje ofensivo.</li>
           <li>
-            Suplantar identidad de otro alumno en cualquier flujo (kudos,
-            retroalimentación, foro, chat).
+            Suplantar la identidad de otra persona del curso en cualquier flujo
+            (kudos, retroalimentación, foro, chat).
           </li>
         </ul>
         <p className="text-neutral-300 pt-2">
-          Ante un presunto abuso el alumno recibe notificación por correo con la
+          Ante un presunto abuso, la persona recibe notificación por correo con la
           evidencia y tiene <strong className="text-white">48 horas hábiles</strong>{" "}
           para responder por escrito antes de que se aplique cualquier sanción
           (derecho de audiencia). Toda sanción queda registrada y puede apelarse

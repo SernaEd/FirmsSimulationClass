@@ -37,6 +37,10 @@ def register(payload: RegisterIn, db: Session = Depends(get_db)) -> User:
         nickname=payload.nickname.strip(),
         pin_hash=hash_pin(payload.pin),
         correo_institucional=payload.correo_institucional,
+        pronombres=payload.pronombres,
+        # TODO(iter-1): cuando exista el test de perfil, cambiar a
+        # UserStatus.pending_profile — la persona pasa por el test antes de
+        # que el profesor apruebe. Ver plan_de_tareas_mvp.md / Iteración 1.
         estado=UserStatus.pending_approval,
         terms_accepted_at=datetime.now(timezone.utc),
     )

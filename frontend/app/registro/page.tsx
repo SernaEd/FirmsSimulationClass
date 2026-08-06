@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
-import { ApiError, api } from "@/lib/api";
+import { Field } from "@/components/Field";
+import { ApiError, UserPronouns, api } from "@/lib/api";
 
 type Status =
   | { kind: "idle" }
@@ -26,6 +27,7 @@ export default function Registro() {
         nickname: String(form.get("nickname") ?? "").trim(),
         pin: String(form.get("pin") ?? ""),
         correo_institucional: String(form.get("correo_institucional") ?? "").trim() || undefined,
+        pronombres: (form.get("pronombres") as UserPronouns) ?? "prefiero_no_decir",
         acepta_reglas: form.get("acepta_reglas") === "on",
       });
       setStatus({ kind: "success" });
@@ -70,26 +72,26 @@ export default function Registro() {
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div className="grid grid-cols-2 gap-4">
-          <Field label="Nombre" name="nombre" required minLength={1} maxLength={100} />
+          <Field label="Nombre(s)" name="nombre" required minLength={1} maxLength={100} />
           <Field label="Apellidos" name="apellidos" required minLength={1} maxLength={100} />
         </div>
-        <Field label="Número de cuenta" name="numero_cuenta" required minLength={4} maxLength={20} />
+        <Field label="Número de cuenta (Sin Digito)" name="numero_cuenta" required minLength={4} maxLength={20} />
         <Field
           label="Nickname"
           name="nickname"
           required
           minLength={3}
           maxLength={40}
-          hint="Lo verán tus compañeros. Puedes usar letras, números y espacios."
+          hint="Es visible para el resto del grupo. Puedes usar letras, números y espacios."
         />
         <Field
           label="PIN"
           name="pin"
           type="password"
           required
-          minLength={6}
+          minLength={4}
           maxLength={32}
-          hint="Mínimo 6 caracteres. Elige algo memorable pero no obvio."
+          hint="Mínimo 4 caracteres. Elige algo memorable pero no obvio."
         />
         <Field
           label="Correo institucional (opcional)"
@@ -97,6 +99,23 @@ export default function Registro() {
           type="email"
           hint="Solo lo pediremos si activas notificaciones desde tu perfil."
         />
+
+        <label className="block space-y-1.5">
+          <span className="block text-sm text-neutral-300">Pronombres (opcional)</span>
+          <select
+            name="pronombres"
+            defaultValue="prefiero_no_decir"
+            className="w-full rounded-md border border-surface-border bg-surface-raised px-3 py-2 text-white focus:border-ibero-red focus:outline-none focus:ring-1 focus:ring-ibero-red"
+          >
+            <option value="prefiero_no_decir">Prefiero no decirlo</option>
+            <option value="ella">ella</option>
+            <option value="el">él</option>
+            <option value="elle">elle</option>
+          </select>
+          <span className="block text-xs text-neutral-500">
+            Nos ayuda a personalizar mensajes contigo. Puedes cambiarlo después.
+          </span>
+        </label>
 
         <label className="flex items-start gap-3 text-sm text-neutral-300 pt-2">
           <input
@@ -140,32 +159,3 @@ export default function Registro() {
   );
 }
 
-type FieldProps = {
-  label: string;
-  name: string;
-  type?: string;
-  required?: boolean;
-  minLength?: number;
-  maxLength?: number;
-  hint?: string;
-};
-
-function Field({ label, name, type = "text", required, minLength, maxLength, hint }: FieldProps) {
-  return (
-    <label className="block space-y-1.5">
-      <span className="block text-sm text-neutral-300">
-        {label}
-        {required && <span className="text-ibero-red"> *</span>}
-      </span>
-      <input
-        name={name}
-        type={type}
-        required={required}
-        minLength={minLength}
-        maxLength={maxLength}
-        className="w-full rounded-md border border-surface-border bg-surface-raised px-3 py-2 text-white focus:border-ibero-red focus:outline-none focus:ring-1 focus:ring-ibero-red"
-      />
-      {hint && <span className="block text-xs text-neutral-500">{hint}</span>}
-    </label>
-  );
-}

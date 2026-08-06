@@ -1,6 +1,6 @@
 # Roadmap Agile (Prioridad MVP)
 
-**Contexto temporal:** el semestre inicia el **10 de agosto de 2026** (lunes). El objetivo es tener un Producto Mínimo Viable (MVP) operativo para la **Semana 2 del semestre (17–21 de agosto)**, centrado en el sistema de puntos, equipos, privilegios y canales básicos de comunicación. Las funciones de automatización o conveniencia se irán agregando progresivamente con el curso ya iniciado.
+**Contexto temporal:** el semestre inicia el **10 de agosto de 2026** (lunes). El objetivo es tener un Producto Mínimo Viable (MVP) operativo para la **Semana 2 del semestre (17–21 de agosto)**, centrado en el sistema de Tokens, equipos, privilegios y canales básicos de comunicación. Las funciones de automatización o conveniencia se irán agregando progresivamente con el curso ya iniciado.
 
 **Convención sobre "Semana N":** se refiere a la semana N del semestre, no del proyecto.
 
@@ -10,7 +10,7 @@
 
 ## 🏁 MVP — Lanzamiento Semana 2 del semestre (17–21 ago) — Esencial
 
-*El núcleo de la economía, comunicación y gestión básica. El backend se desarrolla **por dominios**; cada dominio queda como un commit revisable en git antes de pasar al siguiente. El curso puede operar aunque muchas mecánicas sean manuales al inicio.*
+*El núcleo de la economía (Tokens), comunicación y gestión básica. El backend se desarrolla **por dominios**; cada dominio queda como un commit revisable en git antes de pasar al siguiente. El curso puede operar aunque muchas mecánicas sean manuales al inicio.*
 
 ### 🧱 Fundación
 
@@ -25,7 +25,8 @@
 ### 👤 Dominio 1 — Users + Auth
 
 - [x] Modelo `User` con estados `pending_profile → pending_approval → active → rejected` (§2).
-- [x] Migración inicial Alembic (base declarativa + `User`).
+- [x] Campo `pronombres` (`ella | el | elle | prefiero_no_decir`, default neutral) para personalizar mensajes.
+- [x] Migración inicial Alembic (base declarativa + `User`) + migración para `pronombres`.
 - [x] `POST /auth/register` — autorregistro con checkbox de aceptación de reglas.
 - [x] `POST /auth/login` — JWT firmado, hash bcrypt del PIN.
 - [x] `GET /auth/me` — perfil del usuario autenticado.
@@ -34,6 +35,9 @@
 - [x] `GET /admin/users/pending` — listar pendientes (provisional).
 - [x] Rate limiting de login (3 intentos / 15 min, §13.1).
 - [x] Frontend: formularios de registro y login + página de reglas + `/inicio` post-login con `/auth/me`.
+- [x] Frontend: componente `Field` compartido con toggle de visibilidad del PIN.
+- [x] Frontend: fraseo neutro por default + saludo personalizado por pronombres (`pickByPronoun`).
+- [ ] *(diferido a Iteración 1)* Test de perfil accesible inmediatamente tras el registro; el flujo pasará a `pending_profile → (test) → pending_approval → active`. Ver Iteración 1.
 
 ### 👥 Dominio 2 — Teams y nombres de firma
 
@@ -44,16 +48,16 @@
 - [ ] `POST /admin/team-name-proposals/{id}/[approve|reject]`.
 - [ ] Frontend admin: generador de equipos + moderación de nombres.
 
-### 💰 Dominio 3 — Puntos, tickets y catálogo de privilegios
+### 💰 Dominio 3 — Tokens, tickets y catálogo de privilegios
 
-- [ ] Modelos `PointsLedger` (append-only), `PrivilegeCatalog`, `PrivilegeTicket`, `DecimalRedemptionRequest`.
+- [ ] Modelos `TokenLedger` (append-only), `PrivilegeCatalog`, `PrivilegeTicket`, `DecimalRedemptionRequest`.
 - [ ] Migración Alembic.
-- [ ] `GET /me/points` — saldo actual + historial de movimientos ("Ver movimientos", §5.3).
+- [ ] `GET /me/tokens` — saldo actual + historial de movimientos ("Ver movimientos", §5.3).
 - [ ] `GET /privileges` — catálogo visible al alumno (respeta feature flags).
 - [ ] `POST /privileges/{id}/purchase` — compra individual y emisión de ticket con folio único.
 - [ ] `POST /privileges/{id}/split-bill` — **compras grupales por aportación voluntaria**; se emite ticket grupal al alcanzar el costo.
 - [ ] `POST /admin/tickets/{folio}/consume` — profesor marca ticket como usado.
-- [ ] `POST /admin/points/adjust` — gestor manual de puntos con nota justificativa.
+- [ ] `POST /admin/tokens/adjust` — gestor manual de Tokens con nota justificativa.
 - [ ] `CRUD /admin/privileges` — editor del catálogo (costos, límites, visibilidad, feature flags).
 - [ ] Frontend alumno: widget "Saldo del banco", vista "Ver movimientos", catálogo de privilegios con flujo de canje.
 
@@ -73,12 +77,27 @@
 
 ## 🚀 Iteración 1 — Práctica, Contenido y Racha (Semanas 3–4)
 
-*Automatización de puntos individuales + canales de contenido + recordatorios.*
+*Automatización de Tokens individuales + canales de contenido + recordatorios.*
 
-- [ ] Integración de Notion API + PDFs + Comentarios (Vista de Clase).
-  - [ ] Pipeline: Notion API → BD local → renderizado con `react-notion-x` (sección superior).
-  - [ ] Visor embebido de PDF para notas del profesor desde GDrive (sección media).
-  - [ ] Botón manual de sincronización por Clase.
+- [ ] **Modelos y migraciones nuevas** (contenido y ejercicios):
+  - [ ] Modelo `Module` (id, numero, nombre, unlocked_at, pozo_tks).
+  - [ ] Modelo `CourseSession` (id, module_id, numero_sesion, titulo, `notion_page_id`, `apuntes_pdf_url`, notion_last_sync).
+  - [ ] Modelo `PracticeExercise` + `ExerciseAttempt`.
+  - [ ] Modelo `ForumPost` con `session_id` (comentarios anclados a la Vista de Clase, no al módulo).
+- [ ] **Integración Notion API + PDFs + Comentarios (Vista de Clase)**:
+  - [ ] Endpoint `POST /admin/sessions/{id}/sync` — descarga la sub-página de Notion, guarda bloques en BD.
+  - [ ] Pipeline: Notion API → BD local → renderizado con `react-notion-x` (sección superior de la Vista de Clase).
+  - [ ] Visor embebido de PDF (`<iframe>`) para apuntes del profesor desde GDrive (sección media).
+  - [ ] Sección de comentarios estilo YouTube por sesión (sección inferior).
+  - [ ] Botón admin "Sincronizar Clase" por sesión.
+- [ ] **Test de perfil de trabajo (Belbin adaptado)** *(mudado desde Dominio 1 diferido)*:
+  - [ ] Modelo `ProfileTestQuestion` + `ProfileTestAnswer` (8-10 preguntas de escenario con 3 opciones cada una).
+  - [ ] Migración Alembic.
+  - [ ] `GET /profile-test` (para persona en `pending_profile`) y `POST /profile-test/submit`.
+  - [ ] Cambiar default de registro a `pending_profile`; al terminar el test → `pending_approval` (auto).
+  - [ ] Frontend: página `/test-perfil` accesible inmediatamente tras el registro (no requiere aprobación previa).
+  - [ ] Redacción de las preguntas + bibliografía visible (Belbin, Felder & Brent).
+
 - [ ] **Motor SymPy + MathLive**:
   - [ ] UI del profesor para crear problemas parametrizados.
   - [ ] Pre-procesamiento de derivadas ($dy/dx$) y normalización de constantes libres ($C_1$, $K$…).
@@ -87,10 +106,10 @@
   - [ ] Jobs `publish_daily_challenge`, `evaluate_streaks`, `detect_inactivity`.
   - [ ] Widget de racha con calendario mensual y palomitas verdes.
   - [ ] Pases de racha automáticos + compra en catálogo.
-- [ ] **Comentarios por Clase** (Foros tipo YouTube) *(subido desde Iteración 2 original)*:
+- [ ] **Comentarios por Clase** (Foros tipo YouTube) *(subido desde Iteración 2 original; usa `ForumPost.session_id`)*:
   - [ ] Opción por post: nickname o anónimo para pares.
   - [ ] Editor con soporte de LaTeX inline.
-  - [ ] Marcado de post destacado por el profesor.
+  - [ ] Marcado de post destacado por el profesor (bono de Tokens al autor).
 - [ ] **Calendario académico editable** en admin (§11.5) — necesario para marcar festivos antes de que la racha llegue.
 - [ ] **Notificaciones opcionales por correo** *(subido desde Iteración 4 original)*:
   - [ ] Opt-in explícito en el perfil.
@@ -107,8 +126,8 @@
   - [ ] Conexiones WebSockets manejadas en RAM.
   - [ ] Interfaz de proyección del profesor.
   - [ ] Captura de envíos grupales únicos y asignación de podio (35-40 / 22-25 / 15-18 / 10 / 5 / 0).
-  - [ ] Solo integrantes presentes reciben puntos.
-- [ ] Sistema de **Kudos** entre compañeros (10 pts del emisor, transferencia neta cero).
+  - [ ] Solo integrantes presentes reciben Tokens.
+- [ ] Sistema de **Kudos** entre compañeros (10 Tks del emisor, transferencia neta cero).
 - [ ] **Ciclos de Retroalimentación entre pares** *(subido desde Iteración 3 original)*:
   - [ ] Ciclo abierto al cierre del módulo 1 (aprox. semana 4-5).
   - [ ] Formulario con 3 dimensiones + justificación obligatoria.
@@ -123,7 +142,7 @@
 
 - [ ] Sistema de entregas y subida de videos (datos empíricos del proyecto final).
 - [ ] Sorteo aleatorio de sustentador para entregas grupales.
-- [ ] **Sustentación destacada** (asignación desde admin) y **posts destacados** con bono de puntos.
+- [ ] **Sustentación destacada** (asignación desde admin) y **posts destacados** con bono de Tokens.
 - [ ] Gestor de calificaciones tipo Excel en el Admin, con reparto configurable 70/30 por-tarea.
 - [ ] Registro de asistencia y aplicación de privilegios de retardo/pase.
 - [ ] Ampliación del Inbox: agregar categorías `disputa`, `sancion`, `sustentacion_destacada_pendiente`, `post_destacado_pendiente`.

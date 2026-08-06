@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ApiError, UserOut, api, auth } from "@/lib/api";
+import { ApiError, UserOut, api, auth, pickByPronoun } from "@/lib/api";
 
 type Status =
   | { kind: "loading" }
@@ -62,6 +62,8 @@ export default function Inicio() {
 
   const { user } = status;
   const isPending = user.estado !== "active";
+  // Fraseo neutro por default; se personaliza si la persona declaró pronombres.
+  const bienvenida = pickByPronoun(user.pronombres, "Bienvenida", "Bienvenido", "Te damos la bienvenida");
 
   return (
     <main className="min-h-screen max-w-3xl mx-auto p-8 space-y-8">
@@ -92,8 +94,8 @@ export default function Inicio() {
             Cuenta pendiente
           </h2>
           <p className="text-sm text-amber-100/80">
-            Estado actual: <code>{user.estado}</code>. El profesor debe aprobar tu
-            cuenta antes de que puedas acceder al Dashboard, catálogo de
+            Estado actual: <code>{user.estado}</code>. Tu cuenta requiere
+            aprobación del profesor antes de acceder al Dashboard, catálogo de
             privilegios y demás secciones.
           </p>
         </section>
@@ -101,12 +103,12 @@ export default function Inicio() {
         <section className="rounded-lg border border-surface-border bg-surface-raised p-6 space-y-3">
           <h2 className="text-lg font-semibold">Cuenta activa</h2>
           <p className="text-sm text-neutral-400">
-            Bienvenido a la plataforma. En próximas iteraciones aquí verás tu
+            {bienvenida} a la plataforma. En próximas iteraciones aquí verás tu
             Dashboard completo: racha, saldo del banco, catálogo, foros y más.
           </p>
           {user.is_admin && (
             <p className="text-sm text-ibero-red">
-              Tienes rol de administrador. Panel admin próximamente.
+              Tienes rol de administración. Panel admin próximamente.
             </p>
           )}
         </section>
