@@ -46,3 +46,4 @@ data/mysql/
 
 # ---- Materiales de referencia (PDFs pesados) ----
 *.pdf
+/.agents
