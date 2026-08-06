@@ -10,29 +10,64 @@
 
 ## 🏁 MVP — Lanzamiento Semana 2 del semestre (17–21 ago) — Esencial
 
-*El núcleo de la economía, comunicación y gestión básica. El curso puede operar aunque muchas mecánicas sean manuales al inicio.*
+*El núcleo de la economía, comunicación y gestión básica. El backend se desarrolla **por dominios**; cada dominio queda como un commit revisable en git antes de pasar al siguiente. El curso puede operar aunque muchas mecánicas sean manuales al inicio.*
 
-- [ ] **Fundación y Auth:**
-  - [x] Configurar repositorios, Docker Compose (FastAPI + Next.js + MySQL).
-  - [ ] Esquema de base de datos base (Usuarios, Equipos, Puntos, Tickets, `InboxItem`, `Announcement`, `SystemFlag`, `SystemState`).
-  - [ ] Registro con checkbox "He leído y acepto reglas y aviso de privacidad".
-  - [ ] Login JWT, y recuperación manual de PIN.
-- [ ] **Reglas y política (bloqueante para registro):**
-  - [ ] Página pública de reglas y políticas (§18).
-  - [ ] Aviso de privacidad breve (§18.1).
-  - [ ] Política de disputas y uso aceptable (§18.3, §18.4).
-- [ ] **Economía y Privilegios (El Núcleo):**
-  - [ ] Dashboard del Alumno: vista de saldo actual e historial de movimientos ("Ver movimientos", §5.3).
-  - [ ] Catálogo de Privilegios: flujo de compra y generación de tickets con folio único.
-  - [ ] **Split Bill**: aportaciones voluntarias entre integrantes de un equipo para privilegios grupales; ticket grupal se emite al alcanzar el costo.
-- [ ] **Comunicación del profesor:**
-  - [ ] Publicador de anuncios (§11.3.1) — solo funciones esenciales: título, cuerpo markdown, prioridad, anclado, alcance (todos/equipo/alumno).
-  - [ ] Widget "Anuncios del profesor" en Fila 0 del Dashboard (§14.2).
-- [ ] **Panel de Administración Base:**
-  - [ ] **Inbox de Aprobaciones** (§11.0) con **2 categorías iniciales**: `registro` y `nombre_firma`. Se irán agregando más en iteraciones siguientes.
-  - [ ] Gestor manual de puntos (para otorgar puntos por participación o licitaciones offline temporalmente, con nota justificativa).
-  - [ ] Creador algorítmico de Equipos y aprobación de Nombres de Firma.
-  - [ ] Editor del catálogo de privilegios (costos, límites, visibilidad, feature flags).
+### 🧱 Fundación
+
+- [x] Configurar repositorios, Docker Compose (FastAPI + Next.js + MySQL).
+
+### 📜 Reglas y política *(bloqueante para el registro)*
+
+- [ ] Página pública de reglas y políticas (§18).
+- [ ] Aviso de privacidad breve (§18.1).
+- [ ] Política de disputas y uso aceptable (§18.3, §18.4).
+
+### 👤 Dominio 1 — Users + Auth
+
+- [x] Modelo `User` con estados `pending_profile → pending_approval → active → rejected` (§2).
+- [x] Migración inicial Alembic (base declarativa + `User`).
+- [x] `POST /auth/register` — autorregistro con checkbox de aceptación de reglas.
+- [x] `POST /auth/login` — JWT firmado, hash bcrypt del PIN.
+- [x] `GET /auth/me` — perfil del usuario autenticado.
+- [x] `POST /admin/users/{id}/reset-pin` — recuperación manual de PIN por admin.
+- [x] `POST /admin/users/{id}/approve|reject` — cola provisional hasta Dominio 4 Inbox.
+- [x] `GET /admin/users/pending` — listar pendientes (provisional).
+- [x] Rate limiting de login (3 intentos / 15 min, §13.1).
+- [ ] Frontend: formularios de registro y login + página de reglas.
+
+### 👥 Dominio 2 — Teams y nombres de firma
+
+- [ ] Modelos `Team`, `TeamMember`, `TeamNameProposal` (§12.6).
+- [ ] Migración Alembic.
+- [ ] `POST /admin/teams/generate` — generación algorítmica balanceada por perfil.
+- [ ] `POST /teams/{id}/propose-name` — propuesta de nombre desde el chat interno.
+- [ ] `POST /admin/team-name-proposals/{id}/[approve|reject]`.
+- [ ] Frontend admin: generador de equipos + moderación de nombres.
+
+### 💰 Dominio 3 — Puntos, tickets y catálogo de privilegios
+
+- [ ] Modelos `PointsLedger` (append-only), `PrivilegeCatalog`, `PrivilegeTicket`, `DecimalRedemptionRequest`.
+- [ ] Migración Alembic.
+- [ ] `GET /me/points` — saldo actual + historial de movimientos ("Ver movimientos", §5.3).
+- [ ] `GET /privileges` — catálogo visible al alumno (respeta feature flags).
+- [ ] `POST /privileges/{id}/purchase` — compra individual y emisión de ticket con folio único.
+- [ ] `POST /privileges/{id}/split-bill` — **compras grupales por aportación voluntaria**; se emite ticket grupal al alcanzar el costo.
+- [ ] `POST /admin/tickets/{folio}/consume` — profesor marca ticket como usado.
+- [ ] `POST /admin/points/adjust` — gestor manual de puntos con nota justificativa.
+- [ ] `CRUD /admin/privileges` — editor del catálogo (costos, límites, visibilidad, feature flags).
+- [ ] Frontend alumno: widget "Saldo del banco", vista "Ver movimientos", catálogo de privilegios con flujo de canje.
+
+### 🔔 Dominio 4 — Sistema (Inbox, Announcements, Flags/State)
+
+- [ ] Modelos `InboxItem`, `Announcement`, `AnnouncementRead`, `SystemFlag`, `SystemState`.
+- [ ] Migración Alembic.
+- [ ] `POST /admin/announcements` — publicador (§11.3.1); funciones esenciales: título, markdown, prioridad, anclado, alcance (todos/equipo/alumno).
+- [ ] `GET /me/announcements` — feed activo para el alumno.
+- [ ] `POST /me/announcements/{id}/mark-read`.
+- [ ] `GET /admin/inbox` — bandeja con **2 categorías iniciales**: `registro` y `nombre_firma`. Se agregan más en iteraciones posteriores.
+- [ ] `POST /admin/inbox/{id}/[resolve|snooze|dismiss|mark_seen]`.
+- [ ] Frontend alumno: widget "Anuncios del profesor" en Fila 0 del Dashboard (§14.2).
+- [ ] Frontend admin: Inbox de Aprobaciones + Publicador de anuncios.
 
 ---
 

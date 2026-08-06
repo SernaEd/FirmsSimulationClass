@@ -1,6 +1,7 @@
-# Los modelos se registran en Fase 1 del roadmap.
-# Se importarán aquí para que Alembic los detecte:
-#
-# from .user import User
-# from .team import Team, TeamMember
-# etc.
+"""Registro de modelos para que Alembic los detecte con --autogenerate.
+
+Cada dominio agrega sus modelos aquí. Actualmente:
+- Dominio 1 (Users + Auth): User
+"""
+
+from .user import User, UserProfile, UserStatus  # noqa: F401
