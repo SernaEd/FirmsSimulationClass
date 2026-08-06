@@ -1,0 +1,23 @@
+# Overrides para PRODUCCIÓN / STAGING
+# Uso:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+#
+# En prod:
+#   - Sin bind mount de código (usa la imagen construida)
+#   - Sin --reload
+#   - MySQL no expone puerto al host (solo red interna)
+#   - Uvicorn con múltiples workers
+
+services:
+  mysql:
+    ports: []  # No expone puerto al host en prod
+
+  backend:
+    volumes:
+      - ./uploads:/app/uploads
+      # Nota: NO se monta ./backend:/app en prod
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
+
+  frontend:
+    volumes: []  # No hot reload
+    command: sh -c "npm run build && npm run start"
