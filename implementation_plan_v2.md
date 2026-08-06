@@ -383,9 +383,9 @@ Ambos mecanismos (sustentación aleatoria y datos empíricos con video) hacen qu
 
 ### 8.1 Fuente: Notion
 
-- El temario reside en Notion.
-- **Sincronización manual** desde el panel admin mediante un botón "Sincronizar contenido".
-- **Pipeline de contenido**: Notion API → descarga de bloques en formato compatible con `react-notion-x` → persistencia en la BD local (una copia por versión) → renderizado en el Dashboard y páginas de módulo con el componente `<NotionRenderer>` de `react-notion-x`. Esto conserva la fidelidad visual de Notion (imágenes, columnas, callouts, ecuaciones) sin depender de la API en tiempo real.
+- El temario reside en Notion, organizado por Sesiones (Clases). Cada clase tiene su propia sub-página en Notion.
+- **Sincronización manual** desde el panel admin mediante un botón "Sincronizar Clase".
+- **Pipeline de contenido**: Notion API → descarga de bloques en formato compatible con `react-notion-x` → persistencia en la BD local → renderizado en la página específica de la "Vista de Clase". La vista de clase muestra: NotionRenderer (arriba) + Visor de PDF embebido (medio) + Sección de Comentarios estilo YouTube (abajo).
 - **Limitador de Tasa (Rate Limiting):** El proceso de sincronización incluirá retrasos artificiales (ej. 0.35s entre peticiones) para respetar el límite de 3 peticiones por segundo de la API de Notion y evitar errores 429.
 - **Retry con backoff exponencial**: si aun así aparece un 429, el cliente reintenta con backoff (1s, 2s, 4s, 8s, hasta 3 reintentos) y solo aborta la sincronización si todos los reintentos fallan, dejando la BD en el último estado consistente.
 - **Sin peticiones automáticas a Notion API** durante uso normal.
@@ -394,7 +394,7 @@ Ambos mecanismos (sustentación aleatoria y datos empíricos con video) hacen qu
 ### 8.2 Estructura y desbloqueo de módulos
 
 - Los módulos están ocultos por defecto. El admin los desbloquea manualmente uno a uno para evitar que los alumnos se adelanten.
-- Cada módulo tiene: notas (contenido Notion sincronizado), foro de dudas asociado, ejercicios de práctica (§8.3), entregas configurables.
+- Cada módulo es un contenedor de Sesiones (Clases). Cada clase tiene su propia página de teoría (Notion + PDF) y su propio hilo de comentarios. Los ejercicios de práctica y entregas siguen agrupados a nivel Módulo.
 - **Módulos simultáneos**: los módulos previamente desbloqueados **permanecen accesibles** al desbloquear uno nuevo (los alumnos pueden seguir consultando notas y practicando ejercicios de módulos pasados).
 - **Módulo activo** (para efectos de racha diaria §5.5 y widget "Módulo activo" del Dashboard §14.2): es el **último módulo desbloqueado**. Es la fuente del que sale el reto del día y donde se enfoca el widget principal.
 
@@ -704,7 +704,8 @@ Entidades principales y relaciones clave. No es el schema definitivo (se detalla
 
 **Contenido y módulos:**
 
-- `Module` — id, numero (1-4), nombre, notion_page_id, notion_last_sync, unlocked_at (nullable), pozo_pts.
+- `Module` — id, numero (1-4), nombre, unlocked_at (nullable), pozo_pts.
+- `CourseSession` — id, module_id, numero_sesion, titulo, notion_page_id, apuntes_pdf_url (nullable), notion_last_sync.
 - `PracticeExercise` — id, module_id, plantilla_latex, sympy_solucion, parametros_config (JSON), valor_pts, activo.
 - `ExerciseAttempt` — id, user_id, exercise_id, respuesta_latex, resultado, pts_otorgados, timestamp.
 - `Announcement` — id, titulo, cuerpo_md, prioridad, anclado, publicado_at, expira_at, alcance (JSON), autor_id, edit_history (JSON).
@@ -712,7 +713,7 @@ Entidades principales y relaciones clave. No es el schema definitivo (se detalla
 
 **Foros:**
 
-- `ForumPost` — id, module_id, user_id, cuerpo, es_anonimo_para_pares, destacado, parent_post_id (nullable), created_at.
+- `ForumPost` — id, session_id, user_id, cuerpo, es_anonimo_para_pares, destacado, parent_post_id (nullable), created_at. (Comentarios vinculados a la clase, estilo YouTube).
 
 **Retroalimentación y kudos:**
 
@@ -833,7 +834,7 @@ Tutoriales previstos: registro, test de perfil, Dashboard, catálogo de privileg
 
 **Fila 2 — Curso y trabajo:**
 
-5. **Módulo activo**: título del módulo, barra de progreso del pozo de Tokens (Tks ganados / Tks disponibles), links a notas, foro y ejercicios de práctica.
+5. **Módulo activo**: título del módulo, barra de progreso del pozo de Tokens (Tks ganados / Tks disponibles), links al índice de Clases de ese módulo y a los ejercicios de práctica. Al entrar a una Clase, se abre la "Vista de Clase" (Notion + PDF + Comentarios).
 6. **Próximas entregas**: lista de 3-5 con countdown ("faltan 2 días", "vence hoy"), color por urgencia.
 7. **Mi equipo**: nombre de firma, mini-cards de integrantes (nickname + perfil), botón para abrir chat, contador "N kudos esta semana".
 

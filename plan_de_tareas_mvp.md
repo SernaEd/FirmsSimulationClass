@@ -18,9 +18,9 @@
 
 ### 📜 Reglas y política *(bloqueante para el registro)*
 
-- [ ] Página pública de reglas y políticas (§18).
-- [ ] Aviso de privacidad breve (§18.1).
-- [ ] Política de disputas y uso aceptable (§18.3, §18.4).
+- [x] Página pública de reglas y políticas (§18).
+- [x] Aviso de privacidad breve (§18.1).
+- [x] Política de disputas y uso aceptable (§18.3, §18.4).
 
 ### 👤 Dominio 1 — Users + Auth
 
@@ -33,7 +33,7 @@
 - [x] `POST /admin/users/{id}/approve|reject` — cola provisional hasta Dominio 4 Inbox.
 - [x] `GET /admin/users/pending` — listar pendientes (provisional).
 - [x] Rate limiting de login (3 intentos / 15 min, §13.1).
-- [ ] Frontend: formularios de registro y login + página de reglas.
+- [x] Frontend: formularios de registro y login + página de reglas + `/inicio` post-login con `/auth/me`.
 
 ### 👥 Dominio 2 — Teams y nombres de firma
 
@@ -75,9 +75,10 @@
 
 *Automatización de puntos individuales + canales de contenido + recordatorios.*
 
-- [ ] Integración de Notion API (o embeber el contenido temporalmente).
-  - [ ] Pipeline: Notion API → BD local → renderizado con `react-notion-x`.
-  - [ ] Botón manual de sincronización con vista de diff.
+- [ ] Integración de Notion API + PDFs + Comentarios (Vista de Clase).
+  - [ ] Pipeline: Notion API → BD local → renderizado con `react-notion-x` (sección superior).
+  - [ ] Visor embebido de PDF para notas del profesor desde GDrive (sección media).
+  - [ ] Botón manual de sincronización por Clase.
 - [ ] **Motor SymPy + MathLive**:
   - [ ] UI del profesor para crear problemas parametrizados.
   - [ ] Pre-procesamiento de derivadas ($dy/dx$) y normalización de constantes libres ($C_1$, $K$…).
@@ -86,7 +87,7 @@
   - [ ] Jobs `publish_daily_challenge`, `evaluate_streaks`, `detect_inactivity`.
   - [ ] Widget de racha con calendario mensual y palomitas verdes.
   - [ ] Pases de racha automáticos + compra en catálogo.
-- [ ] **Foros por módulo** *(subido desde Iteración 2 original)*:
+- [ ] **Comentarios por Clase** (Foros tipo YouTube) *(subido desde Iteración 2 original)*:
   - [ ] Opción por post: nickname o anónimo para pares.
   - [ ] Editor con soporte de LaTeX inline.
   - [ ] Marcado de post destacado por el profesor.
