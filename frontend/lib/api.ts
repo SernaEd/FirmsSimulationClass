@@ -138,8 +138,50 @@ async function request<T>(
   return res.json();
 }
 
+// ---- Tipos Dominio 2 (Teams) ----
+export type TeamNameStatus = "pendiente" | "aprobado" | "asignado_por_sistema";
+export type ProposalStatus = "pendiente_mod" | "aprobado" | "rechazado" | "superseded";
+
+export type TeamMemberOut = {
+  user_id: number;
+  nombre: string;
+  apellidos: string;
+  nickname: string;
+  perfil: UserProfile | null;
+  joined_at: string;
+};
+
+export type TeamOut = {
+  id: number;
+  nombre_firma: string | null;
+  estado_nombre: TeamNameStatus;
+  created_at: string;
+  members: TeamMemberOut[];
+};
+
+export type GenerateTeamsResult = {
+  total_alumnos_disponibles: number;
+  equipos_generados: number;
+  tamanos: number[];
+  teams: TeamOut[] | null;
+  warnings: string[];
+};
+
+export type ProposalOut = {
+  id: number;
+  team_id: number;
+  propuesta: string;
+  propuesto_por: number;
+  estado: ProposalStatus;
+  nota_moderacion: string | null;
+  created_at: string;
+  resolved_at: string | null;
+  resolved_by: number | null;
+};
+
 // ---- API pública ----
 export const api = {
+  // Dominio 1
   register: (body: RegisterPayload) =>
     request<UserOut>("/auth/register", {
       method: "POST",
@@ -151,6 +193,58 @@ export const api = {
       body: JSON.stringify(body),
     }),
   me: (token: string) => request<UserOut>("/auth/me", {}, token),
+
+  // Dominio 2 — alumno
+  myTeam: (token: string) => request<TeamOut | null>("/me/team", {}, token),
+  proposeName: (token: string, teamId: number, propuesta: string) =>
+    request<ProposalOut>(
+      `/teams/${teamId}/propose-name`,
+      { method: "POST", body: JSON.stringify({ propuesta }) },
+      token,
+    ),
+  teamProposals: (token: string, teamId: number) =>
+    request<ProposalOut[]>(`/teams/${teamId}/name-proposals`, {}, token),
+
+  // Dominio 2 — admin
+  adminListTeams: (token: string) =>
+    request<TeamOut[]>("/admin/teams", {}, token),
+  adminGenerateTeams: (
+    token: string,
+    body: { tamano_preferido?: 3 | 4; incluir_admin?: boolean; dry_run?: boolean },
+  ) =>
+    request<GenerateTeamsResult>(
+      "/admin/teams/generate",
+      { method: "POST", body: JSON.stringify(body) },
+      token,
+    ),
+  adminDeleteTeam: (token: string, teamId: number) =>
+    request<void>(`/admin/teams/${teamId}`, { method: "DELETE" }, token),
+  adminAssignDefaultName: (token: string, teamId: number, nombre?: string) =>
+    request<TeamOut>(
+      `/admin/teams/${teamId}/assign-default-name`,
+      { method: "POST", body: JSON.stringify({ nombre }) },
+      token,
+    ),
+  adminRenameTeam: (token: string, teamId: number, nombre: string) =>
+    request<TeamOut>(
+      `/admin/teams/${teamId}/rename`,
+      { method: "POST", body: JSON.stringify({ nombre }) },
+      token,
+    ),
+  adminListPendingProposals: (token: string) =>
+    request<ProposalOut[]>("/admin/team-name-proposals/pending", {}, token),
+  adminApproveProposal: (token: string, proposalId: number) =>
+    request<TeamOut>(
+      `/admin/team-name-proposals/${proposalId}/approve`,
+      { method: "POST" },
+      token,
+    ),
+  adminRejectProposal: (token: string, proposalId: number, nota?: string) =>
+    request<ProposalOut>(
+      `/admin/team-name-proposals/${proposalId}/reject`,
+      { method: "POST", body: JSON.stringify({ nota_moderacion: nota }) },
+      token,
+    ),
 };
 
 // ---- Token en localStorage ----

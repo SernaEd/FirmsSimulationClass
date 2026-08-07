@@ -100,17 +100,29 @@ export default function Inicio() {
           </p>
         </section>
       ) : (
-        <section className="rounded-lg border border-surface-border bg-surface-raised p-6 space-y-3">
+        <section className="rounded-lg border border-surface-border bg-surface-raised p-6 space-y-4">
           <h2 className="text-lg font-semibold">Cuenta activa</h2>
           <p className="text-sm text-neutral-400">
             {bienvenida} a la plataforma. En próximas iteraciones aquí verás tu
             Dashboard completo: racha, saldo del banco, catálogo, foros y más.
           </p>
-          {user.is_admin && (
-            <p className="text-sm text-ibero-red">
-              Tienes rol de administración. Panel admin próximamente.
-            </p>
-          )}
+
+          <div className="grid gap-2">
+            <Link
+              href="/mi-equipo"
+              className="block rounded-md border border-surface-border hover:bg-surface px-4 py-3 text-sm"
+            >
+              → Mi equipo (integrantes y nombre de firma)
+            </Link>
+            {user.is_admin && (
+              <Link
+                href="/admin/equipos"
+                className="block rounded-md border border-ibero-red/60 hover:bg-ibero-red/10 px-4 py-3 text-sm text-ibero-red"
+              >
+                → Admin · Equipos (generar y moderar nombres)
+              </Link>
+            )}
+          </div>
         </section>
       )}
 

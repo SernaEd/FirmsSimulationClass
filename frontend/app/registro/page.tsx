@@ -16,16 +16,25 @@ export default function Registro() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setStatus({ kind: "submitting" });
 
     const form = new FormData(event.currentTarget);
+    const pin = String(form.get("pin") ?? "");
+    const pinConfirm = String(form.get("pin_confirm") ?? "");
+
+    if (pin !== pinConfirm) {
+      setStatus({ kind: "error", message: "El PIN y su confirmación no coinciden." });
+      return;
+    }
+
+    setStatus({ kind: "submitting" });
+
     try {
       await api.register({
         nombre: String(form.get("nombre") ?? "").trim(),
         apellidos: String(form.get("apellidos") ?? "").trim(),
         numero_cuenta: String(form.get("numero_cuenta") ?? "").trim(),
         nickname: String(form.get("nickname") ?? "").trim(),
-        pin: String(form.get("pin") ?? ""),
+        pin,
         correo_institucional: String(form.get("correo_institucional") ?? "").trim() || undefined,
         pronombres: (form.get("pronombres") as UserPronouns) ?? "prefiero_no_decir",
         acepta_reglas: form.get("acepta_reglas") === "on",
@@ -92,6 +101,15 @@ export default function Registro() {
           minLength={4}
           maxLength={32}
           hint="Mínimo 4 caracteres. Elige algo memorable pero no obvio."
+        />
+        <Field
+          label="Confirmar PIN"
+          name="pin_confirm"
+          type="password"
+          required
+          minLength={4}
+          maxLength={32}
+          hint="Escríbelo de nuevo para confirmar."
         />
         <Field
           label="Correo institucional (opcional)"

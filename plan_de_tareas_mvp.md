@@ -41,12 +41,16 @@
 
 ### 👥 Dominio 2 — Teams y nombres de firma
 
-- [ ] Modelos `Team`, `TeamMember`, `TeamNameProposal` (§12.6).
-- [ ] Migración Alembic.
-- [ ] `POST /admin/teams/generate` — generación algorítmica balanceada por perfil.
-- [ ] `POST /teams/{id}/propose-name` — propuesta de nombre desde el chat interno.
-- [ ] `POST /admin/team-name-proposals/{id}/[approve|reject]`.
-- [ ] Frontend admin: generador de equipos + moderación de nombres.
+- [x] Modelos `Team`, `TeamMember`, `TeamNameProposal` (§12.6).
+- [x] Migración Alembic.
+- [x] `POST /admin/teams/generate` — generación algorítmica con tamaños 3/4 y balance por perfil cuando exista (hoy aleatorio con hook Belbin listo).
+- [x] `POST /teams/{id}/propose-name` — propuesta con validación de charset (letras+acentos+dígitos+espacios+guiones, 3-40 chars).
+- [x] `POST /admin/team-name-proposals/{id}/[approve|reject]` + `POST /admin/teams/{id}/assign-default-name` (fallback "Firma A/B/…").
+- [x] Endpoints alumno: `GET /me/team`, `GET /teams/{id}/name-proposals`.
+- [x] Frontend admin: `/admin/equipos` (generador + moderación + eliminación).
+- [x] Frontend alumno: `/mi-equipo` (ver integrantes + proponer nombre).
+- [x] `useAuth()` hook compartido con `requireAdmin` para proteger rutas admin.
+- [ ] *(Iteración 1)* Auto-asignación de nombre por sistema al día 7 sin propuesta aprobada — requiere APScheduler.
 
 ### 💰 Dominio 3 — Tokens, tickets y catálogo de privilegios
 

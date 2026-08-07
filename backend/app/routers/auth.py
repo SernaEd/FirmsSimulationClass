@@ -51,7 +51,10 @@ def register(payload: RegisterIn, db: Session = Depends(get_db)) -> User:
 
 
 @router.post("/login", response_model=TokenOut)
-@limiter.limit("3/15minutes")
+@limiter.limit(
+    # En dev es 100/min para no bloquear pruebas; en prod/staging: 3/15min (§13.1)
+    lambda: "100/minute" if settings.environment == "development" else "3/15minutes"
+)
 def login(request: Request, payload: LoginIn, db: Session = Depends(get_db)) -> TokenOut:
     user = db.query(User).filter(User.numero_cuenta == payload.numero_cuenta).first()
     if user is None or not verify_pin(payload.pin, user.pin_hash):
