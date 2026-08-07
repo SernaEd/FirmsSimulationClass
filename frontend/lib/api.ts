@@ -179,6 +179,56 @@ export type ProposalOut = {
   resolved_by: number | null;
 };
 
+// ---- Tipos Dominio 3 (Economía) ----
+export type TokenSource =
+  | "practica"
+  | "racha"
+  | "hito_racha"
+  | "licitacion"
+  | "sustentacion_destacada"
+  | "post_destacado"
+  | "kudos_out"
+  | "kudos_in"
+  | "ajuste_admin"
+  | "canje_privilegio"
+  | "canje_decima"
+  | "split_bill_refund"
+  | "bono_manual";
+
+export type LedgerEntryOut = {
+  id: number;
+  user_id: number;
+  delta: number;
+  fuente: TokenSource;
+  referencia_tipo: string | null;
+  referencia_id: number | null;
+  nota: string | null;
+  admin_id: number | null;
+  created_at: string;
+};
+
+export type BalanceOut = {
+  balance: number;
+  recent: LedgerEntryOut[];
+};
+
+// Etiquetas legibles para mostrar la fuente en la UI.
+export const TOKEN_SOURCE_LABEL: Record<TokenSource, string> = {
+  practica: "Ejercicios de práctica",
+  racha: "Racha diaria",
+  hito_racha: "Hito de racha",
+  licitacion: "Licitación",
+  sustentacion_destacada: "Sustentación destacada",
+  post_destacado: "Post destacado",
+  kudos_out: "Kudos enviado",
+  kudos_in: "Kudos recibido",
+  ajuste_admin: "Ajuste del profesor",
+  canje_privilegio: "Canje de privilegio",
+  canje_decima: "Canje por décimas",
+  split_bill_refund: "Reembolso split bill",
+  bono_manual: "Bono manual",
+};
+
 // ---- API pública ----
 export const api = {
   // Dominio 1
@@ -245,6 +295,24 @@ export const api = {
       { method: "POST", body: JSON.stringify({ nota_moderacion: nota }) },
       token,
     ),
+
+  // Dominio 3 — economía (alumno)
+  myTokens: (token: string) => request<BalanceOut>("/me/tokens", {}, token),
+  myMovements: (
+    token: string,
+    opts: { limit?: number; offset?: number; fuente?: TokenSource[] } = {},
+  ) => {
+    const params = new URLSearchParams();
+    if (opts.limit != null) params.set("limit", String(opts.limit));
+    if (opts.offset != null) params.set("offset", String(opts.offset));
+    if (opts.fuente) opts.fuente.forEach((f) => params.append("fuente", f));
+    const qs = params.toString();
+    return request<LedgerEntryOut[]>(
+      `/me/tokens/movements${qs ? `?${qs}` : ""}`,
+      {},
+      token,
+    );
+  },
 };
 
 // ---- Token en localStorage ----

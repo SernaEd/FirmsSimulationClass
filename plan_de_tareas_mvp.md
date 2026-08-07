@@ -69,7 +69,29 @@
 - [x] `CRUD /admin/privileges` + `POST /admin/privileges/seed-defaults` (siembra los ~22 privilegios de §5.2).
 - [x] Décimas: `POST /me/decimal-redemption` (deducción inmediata) y `/admin/decimal-redemption/{id}/[approve|reject]` con reembolso en rechazo.
 - [x] Validación de topes `por_semestre` en `limites_config`; `por_tarea`/`por_examen` diferidos a Iteración 3.
-- [ ] Frontend alumno: widget "Saldo del banco", vista "Ver movimientos", catálogo de privilegios con flujo de canje. *(commit 3/3)*
+
+**Frontend Dominio 3 (dividido por funcionalidad para pruebas incrementales):**
+
+- [x] **3.1 · Alumno: Saldo del banco y movimientos**
+  - Widget "Saldo del banco" en `/inicio` (con saldo + últimos 3 movimientos + link).
+  - Página `/movimientos` con historial paginado y filtros por fuente.
+  - Tipos y wrappers en `lib/api.ts`.
+
+- [ ] **3.2 · Alumno: Catálogo y compra individual**
+  - Página `/privilegios` con catálogo agrupado por categoría (visible al alumno).
+  - Flujo de compra individual con confirmación de saldo.
+  - Página `/mis-tickets` (listar + detalle con folio grande para mostrar al profesor).
+
+- [ ] **3.3 · Alumno: Split Bill (compras grupales)**
+  - Iniciar Split Bill desde `/privilegios` (solo entradas `es_grupal`).
+  - Aportar a tickets `funding` desde `/mis-tickets`.
+  - Cancelar ticket `funding` (iniciador) con reembolso automático visible.
+
+- [ ] **3.4 · Alumno: Canje de Tokens por décimas**
+  - Página `/decimas` con formulario (entrega objetivo, cantidad) e histórico.
+
+- [ ] **3.5 · Admin: Panel de economía**
+  - Página `/admin/economia` con: gestor del catálogo (CRUD inline + botón "Sembrar defaults"), consumo por folio, ajuste manual de Tokens, cola de aprobación de décimas.
 
 ### 🔔 Dominio 4 — Sistema (Inbox, Announcements, Flags/State)
 
