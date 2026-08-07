@@ -56,14 +56,20 @@
 
 - [x] Modelos `TokenLedger` (append-only), `PrivilegeCatalog`, `PrivilegeTicket`, `SplitBillContribution`, `DecimalRedemptionRequest` + enums (`TokenSource`, `TicketStatus`, `DecimalRequestStatus`).
 - [x] Migración Alembic (`98d19bcd4ae5`).
-- [ ] `GET /me/tokens` — saldo actual + historial de movimientos ("Ver movimientos", §5.3).
-- [ ] `GET /privileges` — catálogo visible al alumno (respeta feature flags).
-- [ ] `POST /privileges/{id}/purchase` — compra individual y emisión de ticket con folio único.
-- [ ] `POST /privileges/{id}/split-bill` — **compras grupales por aportación voluntaria**; se emite ticket grupal al alcanzar el costo.
-- [ ] `POST /admin/tickets/{folio}/consume` — profesor marca ticket como usado.
-- [ ] `POST /admin/tokens/adjust` — gestor manual de Tokens con nota justificativa.
-- [ ] `CRUD /admin/privileges` — editor del catálogo (costos, límites, visibilidad, feature flags).
-- [ ] Frontend alumno: widget "Saldo del banco", vista "Ver movimientos", catálogo de privilegios con flujo de canje.
+- [x] `GET /me/tokens` — saldo actual + últimos 10 movimientos.
+- [x] `GET /me/tokens/movements` — historial paginado con filtro por fuente.
+- [x] `GET /privileges` — catálogo visible al alumno (respeta feature flags: hidden hasta Dominio 4).
+- [x] `POST /privileges/{id}/purchase` — compra individual, ticket con folio único, estado `emitted`.
+- [x] `POST /privileges/{id}/split-bill/init` — inicia ticket grupal con aportación del iniciador.
+- [x] `POST /tickets/{id}/contribute` — otras personas del equipo aportan; transición automática a `emitted` al cubrir el costo.
+- [x] `POST /tickets/{id}/cancel` — solo iniciador (o admin) mientras esté `funding`; reembolso automático a contribuidores.
+- [x] `GET /me/tickets` y `GET /tickets/{id}` con control de acceso.
+- [x] `POST /admin/tickets/{folio}/consume` — profesor marca ticket como usado.
+- [x] `POST /admin/tokens/adjust` — gestor manual de Tokens con nota justificativa (obligatoria).
+- [x] `CRUD /admin/privileges` + `POST /admin/privileges/seed-defaults` (siembra los ~22 privilegios de §5.2).
+- [x] Décimas: `POST /me/decimal-redemption` (deducción inmediata) y `/admin/decimal-redemption/{id}/[approve|reject]` con reembolso en rechazo.
+- [x] Validación de topes `por_semestre` en `limites_config`; `por_tarea`/`por_examen` diferidos a Iteración 3.
+- [ ] Frontend alumno: widget "Saldo del banco", vista "Ver movimientos", catálogo de privilegios con flujo de canje. *(commit 3/3)*
 
 ### 🔔 Dominio 4 — Sistema (Inbox, Announcements, Flags/State)
 
