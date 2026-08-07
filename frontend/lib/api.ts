@@ -229,6 +229,83 @@ export const TOKEN_SOURCE_LABEL: Record<TokenSource, string> = {
   bono_manual: "Bono manual",
 };
 
+export type TicketStatus =
+  | "funding"
+  | "emitted"
+  | "consumed"
+  | "cancelled"
+  | "expired";
+
+export const TICKET_STATUS_LABEL: Record<TicketStatus, string> = {
+  funding: "En financiamiento",
+  emitted: "Emitido",
+  consumed: "Usado",
+  cancelled: "Cancelado",
+  expired: "Vencido",
+};
+
+export type PrivilegeCatalogOut = {
+  id: number;
+  nombre: string;
+  descripcion: string | null;
+  categoria: string | null;
+  costo: number;
+  es_grupal: boolean;
+  limites_config: Record<string, number> | null;
+  visible: boolean;
+  feature_flag_key: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ContributionOut = {
+  id: number;
+  user_id: number;
+  amount: number;
+  created_at: string;
+  refunded_at: string | null;
+};
+
+export type TicketOut = {
+  id: number;
+  folio: string;
+  catalog_id: number;
+  initiator_user_id: number;
+  team_id: number | null;
+  costo_total: number;
+  pagado_total: number;
+  estado: TicketStatus;
+  created_at: string;
+  emitido_at: string | null;
+  consumido_at: string | null;
+  consumido_por_admin_id: number | null;
+  cancelled_at: string | null;
+  contribuciones: ContributionOut[];
+};
+
+// Etiquetas amigables por categoría (§5.2). Las claves coinciden con
+// los strings guardados en PrivilegeCatalog.categoria.
+export const CATEGORY_LABEL: Record<string, string> = {
+  tarea: "Tareas y entregas",
+  examen: "Exámenes parciales",
+  sustentacion: "Sustentación oral",
+  contenido: "Contenido y acceso",
+  racha: "Racha",
+  tutoria: "Tutoría y apoyo",
+  asistencia: "Asistencia",
+};
+
+// Orden preferido de categorías en la UI.
+export const CATEGORY_ORDER = [
+  "tarea",
+  "examen",
+  "sustentacion",
+  "contenido",
+  "racha",
+  "tutoria",
+  "asistencia",
+];
+
 // ---- API pública ----
 export const api = {
   // Dominio 1
@@ -313,6 +390,26 @@ export const api = {
       token,
     );
   },
+  listPrivileges: (token: string) =>
+    request<PrivilegeCatalogOut[]>("/privileges", {}, token),
+  purchasePrivilege: (token: string, catalogId: number) =>
+    request<TicketOut>(
+      `/privileges/${catalogId}/purchase`,
+      { method: "POST" },
+      token,
+    ),
+  myTickets: (token: string, estados?: TicketStatus[]) => {
+    const params = new URLSearchParams();
+    if (estados) estados.forEach((e) => params.append("estado", e));
+    const qs = params.toString();
+    return request<TicketOut[]>(
+      `/me/tickets${qs ? `?${qs}` : ""}`,
+      {},
+      token,
+    );
+  },
+  getTicket: (token: string, ticketId: number) =>
+    request<TicketOut>(`/tickets/${ticketId}`, {}, token),
 };
 
 // ---- Token en localStorage ----

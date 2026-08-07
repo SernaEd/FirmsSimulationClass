@@ -77,7 +77,7 @@
   - Página `/movimientos` con historial paginado y filtros por fuente.
   - Tipos y wrappers en `lib/api.ts`.
 
-- [ ] **3.2 · Alumno: Catálogo y compra individual**
+- [x] **3.2 · Alumno: Catálogo y compra individual**
   - Página `/privilegios` con catálogo agrupado por categoría (visible al alumno).
   - Flujo de compra individual con confirmación de saldo.
   - Página `/mis-tickets` (listar + detalle con folio grande para mostrar al profesor).

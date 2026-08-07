@@ -97,6 +97,18 @@ export default function Inicio() {
                 → Mi equipo (integrantes y nombre de firma)
               </Link>
               <Link
+                href="/privilegios"
+                className="block rounded-md border border-surface-border hover:bg-surface px-4 py-3 text-sm"
+              >
+                → Catálogo de privilegios (canjear Tokens)
+              </Link>
+              <Link
+                href="/mis-tickets"
+                className="block rounded-md border border-surface-border hover:bg-surface px-4 py-3 text-sm"
+              >
+                → Mis tickets (privilegios comprados)
+              </Link>
+              <Link
                 href="/movimientos"
                 className="block rounded-md border border-surface-border hover:bg-surface px-4 py-3 text-sm"
               >
