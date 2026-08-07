@@ -54,8 +54,8 @@
 
 ### 💰 Dominio 3 — Tokens, tickets y catálogo de privilegios
 
-- [ ] Modelos `TokenLedger` (append-only), `PrivilegeCatalog`, `PrivilegeTicket`, `DecimalRedemptionRequest`.
-- [ ] Migración Alembic.
+- [x] Modelos `TokenLedger` (append-only), `PrivilegeCatalog`, `PrivilegeTicket`, `SplitBillContribution`, `DecimalRedemptionRequest` + enums (`TokenSource`, `TicketStatus`, `DecimalRequestStatus`).
+- [x] Migración Alembic (`98d19bcd4ae5`).
 - [ ] `GET /me/tokens` — saldo actual + historial de movimientos ("Ver movimientos", §5.3).
 - [ ] `GET /privileges` — catálogo visible al alumno (respeta feature flags).
 - [ ] `POST /privileges/{id}/purchase` — compra individual y emisión de ticket con folio único.
