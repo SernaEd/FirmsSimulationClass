@@ -459,6 +459,40 @@ export const api = {
       { method: "POST", body: JSON.stringify(body) },
       token,
     ),
+
+  // Dominio 3 — economía (admin)
+  adminListTickets: (token: string, estados?: TicketStatus[]) => {
+    const params = new URLSearchParams();
+    if (estados) estados.forEach((e) => params.append("estado", e));
+    const qs = params.toString();
+    return request<TicketOut[]>(`/admin/tickets${qs ? `?${qs}` : ""}`, {}, token);
+  },
+  adminConsumeTicket: (token: string, folio: string) =>
+    request<TicketOut>(`/admin/tickets/${folio}/consume`, { method: "POST" }, token),
+  adminCancelTicket: (token: string, ticketId: number) =>
+    request<TicketOut>(`/admin/tickets/${ticketId}/cancel`, { method: "POST" }, token),
+  adminListPendingDecimals: (token: string) =>
+    request<DecimalRedemptionOut[]>("/admin/decimal-redemption/pending", {}, token),
+  adminApproveDecimal: (token: string, requestId: number, nota?: string) =>
+    request<DecimalRedemptionOut>(
+      `/admin/decimal-redemption/${requestId}/approve`,
+      { method: "POST", body: JSON.stringify({ nota }) },
+      token,
+    ),
+  adminRejectDecimal: (token: string, requestId: number, nota?: string) =>
+    request<DecimalRedemptionOut>(
+      `/admin/decimal-redemption/${requestId}/reject`,
+      { method: "POST", body: JSON.stringify({ nota }) },
+      token,
+    ),
+  adminAdjustTokens: (token: string, body: { user_id: number; delta: number; nota: string }) =>
+    request<LedgerEntryOut>(
+      "/admin/tokens/adjust",
+      { method: "POST", body: JSON.stringify(body) },
+      token,
+    ),
+  adminListUsers: (token: string) =>
+    request<UserOut[]>("/admin/users", {}, token),
 };
 
 // ---- Token en localStorage ----

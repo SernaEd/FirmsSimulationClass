@@ -115,12 +115,20 @@ export default function Inicio() {
                 → Movimientos (historial del banco)
               </Link>
               {user.is_admin && (
-                <Link
-                  href="/admin/equipos"
-                  className="block rounded-md border border-ibero-red/60 hover:bg-ibero-red/10 px-4 py-3 text-sm text-ibero-red"
-                >
-                  → Admin · Equipos (generar y moderar nombres)
-                </Link>
+                <>
+                  <Link
+                    href="/admin/equipos"
+                    className="block rounded-md border border-ibero-red/60 hover:bg-ibero-red/10 px-4 py-3 text-sm text-ibero-red"
+                  >
+                    → Admin · Equipos (generar y moderar nombres)
+                  </Link>
+                  <Link
+                    href="/admin/economia"
+                    className="block rounded-md border border-ibero-red/60 hover:bg-ibero-red/10 px-4 py-3 text-sm text-ibero-red mt-2"
+                  >
+                    → Admin · Economía (moderar canjes y décimas)
+                  </Link>
+                </>
               )}
             </div>
           </section>

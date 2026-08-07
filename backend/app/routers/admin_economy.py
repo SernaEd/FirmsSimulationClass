@@ -155,7 +155,11 @@ def admin_list_tickets(
 ) -> list[PrivilegeTicket]:
     stmt = (
         select(PrivilegeTicket)
-        .options(selectinload(PrivilegeTicket.contribuciones))
+        .options(
+            selectinload(PrivilegeTicket.contribuciones),
+            selectinload(PrivilegeTicket.initiator),
+            selectinload(PrivilegeTicket.catalog),
+        )
         .order_by(PrivilegeTicket.created_at.desc())
         .limit(limit)
     )
@@ -210,6 +214,7 @@ def admin_list_pending_decimals(
     return list(
         db.scalars(
             select(DecimalRedemptionRequest)
+            .options(selectinload(DecimalRedemptionRequest.user))
             .where(DecimalRedemptionRequest.estado == DecimalRequestStatus.pendiente)
             .order_by(DecimalRedemptionRequest.created_at.asc())
         ).all()

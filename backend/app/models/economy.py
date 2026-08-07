@@ -166,6 +166,16 @@ class PrivilegeTicket(Base):
     contribuciones: Mapped[list["SplitBillContribution"]] = relationship(
         back_populates="ticket", cascade="all, delete-orphan"
     )
+    initiator: Mapped["User"] = relationship(foreign_keys=[initiator_user_id])
+
+    @property
+    def initiator_name(self) -> str | None:
+        return self.initiator.nickname if getattr(self, "initiator", None) else None
+
+    @property
+    def catalog_name(self) -> str | None:
+        return self.catalog.nombre if getattr(self, "catalog", None) else None
+
 
     __table_args__ = (
         Index("ix_tickets_estado_catalog", "estado", "catalog_id"),
@@ -274,3 +284,9 @@ class DecimalRedemptionRequest(Base):
     )
     resolved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     resolved_by: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+
+    user: Mapped["User"] = relationship(foreign_keys=[user_id])
+
+    @property
+    def user_name(self) -> str | None:
+        return self.user.nickname if getattr(self, "user", None) else None

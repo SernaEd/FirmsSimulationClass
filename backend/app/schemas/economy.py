@@ -90,6 +90,9 @@ class TicketOut(BaseModel):
     consumido_por_admin_id: int | None
     cancelled_at: datetime | None
     contribuciones: list[ContributionOut] = []
+    
+    initiator_name: str | None = None
+    catalog_name: str | None = None
 
 
 class SplitBillInitIn(BaseModel):
@@ -149,6 +152,8 @@ class DecimalRedemptionOut(BaseModel):
     created_at: datetime
     resolved_at: datetime | None
     resolved_by: int | None
+    
+    user_name: str | None = None
 
 
 class DecimalRedemptionIn(BaseModel):

@@ -92,3 +92,17 @@ def list_pending(
         .order_by(User.created_at.asc())
         .all()
     )
+
+
+@router.get("", response_model=list[UserOut])
+def list_users(
+    db: Session = Depends(get_db),
+    _admin: User = Depends(get_current_admin),
+) -> list[User]:
+    """Lista todos los usuarios activos para dropdowns administrativos."""
+    return (
+        db.query(User)
+        .filter(User.estado == UserStatus.active)
+        .order_by(User.nombre.asc())
+        .all()
+    )
