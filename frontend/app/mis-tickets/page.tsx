@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import {
   ApiError,
   PrivilegeCatalogOut,
@@ -17,11 +17,14 @@ const ACTIVE_STATES: TicketStatus[] = ["funding", "emitted"];
 export default function MisTickets() {
   const authState = useAuth();
   const token = authState.status === "authenticated" ? authState.token : null;
+  const currentUserId =
+    authState.status === "authenticated" ? authState.user.id : null;
 
   const [tickets, setTickets] = useState<TicketOut[]>([]);
   const [catalog, setCatalog] = useState<Map<number, PrivilegeCatalogOut>>(
     new Map(),
   );
+  const [balance, setBalance] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<number | null>(null);
@@ -31,20 +34,40 @@ export default function MisTickets() {
     setLoading(true);
     setError(null);
     try {
-      const [ts, cat] = await Promise.all([
+      const [ts, cat, bal] = await Promise.all([
         api.myTickets(token),
         api.listPrivileges(token),
+        api.myTokens(token),
       ]);
       setTickets(ts);
       const map = new Map<number, PrivilegeCatalogOut>();
       for (const c of cat) map.set(c.id, c);
       setCatalog(map);
+      setBalance(bal.balance);
     } catch (err) {
       setError(err instanceof ApiError ? err.detail : String(err));
     } finally {
       setLoading(false);
     }
   }, [token]);
+
+  async function handleContribute(ticketId: number, amount: number) {
+    if (!token) return;
+    await api.contributeToTicket(token, ticketId, amount);
+    await load();
+  }
+
+  async function handleCancel(ticketId: number) {
+    if (!token) return;
+    if (
+      !window.confirm(
+        "¿Cancelar el ticket? Se reembolsan las aportaciones a cada integrante. Esta acción no se puede deshacer.",
+      )
+    )
+      return;
+    await api.cancelTicket(token, ticketId);
+    await load();
+  }
 
   useEffect(() => {
     if (token) load();
@@ -113,9 +136,13 @@ export default function MisTickets() {
                 ticket={t}
                 catalog={catalog.get(t.catalog_id) ?? null}
                 expanded={expandedId === t.id}
+                currentUserId={currentUserId}
+                balance={balance}
                 onToggle={() =>
                   setExpandedId((prev) => (prev === t.id ? null : t.id))
                 }
+                onContribute={handleContribute}
+                onCancel={handleCancel}
               />
             ))}
           </div>
@@ -132,9 +159,13 @@ export default function MisTickets() {
                 ticket={t}
                 catalog={catalog.get(t.catalog_id) ?? null}
                 expanded={expandedId === t.id}
+                currentUserId={currentUserId}
+                balance={balance}
                 onToggle={() =>
                   setExpandedId((prev) => (prev === t.id ? null : t.id))
                 }
+                onContribute={handleContribute}
+                onCancel={handleCancel}
               />
             ))}
           </div>
@@ -148,13 +179,28 @@ function TicketCard({
   ticket,
   catalog,
   expanded,
+  currentUserId,
+  balance,
   onToggle,
+  onContribute,
+  onCancel,
 }: {
   ticket: TicketOut;
   catalog: PrivilegeCatalogOut | null;
   expanded: boolean;
+  currentUserId: number | null;
+  balance: number | null;
   onToggle: () => void;
+  onContribute: (ticketId: number, amount: number) => Promise<void>;
+  onCancel: (ticketId: number) => Promise<void>;
 }) {
+  const isFunding = ticket.estado === "funding";
+  const isInitiator = currentUserId !== null && ticket.initiator_user_id === currentUserId;
+  const activeContribution = ticket.contribuciones.find(
+    (c) => c.user_id === currentUserId && c.refunded_at === null,
+  );
+  const alreadyContributed = !!activeContribution;
+  const currentContributionAmount = activeContribution?.amount ?? 0;
   return (
     <div
       className={
@@ -264,13 +310,125 @@ function TicketCard({
             </div>
           )}
 
-          {ticket.estado === "funding" && (
-            <p className="text-xs text-amber-300">
-              Ticket en financiamiento. En el próximo commit (3.3) podrás aportar
-              y cancelar desde aquí.
-            </p>
+          {isFunding && (
+            <FundingActions
+              ticket={ticket}
+              balance={balance}
+              alreadyContributed={alreadyContributed}
+              currentContributionAmount={currentContributionAmount}
+              isInitiator={isInitiator}
+              onContribute={(amt) => onContribute(ticket.id, amt)}
+              onCancel={() => onCancel(ticket.id)}
+            />
           )}
         </div>
+      )}
+    </div>
+  );
+}
+
+function FundingActions({
+  ticket,
+  balance,
+  alreadyContributed,
+  currentContributionAmount,
+  isInitiator,
+  onContribute,
+  onCancel,
+}: {
+  ticket: TicketOut;
+  balance: number | null;
+  alreadyContributed: boolean;
+  currentContributionAmount: number;
+  isInitiator: boolean;
+  onContribute: (amount: number) => Promise<void>;
+  onCancel: () => Promise<void>;
+}) {
+  const remaining = ticket.costo_total - ticket.pagado_total;
+  const maxContribution = Math.min(remaining + currentContributionAmount, (balance ?? 0) + currentContributionAmount);
+  const [amount, setAmount] = useState<number>(
+    alreadyContributed
+      ? currentContributionAmount
+      : Math.min(remaining, Math.max(1, Math.floor(maxContribution / 2)))
+  );
+  const [busy, setBusy] = useState<null | "contrib" | "cancel">(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setBusy("contrib");
+    setError(null);
+    try {
+      await onContribute(amount);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.detail : String(err));
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function cancel() {
+    setBusy("cancel");
+    setError(null);
+    try {
+      await onCancel();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.detail : String(err));
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  const canContribute = balance !== null && balance >= 1 && remaining > 0;
+
+  return (
+    <div className="rounded-md border border-amber-800/60 bg-amber-950/20 p-3 space-y-3">
+      <p className="text-xs text-amber-200">
+        Faltan <strong>{remaining} Tks</strong> para emitir el ticket.
+      </p>
+
+      {canContribute && (
+        <form onSubmit={submit} className="flex items-end gap-2">
+          <label className="flex-1 space-y-1">
+            <span className="text-[10px] uppercase tracking-widest text-neutral-400">
+              {alreadyContributed ? "Modificar tu aportación" : "Tu aportación"}
+            </span>
+            <input
+              type="number"
+              min={1}
+              max={maxContribution}
+              step={1}
+              value={amount}
+              onChange={(e) => setAmount(Number(e.target.value) || 0)}
+              className="w-full rounded-md border border-surface-border bg-surface px-2 py-1.5 text-sm text-white tabular-nums focus:border-ibero-red focus:outline-none focus:ring-1 focus:ring-ibero-red"
+            />
+          </label>
+          <button
+            type="submit"
+            disabled={busy !== null || amount < 1 || amount > maxContribution || amount === currentContributionAmount}
+            className="rounded-md bg-emerald-800 hover:bg-emerald-700 disabled:opacity-50 px-3 py-1.5 text-xs font-medium"
+          >
+            {busy === "contrib" ? "Guardando…" : alreadyContributed ? "Actualizar" : "Aportar"}
+          </button>
+        </form>
+      )}
+
+      {isInitiator && (
+        <div className="pt-2 border-t border-amber-900/40">
+          <button
+            onClick={cancel}
+            disabled={busy !== null}
+            className="text-xs rounded-md border border-red-800 hover:bg-red-950/40 disabled:opacity-50 text-red-300 px-3 py-1.5"
+          >
+            {busy === "cancel" ? "Cancelando…" : "Cancelar ticket y reembolsar"}
+          </button>
+        </div>
+      )}
+
+      {error && (
+        <p className="text-xs text-red-300 border border-red-800 bg-red-950/40 rounded-md p-2">
+          {error}
+        </p>
       )}
     </div>
   );

@@ -283,6 +283,29 @@ export type TicketOut = {
   contribuciones: ContributionOut[];
 };
 
+export type DecimalRequestStatus = "pending" | "approved" | "rejected";
+
+export type DecimalRedemptionOut = {
+  id: number;
+  user_id: number;
+  entrega_descripcion: string;
+  entrega_ref: string | null;
+  decimas_solicitadas: number;
+  pts_costo: number;
+  estado: DecimalRequestStatus;
+  nota_profesor: string | null;
+  created_at: string;
+  resolved_at: string | null;
+  resolved_by: number | null;
+};
+
+export type DecimalRedemptionIn = {
+  entrega_descripcion: string;
+  entrega_ref?: string | null;
+  decimas_solicitadas: number;
+};
+
+
 // Etiquetas amigables por categoría (§5.2). Las claves coinciden con
 // los strings guardados en PrivilegeCatalog.categoria.
 export const CATEGORY_LABEL: Record<string, string> = {
@@ -410,6 +433,32 @@ export const api = {
   },
   getTicket: (token: string, ticketId: number) =>
     request<TicketOut>(`/tickets/${ticketId}`, {}, token),
+  initSplitBill: (token: string, catalogId: number, amount: number) =>
+    request<TicketOut>(
+      `/privileges/${catalogId}/split-bill/init`,
+      { method: "POST", body: JSON.stringify({ amount }) },
+      token,
+    ),
+  contributeToTicket: (token: string, ticketId: number, amount: number) =>
+    request<TicketOut>(
+      `/tickets/${ticketId}/contribute`,
+      { method: "POST", body: JSON.stringify({ amount }) },
+      token,
+    ),
+  cancelTicket: (token: string, ticketId: number) =>
+    request<TicketOut>(
+      `/tickets/${ticketId}/cancel`,
+      { method: "POST" },
+      token,
+    ),
+  listDecimalRedemptions: (token: string) =>
+    request<DecimalRedemptionOut[]>("/me/decimal-redemption", {}, token),
+  requestDecimalRedemption: (token: string, body: DecimalRedemptionIn) =>
+    request<DecimalRedemptionOut>(
+      "/me/decimal-redemption",
+      { method: "POST", body: JSON.stringify(body) },
+      token,
+    ),
 };
 
 // ---- Token en localStorage ----

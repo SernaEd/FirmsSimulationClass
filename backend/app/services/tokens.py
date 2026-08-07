@@ -252,6 +252,20 @@ def initiate_split_bill(
             detail="No tienes equipo activo. Un Split Bill requiere formar parte de un equipo.",
         )
 
+    # Solo puede haber un Split Bill en proceso (funding) por equipo para el mismo privilegio a la vez
+    active_funding = db.scalar(
+        select(PrivilegeTicket.id).where(
+            PrivilegeTicket.team_id == team.id,
+            PrivilegeTicket.catalog_id == catalog.id,
+            PrivilegeTicket.estado == TicketStatus.funding
+        )
+    )
+    if active_funding:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Tu equipo ya tiene un ticket en financiamiento para este mismo privilegio. Deben completarlo o cancelarlo antes de iniciar otro.",
+        )
+
     if first_amount <= 0:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -330,25 +344,47 @@ def contribute_to_ticket(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="La aportación debe ser mayor que 0.",
         )
+
+    # Revisar si ya hay una aportación activa
+    existing_contrib = db.scalar(
+        select(SplitBillContribution).where(
+            SplitBillContribution.ticket_id == ticket.id,
+            SplitBillContribution.user_id == user.id,
+            SplitBillContribution.refunded_at.is_(None),
+        )
+    )
+
+    current_amount = existing_contrib.amount if existing_contrib else 0
+    delta = amount - current_amount
+
+    if delta == 0:
+        return ticket
+
     remaining = ticket.costo_total - ticket.pagado_total
-    if amount > remaining:
+    if delta > remaining:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"La aportación excede lo restante ({remaining} Tks).",
-        )
-    balance = get_balance(db, user.id)
-    if balance < amount:
-        raise HTTPException(
-            status_code=status.HTTP_402_PAYMENT_REQUIRED,
-            detail=f"Saldo insuficiente. Requieres {amount} Tks, tienes {balance}.",
+            detail=f"El incremento excede lo restante ({remaining} Tks).",
         )
 
-    db.add(SplitBillContribution(ticket_id=ticket.id, user_id=user.id, amount=amount))
-    ticket.pagado_total += amount
+    if delta > 0:
+        balance = get_balance(db, user.id)
+        if balance < delta:
+            raise HTTPException(
+                status_code=status.HTTP_402_PAYMENT_REQUIRED,
+                detail=f"Saldo insuficiente. Requieres {delta} Tks adicionales, tienes {balance}.",
+            )
+
+    if existing_contrib:
+        existing_contrib.amount = amount
+    else:
+        db.add(SplitBillContribution(ticket_id=ticket.id, user_id=user.id, amount=amount))
+        
+    ticket.pagado_total += delta
     _add_ledger_entry(
         db,
         user_id=user.id,
-        delta=-amount,
+        delta=-delta,
         fuente=TokenSource.canje_privilegio,
         referencia_tipo="ticket",
         referencia_id=ticket.id,

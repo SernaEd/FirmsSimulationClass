@@ -82,7 +82,7 @@
   - Flujo de compra individual con confirmación de saldo.
   - Página `/mis-tickets` (listar + detalle con folio grande para mostrar al profesor).
 
-- [ ] **3.3 · Alumno: Split Bill (compras grupales)**
+- [x] **3.3 · Alumno: Split Bill (compras grupales)**
   - Iniciar Split Bill desde `/privilegios` (solo entradas `es_grupal`).
   - Aportar a tickets `funding` desde `/mis-tickets`.
   - Cancelar ticket `funding` (iniciador) con reembolso automático visible.

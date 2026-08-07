@@ -14,10 +14,10 @@ import { useAuth } from "@/lib/useAuth";
 
 type Confirm =
   | { kind: "closed" }
-  | { kind: "open"; entry: PrivilegeCatalogOut }
-  | { kind: "submitting"; entry: PrivilegeCatalogOut }
+  | { kind: "open"; entry: PrivilegeCatalogOut; splitAmount: number }
+  | { kind: "submitting"; entry: PrivilegeCatalogOut; splitAmount: number }
   | { kind: "success"; entry: PrivilegeCatalogOut; ticket: TicketOut }
-  | { kind: "error"; entry: PrivilegeCatalogOut; message: string };
+  | { kind: "error"; entry: PrivilegeCatalogOut; splitAmount: number; message: string };
 
 export default function Privilegios() {
   const authState = useAuth();
@@ -68,10 +68,12 @@ export default function Privilegios() {
 
   async function confirmPurchase() {
     if (!token || confirm.kind !== "open") return;
-    const entry = confirm.entry;
-    setConfirm({ kind: "submitting", entry });
+    const { entry, splitAmount } = confirm;
+    setConfirm({ kind: "submitting", entry, splitAmount });
     try {
-      const ticket = await api.purchasePrivilege(token, entry.id);
+      const ticket = entry.es_grupal
+        ? await api.initSplitBill(token, entry.id, splitAmount)
+        : await api.purchasePrivilege(token, entry.id);
       setConfirm({ kind: "success", entry, ticket });
       // Refrescar saldo
       const bal = await api.myTokens(token);
@@ -80,9 +82,15 @@ export default function Privilegios() {
       setConfirm({
         kind: "error",
         entry,
+        splitAmount,
         message: err instanceof ApiError ? err.detail : String(err),
       });
     }
+  }
+
+  function updateSplitAmount(v: number) {
+    if (confirm.kind !== "open") return;
+    setConfirm({ ...confirm, splitAmount: v });
   }
 
   if (authState.status !== "authenticated") {
@@ -141,7 +149,15 @@ export default function Privilegios() {
                 key={e.id}
                 entry={e}
                 balance={balance}
-                onBuy={() => setConfirm({ kind: "open", entry: e })}
+                onBuy={() =>
+                  setConfirm({
+                    kind: "open",
+                    entry: e,
+                    // Split Bill default: sugerimos que el iniciador aporte
+                    // el costo dividido entre 4 (tamaño típico de equipo).
+                    splitAmount: e.es_grupal ? Math.max(1, Math.round(e.costo / 4)) : e.costo,
+                  })
+                }
               />
             ))}
           </div>
@@ -154,13 +170,9 @@ export default function Privilegios() {
           balance={balance}
           onCancel={() => setConfirm({ kind: "closed" })}
           onConfirm={confirmPurchase}
+          onChangeAmount={updateSplitAmount}
         />
       )}
-
-      <footer className="text-xs text-neutral-500 pt-4 border-t border-surface-border">
-        Los privilegios grupales (Split Bill) llegan en el siguiente commit
-        (3.3).
-      </footer>
     </main>
   );
 }
@@ -174,13 +186,16 @@ function PrivilegeCard({
   balance: number | null;
   onBuy: () => void;
 }) {
-  const canAfford = balance !== null && balance >= entry.costo;
-  const disabledReason =
-    entry.es_grupal
-      ? "Split Bill · disponible en la próxima entrega"
-      : !canAfford
-        ? "Saldo insuficiente"
-        : null;
+  const canAffordFull = balance !== null && balance >= entry.costo;
+  // Para split bill basta con poder aportar al menos 1 Tk.
+  const canAffordSplit = balance !== null && balance >= 1;
+  const disabledReason = entry.es_grupal
+    ? !canAffordSplit
+      ? "Necesitas al menos 1 Tk para iniciar el Split Bill"
+      : null
+    : !canAffordFull
+      ? "Saldo insuficiente"
+      : null;
 
   return (
     <div className="rounded-lg border border-surface-border bg-surface-raised p-4 flex items-start justify-between gap-4">
@@ -195,7 +210,7 @@ function PrivilegeCard({
           </span>
           {entry.es_grupal && (
             <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-950/50 border border-blue-800/60 text-blue-300">
-              Grupal
+              De Equipo
             </span>
           )}
         </div>
@@ -223,69 +238,130 @@ function ConfirmDialog({
   balance,
   onCancel,
   onConfirm,
+  onChangeAmount,
 }: {
   confirm: Exclude<Confirm, { kind: "closed" }>;
   balance: number | null;
   onCancel: () => void;
   onConfirm: () => void;
+  onChangeAmount: (v: number) => void;
 }) {
   const { entry } = confirm;
-  const afterBalance = balance !== null ? balance - entry.costo : null;
+  const grupal = entry.es_grupal;
+
+  // Cantidad efectivamente descontada al iniciador.
+  const deducted = confirm.kind === "success"
+    ? entry.es_grupal
+      ? confirm.ticket.contribuciones.find((c) => !c.refunded_at)?.amount ?? 0
+      : entry.costo
+    : "splitAmount" in confirm
+      ? confirm.splitAmount
+      : entry.costo;
+
+  const afterBalance = balance !== null ? balance - deducted : null;
+  const editing = confirm.kind === "open" || confirm.kind === "error";
+  const currentAmount = "splitAmount" in confirm ? confirm.splitAmount : entry.costo;
+
+  const invalidAmount = grupal && (currentAmount < 1 || currentAmount > entry.costo);
+  const insufficient = afterBalance !== null && afterBalance < 0;
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
       <div className="max-w-md w-full rounded-lg border border-surface-border bg-surface-raised p-6 space-y-4">
-        <h3 className="text-lg font-semibold">Confirmar compra</h3>
+        <h3 className="text-lg font-semibold">
+          {grupal ? "Iniciar Split Bill" : "Confirmar compra"}
+        </h3>
 
         <div className="space-y-2 text-sm">
           <p className="text-neutral-300">{entry.nombre}</p>
           {entry.descripcion && (
             <p className="text-neutral-400 text-xs">{entry.descripcion}</p>
           )}
+          {grupal && (
+            <p className="text-xs text-blue-300 bg-blue-950/30 border border-blue-900/60 rounded-md p-2">
+              Este privilegio es <strong>de equipo</strong>. Aportas la cantidad
+              que quieras; el resto del equipo puede aportar después. El ticket
+              se emite cuando la suma llega a {entry.costo} Tks.
+            </p>
+          )}
         </div>
+
+        {grupal && editing && (
+          <label className="block space-y-1">
+            <span className="text-xs text-neutral-400">Tu aportación inicial (Tks)</span>
+            <input
+              type="number"
+              min={1}
+              max={Math.min(entry.costo, balance ?? entry.costo)}
+              step={1}
+              value={currentAmount}
+              onChange={(e) => onChangeAmount(Number(e.target.value) || 0)}
+              className="w-full rounded-md border border-surface-border bg-surface px-3 py-2 text-white tabular-nums focus:border-ibero-red focus:outline-none focus:ring-1 focus:ring-ibero-red"
+            />
+            <span className="text-[10px] text-neutral-500">
+              Entre 1 y {Math.min(entry.costo, balance ?? entry.costo)} Tks.
+              Cubrir el 100% ({entry.costo}) emite el ticket de inmediato.
+            </span>
+          </label>
+        )}
 
         <div className="rounded-md border border-surface-border/60 bg-surface p-3 text-sm space-y-1 tabular-nums">
           <div className="flex justify-between">
-            <span className="text-neutral-400">Costo</span>
+            <span className="text-neutral-400">
+              {grupal ? "Costo total del equipo" : "Costo"}
+            </span>
             <span>{entry.costo} Tks</span>
           </div>
+          {grupal && (
+            <div className="flex justify-between">
+              <span className="text-neutral-400">Tu aportación</span>
+              <span>{Number(deducted)} Tks</span>
+            </div>
+          )}
           <div className="flex justify-between">
             <span className="text-neutral-400">Saldo actual</span>
             <span>{balance ?? "—"} Tks</span>
           </div>
           <div className="flex justify-between pt-1 border-t border-surface-border/60">
             <span className="text-neutral-400">Saldo después</span>
-            <span
-              className={
-                afterBalance !== null && afterBalance < 0
-                  ? "text-red-400"
-                  : "text-emerald-400"
-              }
-            >
+            <span className={insufficient ? "text-red-400" : "text-emerald-400"}>
               {afterBalance ?? "—"} Tks
             </span>
           </div>
         </div>
 
         <p className="text-xs text-neutral-500">
-          La compra es irreversible. Se generará un ticket con folio único que
-          debes mostrar al profesor al momento de usarlo (§5.4).
+          {grupal
+            ? "Puedes cancelar el ticket mientras esté en 'funding' para recibir un reembolso completo. Una vez emitido no se puede reembolsar."
+            : "La compra es irreversible. Se generará un ticket con folio único que debes mostrar al profesor al momento de usarlo (§5.4)."}
         </p>
 
         {confirm.kind === "error" && (
-          <p className="rounded-md border border-red-800 bg-red-950/40 p-3 text-sm text-red-300">
-            {confirm.message}
-          </p>
+          <div className="rounded-md border border-red-800 bg-red-950/40 p-3 text-sm text-red-300 space-y-2">
+            <p>{confirm.message}</p>
+            {confirm.message.includes("financiamiento") && (
+              <Link href="/mis-tickets" className="inline-block text-xs underline text-red-300 hover:text-white">
+                Ir a mis tickets →
+              </Link>
+            )}
+          </div>
         )}
 
         {confirm.kind === "success" && (
           <div className="rounded-md border border-emerald-800 bg-emerald-950/40 p-3 text-sm text-emerald-200 space-y-2">
-            <p className="font-medium">Compra exitosa</p>
+            <p className="font-medium">
+              {confirm.ticket.estado === "emitted"
+                ? grupal
+                  ? "Split Bill cubierto al 100%: ticket emitido"
+                  : "Compra exitosa"
+                : "Split Bill iniciado (esperando aportaciones del equipo)"}
+            </p>
             <p className="text-xs">
               Folio:{" "}
               <code className="font-mono text-emerald-300">
                 {confirm.ticket.folio}
-              </code>
+              </code>{" "}
+              · pagado {confirm.ticket.pagado_total}/{confirm.ticket.costo_total} Tks
             </p>
             <Link
               href="/mis-tickets"
@@ -315,13 +391,16 @@ function ConfirmDialog({
               </button>
               <button
                 onClick={onConfirm}
-                disabled={
-                  confirm.kind === "submitting" ||
-                  (afterBalance !== null && afterBalance < 0)
-                }
+                disabled={confirm.kind === "submitting" || invalidAmount || insufficient}
                 className="rounded-md bg-ibero-red hover:bg-ibero-red-dark disabled:opacity-50 px-4 py-2 text-sm font-medium"
               >
-                {confirm.kind === "submitting" ? "Comprando…" : "Confirmar compra"}
+                {confirm.kind === "submitting"
+                  ? grupal
+                    ? "Iniciando…"
+                    : "Comprando…"
+                  : grupal
+                    ? "Iniciar Split Bill"
+                    : "Confirmar compra"}
               </button>
             </>
           )}
