@@ -13,14 +13,14 @@ import { BalanceWidget } from "@/components/BalanceWidget";
 
 function StatusBadge({ estado }: { estado: DecimalRequestStatus }) {
   const styles: Record<DecimalRequestStatus, string> = {
-    pending: "bg-amber-500/20 text-amber-300 border-amber-500/30",
-    approved: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
-    rejected: "bg-red-500/20 text-red-300 border-red-500/30",
+    pendiente: "bg-amber-500/20 text-amber-300 border-amber-500/30",
+    aprobado: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+    rechazado: "bg-red-500/20 text-red-300 border-red-500/30",
   };
   const labels: Record<DecimalRequestStatus, string> = {
-    pending: "Pendiente",
-    approved: "Aprobada",
-    rejected: "Rechazada",
+    pendiente: "Pendiente",
+    aprobado: "Aprobada",
+    rechazado: "Rechazada",
   };
   return (
     <span

@@ -84,14 +84,17 @@
 
 - [x] **3.3 · Alumno: Split Bill (compras grupales)**
   - Iniciar Split Bill desde `/privilegios` (solo entradas `es_grupal`).
-  - Aportar a tickets `funding` desde `/mis-tickets`.
-  - Cancelar ticket `funding` (iniciador) con reembolso automático visible.
+  - Aportar a tickets `funding` desde `/mis-tickets`, con **modificación de aportación propia** (semántica absoluta: el monto enviado es tu aportación total, no un incremento; permite subir o bajar mientras el ticket siga en `funding`).
+  - Cancelar ticket `funding` (iniciador o admin) con reembolso automático visible.
+  - Backend: guarda de "un solo Split Bill activo por equipo+privilegio" en `initiate_split_bill`.
 
-- [ ] **3.4 · Alumno: Canje de Tokens por décimas**
-  - Página `/decimas` con formulario (entrega objetivo, cantidad) e histórico.
+- [x] **3.4 · Alumno: Canje de Tokens por décimas**
+  - Página `/decimas` con formulario (entrega objetivo, referencia opcional, cantidad) e histórico con badge de estado.
 
-- [ ] **3.5 · Admin: Panel de economía**
-  - Página `/admin/economia` con: gestor del catálogo (CRUD inline + botón "Sembrar defaults"), consumo por folio, ajuste manual de Tokens, cola de aprobación de décimas.
+- [~] **3.5 · Admin: Panel de economía** *(parcial — falta el editor del catálogo)*
+  - [x] Página `/admin/economia`: moderación de tickets `emitted` (consumir/cancelar con reembolso), cola de aprobación de décimas con nota opcional, ajuste manual de Tokens con selector de alumno.
+  - [x] Backend: `GET /admin/users` (para el selector), eager-load de `initiator`/`catalog`/`user` en las vistas admin (`TicketOut.initiator_name`/`catalog_name`, `DecimalRedemptionOut.user_name`).
+  - [ ] **Pendiente**: editor del catálogo (CRUD inline: crear/editar/ocultar privilegios, ajustar costos y límites) + botón "Sembrar defaults" en UI. Hoy solo existe vía `/docs` (Swagger) — ver `CRUD /admin/privileges` en Dominio 3 backend, ya implementado y funcional, solo falta la interfaz.
 
 ### 🔔 Dominio 4 — Sistema (Inbox, Announcements, Flags/State)
 

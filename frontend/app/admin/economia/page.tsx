@@ -210,10 +210,10 @@ export default function AdminEconomiaPage() {
   if (authState.status === "loading") {
     return <div className="p-8 text-neutral-500">Cargando sesión…</div>;
   }
-  if (authState.status === "unauthenticated") {
-    return <div className="p-8 text-red-400">Debes iniciar sesión.</div>;
+  if (authState.status === "error") {
+    return <div className="p-8 text-red-400">Error: {authState.error}</div>;
   }
-  if (!authState.user?.is_admin) {
+  if (!authState.user.is_admin) {
     return <div className="p-8 text-red-400">No tienes acceso de administrador.</div>;
   }
 

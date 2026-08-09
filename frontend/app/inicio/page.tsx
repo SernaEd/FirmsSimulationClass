@@ -114,6 +114,12 @@ export default function Inicio() {
               >
                 → Movimientos (historial del banco)
               </Link>
+              <Link
+                href="/decimas"
+                className="block rounded-md border border-surface-border hover:bg-surface px-4 py-3 text-sm"
+              >
+                → Canje de décimas (usar Tokens sobrantes)
+              </Link>
               {user.is_admin && (
                 <>
                   <Link

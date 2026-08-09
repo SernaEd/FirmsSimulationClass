@@ -379,17 +379,31 @@ def contribute_to_ticket(
         existing_contrib.amount = amount
     else:
         db.add(SplitBillContribution(ticket_id=ticket.id, user_id=user.id, amount=amount))
-        
+
     ticket.pagado_total += delta
-    _add_ledger_entry(
-        db,
-        user_id=user.id,
-        delta=-delta,
-        fuente=TokenSource.canje_privilegio,
-        referencia_tipo="ticket",
-        referencia_id=ticket.id,
-        nota=f"Aportación split bill: ticket {ticket.folio}",
-    )
+    # delta > 0 = aumenta su aportación (gasto); delta < 0 = la reduce (reembolso
+    # parcial). Distinguimos la fuente para que los reportes por fuente (§17.1)
+    # no mezclen gasto real con reembolsos.
+    if delta > 0:
+        _add_ledger_entry(
+            db,
+            user_id=user.id,
+            delta=-delta,
+            fuente=TokenSource.canje_privilegio,
+            referencia_tipo="ticket",
+            referencia_id=ticket.id,
+            nota=f"Aportación split bill: ticket {ticket.folio}",
+        )
+    else:
+        _add_ledger_entry(
+            db,
+            user_id=user.id,
+            delta=-delta,
+            fuente=TokenSource.split_bill_refund,
+            referencia_tipo="ticket",
+            referencia_id=ticket.id,
+            nota=f"Reducción de aportación split bill: ticket {ticket.folio}",
+        )
 
     if ticket.pagado_total >= ticket.costo_total:
         ticket.estado = TicketStatus.emitted

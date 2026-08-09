@@ -281,9 +281,15 @@ export type TicketOut = {
   consumido_por_admin_id: number | null;
   cancelled_at: string | null;
   contribuciones: ContributionOut[];
+  // Presentes solo en vistas admin que hacen eager-load de las relaciones
+  // (GET /admin/tickets). En otras vistas quedan undefined.
+  initiator_name?: string | null;
+  catalog_name?: string | null;
 };
 
-export type DecimalRequestStatus = "pending" | "approved" | "rejected";
+// Debe coincidir con el enum Python DecimalRequestStatus (models/economy.py):
+// los valores viajan tal cual por la API, en español.
+export type DecimalRequestStatus = "pendiente" | "aprobado" | "rechazado";
 
 export type DecimalRedemptionOut = {
   id: number;
@@ -297,6 +303,8 @@ export type DecimalRedemptionOut = {
   created_at: string;
   resolved_at: string | null;
   resolved_by: number | null;
+  // Presente solo en /admin/decimal-redemption/pending (eager-load de `user`).
+  user_name?: string | null;
 };
 
 export type DecimalRedemptionIn = {
