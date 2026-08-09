@@ -91,10 +91,10 @@
 - [x] **3.4 · Alumno: Canje de Tokens por décimas**
   - Página `/decimas` con formulario (entrega objetivo, referencia opcional, cantidad) e histórico con badge de estado.
 
-- [~] **3.5 · Admin: Panel de economía** *(parcial — falta el editor del catálogo)*
+- [x] **3.5 · Admin: Panel de economía**
   - [x] Página `/admin/economia`: moderación de tickets `emitted` (consumir/cancelar con reembolso), cola de aprobación de décimas con nota opcional, ajuste manual de Tokens con selector de alumno.
   - [x] Backend: `GET /admin/users` (para el selector), eager-load de `initiator`/`catalog`/`user` en las vistas admin (`TicketOut.initiator_name`/`catalog_name`, `DecimalRedemptionOut.user_name`).
-  - [ ] **Pendiente**: editor del catálogo (CRUD inline: crear/editar/ocultar privilegios, ajustar costos y límites) + botón "Sembrar defaults" en UI. Hoy solo existe vía `/docs` (Swagger) — ver `CRUD /admin/privileges` en Dominio 3 backend, ya implementado y funcional, solo falta la interfaz.
+  - [x] Editor del catálogo: sección "Catálogo de privilegios" agrupada por categoría, con crear (`+ Nuevo privilegio`), editar inline (nombre, descripción, categoría con autocompletado, costo, `es_grupal`, `visible`, `feature_flag_key`, límites como JSON), toggle rápido ocultar/mostrar, eliminar (con mensaje claro si el backend rechaza por tener tickets asociados), y botón "Sembrar catálogo por defecto" con resultado (creadas/ya existentes).
 
 ### 🔔 Dominio 4 — Sistema (Inbox, Announcements, Flags/State)
 

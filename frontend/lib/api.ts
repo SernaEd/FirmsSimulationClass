@@ -258,6 +258,25 @@ export type PrivilegeCatalogOut = {
   updated_at: string;
 };
 
+export type PrivilegeCatalogIn = {
+  nombre: string;
+  descripcion?: string | null;
+  categoria?: string | null;
+  costo: number;
+  es_grupal?: boolean;
+  limites_config?: Record<string, number> | null;
+  visible?: boolean;
+  feature_flag_key?: string | null;
+};
+
+// Todos los campos opcionales: PATCH solo envía lo que cambió.
+export type PrivilegeCatalogUpdate = Partial<PrivilegeCatalogIn>;
+
+export type SeedResult = {
+  creadas: number;
+  ya_existentes: number;
+};
+
 export type ContributionOut = {
   id: number;
   user_id: number;
@@ -469,6 +488,24 @@ export const api = {
     ),
 
   // Dominio 3 — economía (admin)
+  adminListPrivileges: (token: string) =>
+    request<PrivilegeCatalogOut[]>("/admin/privileges", {}, token),
+  adminCreatePrivilege: (token: string, body: PrivilegeCatalogIn) =>
+    request<PrivilegeCatalogOut>(
+      "/admin/privileges",
+      { method: "POST", body: JSON.stringify(body) },
+      token,
+    ),
+  adminUpdatePrivilege: (token: string, catalogId: number, body: PrivilegeCatalogUpdate) =>
+    request<PrivilegeCatalogOut>(
+      `/admin/privileges/${catalogId}`,
+      { method: "PATCH", body: JSON.stringify(body) },
+      token,
+    ),
+  adminDeletePrivilege: (token: string, catalogId: number) =>
+    request<void>(`/admin/privileges/${catalogId}`, { method: "DELETE" }, token),
+  adminSeedDefaults: (token: string) =>
+    request<SeedResult>("/admin/privileges/seed-defaults", { method: "POST" }, token),
   adminListTickets: (token: string, estados?: TicketStatus[]) => {
     const params = new URLSearchParams();
     if (estados) estados.forEach((e) => params.append("estado", e));
