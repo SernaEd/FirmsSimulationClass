@@ -96,32 +96,36 @@
   - [x] Backend: `GET /admin/users` (para el selector), eager-load de `initiator`/`catalog`/`user` en las vistas admin (`TicketOut.initiator_name`/`catalog_name`, `DecimalRedemptionOut.user_name`).
   - [x] Editor del catálogo: sección "Catálogo de privilegios" agrupada por categoría, con crear (`+ Nuevo privilegio`), editar inline (nombre, descripción, categoría con autocompletado, costo, `es_grupal`, `visible`, `feature_flag_key`, límites como JSON), toggle rápido ocultar/mostrar, eliminar (con mensaje claro si el backend rechaza por tener tickets asociados), y botón "Sembrar catálogo por defecto" con resultado (creadas/ya existentes).
 
-### 🔔 Dominio 4 — Sistema (Inbox, Announcements, Flags/State)
+### 🔔 Dominio 4 — Sistema (Inbox, Flags/State)
 
-- [x] Modelos `InboxItem`, `Announcement`, `AnnouncementRead`, `SystemFlag`, `SystemState` + enums (`InboxItemType` con las 10 categorías del plan, `InboxPriority`, `InboxItemStatus`, `AnnouncementPriority`, `AnnouncementScope`).
-- [x] Migración Alembic (`f28e6bc07eca`).
-- [x] `POST /admin/announcements` — publicador (§11.3.1): título, markdown, prioridad, anclado, alcance (todos/equipo/alumno), expiración opcional. `GET /admin/announcements` (con `read_count`/`audience_size`), `PATCH`, `DELETE` (soft-delete vía `activo=false`).
-- [x] `GET /me/announcements` — feed activo para el alumno (filtra por alcance, expiración y `activo`; ordena anclado → prioridad → recencia).
-- [x] `POST /me/announcements/{id}/mark-read` — idempotente.
+> **Actualización (9 ago 2026):** el publicador de Anuncios (construido y funcional al cierre del dominio) **se removió del MVP** — los anuncios se publican directamente en Brightspace, canal que los alumnos ya revisan por defecto (ver nota de alcance en `implementation_plan_v2.md` §11.3). Los ítems marcados `[x]` abajo relacionados con Announcements describen trabajo que **se completó, se probó y luego se eliminó** (backend: modelos, rutas, servicio; frontend: página `/anuncios`, widget, `markdown-lite.ts`; migración `5856aa859e12`). Se dejan tachados como registro histórico en vez de borrarse de este documento.
+
+- [x] Modelos `InboxItem`, ~~`Announcement`, `AnnouncementRead`~~, `SystemFlag`, `SystemState` + enums (`InboxItemType` con las 10 categorías del plan, `InboxPriority`, `InboxItemStatus`, ~~`AnnouncementPriority`, `AnnouncementScope`~~).
+- [x] Migración Alembic (`f28e6bc07eca`); anuncios removidos después vía migración `5856aa859e12`.
+- [x] ~~`POST /admin/announcements` — publicador (§11.3.1): título, markdown, prioridad, anclado, alcance (todos/equipo/alumno), expiración opcional. `GET /admin/announcements` (con `read_count`/`audience_size`), `PATCH`, `DELETE` (soft-delete vía `activo=false`).~~
+- [x] ~~`GET /me/announcements` — feed activo para el alumno (filtra por alcance, expiración y `activo`; ordena anclado → prioridad → recencia).~~
+- [x] ~~`POST /me/announcements/{id}/mark-read` — idempotente.~~
 - [x] `GET /admin/inbox` — bandeja con **2 categorías iniciales**: `registro` y `nombre_firma` (el enum completo de 10 categorías ya está definido en el modelo para cuando existan las demás features). Filtros por tipo/prioridad/estado; por default muestra pendientes + pospuestos ya vencidos (sin necesidad de cron).
 - [x] `POST /admin/inbox/{id}/[resolve|snooze|dismiss|mark_seen]`.
 - [x] **Hooks de sincronización**: registrar un alumno crea el `InboxItem`; aprobar/rechazar desde `/admin/users` (Dominio 1) resuelve el item aunque no se use el Inbox. Proponer nombre de firma crea el item; aprobar/rechazar/renombrar/asignar-default desde `/admin/teams` (Dominio 2) resuelve el item propio y los que quedan `superseded`.
 - [x] **Feature flags conectados**: se cerró el TODO de Dominio 3 — `is_privilege_available_for_users` ahora consulta `SystemFlag` real en vez de ocultar siempre. `GET /admin/system/flags`, `GET /admin/system/flags/known-keys` (claves referenciadas por el catálogo sin fila aún), `PUT /admin/system/flags/{key}`.
-- [x] Frontend alumno: widget "Anuncios del profesor" en Fila 0 del Dashboard (§14.2) — hasta 3, anclados/prioridad alta primero, marcar como visto inline; página `/anuncios` con el histórico completo. Render de markdown básico propio (`lib/markdown-lite.ts`, sin dependencias nuevas — escapa HTML primero y solo entonces aplica negrita/itálica/código/links http(s), bloqueando XSS y `javascript:` URIs).
-- [x] Frontend admin: página `/admin/sistema` con 3 secciones — Inbox de Aprobaciones (acciones específicas Aprobar/Rechazar para `registro` y `nombre_firma`, más resolver/posponer/descartar/marcar-visto genéricos para cualquier tipo futuro), Publicador de anuncios (crear con selector de alcance equipo/alumno, editar inline, eliminar, histórico), Feature flags (toggle con descripción, incluye claves referenciadas por el catálogo aún sin configurar).
+- [x] ~~Frontend alumno: widget "Anuncios del profesor" en Fila 0 del Dashboard (§14.2) — hasta 3, anclados/prioridad alta primero, marcar como visto inline; página `/anuncios` con el histórico completo. Render de markdown básico propio (`lib/markdown-lite.ts`, sin dependencias nuevas — escapa HTML primero y solo entonces aplica negrita/itálica/código/links http(s), bloqueando XSS y `javascript:` URIs).~~
+- [x] Frontend admin: página `/admin/sistema` con 2 secciones — Inbox de Aprobaciones (acciones específicas Aprobar/Rechazar para `registro` y `nombre_firma`, más resolver/posponer/descartar/marcar-visto genéricos para cualquier tipo futuro), Feature flags (toggle con descripción, incluye claves referenciadas por el catálogo aún sin configurar). ~~Publicador de anuncios (crear con selector de alcance equipo/alumno, editar inline, eliminar, histórico).~~
 - [x] Wrappers nuevos en `lib/api.ts` para aprobar/rechazar/reset-pin de usuarios (Dominio 1) y listar equipos — no existían en frontend porque nunca se había construido una UI admin para esas acciones (se probaban solo por `/docs`).
 
 ---
 
-## 🚀 Iteración 1 — Práctica, Contenido y Racha (Semanas 3–4)
+## 🚀 Iteración 1 — Contenido y Racha (Semanas 3–4)
 
 *Automatización de Tokens individuales + canales de contenido + recordatorios.*
 
-- [ ] **Modelos y migraciones nuevas** (contenido y ejercicios):
-  - [ ] Modelo `Module` (id, numero, nombre, unlocked_at, pozo_tks).
+> **Actualización (9 ago 2026):** los anuncios (Brightspace), la asistencia (Brightspace) y los ejercicios de práctica (WebAssign) se descartan del alcance de la plataforma — ver nota de alcance en `implementation_plan_v2.md` §5.5, §8.3, §11.3. Esta iteración se renombró de "Práctica, Contenido y Racha" a "Contenido y Racha": ya no hay motor de ejercicios propio, y la racha se basa en subir evidencia de WebAssign en vez de resolver un reto dentro de la plataforma.
+
+- [ ] **Modelos y migraciones nuevas** (contenido):
+  - [ ] Modelo `Module` (id, numero, nombre, unlocked_at).
   - [ ] Modelo `CourseSession` (id, module_id, numero_sesion, titulo, `notion_page_id`, `apuntes_pdf_url`, notion_last_sync).
-  - [ ] Modelo `PracticeExercise` + `ExerciseAttempt`.
   - [ ] Modelo `ForumPost` con `session_id` (comentarios anclados a la Vista de Clase, no al módulo).
+  - [ ] Modelo `StreakEvidence` (id, streak_day_id, user_id, webassign_report_url, captura_path, submitted_at) — ver §5.5, §12.6.
 - [ ] **Integración Notion API + PDFs + Comentarios (Vista de Clase)**:
   - [ ] Endpoint `POST /admin/sessions/{id}/sync` — descarga la sub-página de Notion, guarda bloques en BD.
   - [ ] Pipeline: Notion API → BD local → renderizado con `react-notion-x` (sección superior de la Vista de Clase).
@@ -136,14 +140,12 @@
   - [ ] Frontend: página `/test-perfil` accesible inmediatamente tras el registro (no requiere aprobación previa).
   - [ ] Redacción de las preguntas + bibliografía visible (Belbin, Felder & Brent).
 
-- [ ] **Motor SymPy + MathLive**:
-  - [ ] UI del profesor para crear problemas parametrizados.
-  - [ ] Pre-procesamiento de derivadas ($dy/dx$) y normalización de constantes libres ($C_1$, $K$…).
-  - [ ] Validación simbólica de ejercicios (equivalencia + sustitución para EDOs).
-- [ ] **Motor de Racha Diaria** (APScheduler):
-  - [ ] Jobs `publish_daily_challenge`, `evaluate_streaks`, `detect_inactivity`.
-  - [ ] Widget de racha con calendario mensual y palomitas verdes.
+- [ ] **Motor de Racha Diaria** (evidencia WebAssign, APScheduler):
+  - [ ] `POST /me/streak/evidence` — sube link al reporte de WebAssign + captura; marca el día `completado` de inmediato (sin cola de revisión, §5.5).
+  - [ ] Jobs `evaluate_streaks`, `send_streak_reminder`, `detect_inactivity`.
+  - [ ] Widget "Evidencia del día" + calendario mensual de racha con palomitas verdes.
   - [ ] Pases de racha automáticos + compra en catálogo.
+  - [ ] Vista admin de verificación puntual (spot-check) sobre evidencia subida, para disputas o sospecha de evidencia falsa (§18.4).
 - [ ] **Comentarios por Clase** (Foros tipo YouTube) *(subido desde Iteración 2 original; usa `ForumPost.session_id`)*:
   - [ ] Opción por post: nickname o anónimo para pares.
   - [ ] Editor con soporte de LaTeX inline.
@@ -151,8 +153,8 @@
 - [ ] **Calendario académico editable** en admin (§11.5) — necesario para marcar festivos antes de que la racha llegue.
 - [ ] **Notificaciones opcionales por correo** *(subido desde Iteración 4 original)*:
   - [ ] Opt-in explícito en el perfil.
-  - [ ] Recordatorio del reto del día (20:00 Lun-Jue).
-  - [ ] Aviso de módulo desbloqueado, kudos recibido, aviso administrativo.
+  - [ ] Recordatorio de evidencia del día (20:00 Lun-Jue).
+  - [ ] Aviso de módulo desbloqueado, kudos recibido.
 
 ---
 
@@ -182,7 +184,7 @@
 - [ ] Sorteo aleatorio de sustentador para entregas grupales.
 - [ ] **Sustentación destacada** (asignación desde admin) y **posts destacados** con bono de Tokens.
 - [ ] Gestor de calificaciones tipo Excel en el Admin, con reparto configurable 70/30 por-tarea.
-- [ ] Registro de asistencia y aplicación de privilegios de retardo/pase.
+- [ ] Aplicación manual (admin) de privilegios de retardo/pase de asistencia — la asistencia se registra en Brightspace, no hay `AttendanceRecord` local (ver §5.2, §12.6).
 - [ ] Ampliación del Inbox: agregar categorías `disputa`, `sancion`, `sustentacion_destacada_pendiente`, `post_destacado_pendiente`.
 
 ---

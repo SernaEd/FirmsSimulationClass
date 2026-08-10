@@ -1,16 +1,14 @@
-"""Schemas Pydantic de Dominio 4 (Inbox, Anuncios, Flags/State)."""
+"""Schemas Pydantic de Dominio 4 (Inbox, Flags/State).
+
+Nota: los schemas de Announcement se removieron junto con la feature —
+los anuncios se publican en Brightspace. Ver plan_de_tareas_mvp.md.
+"""
 
 from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.models.system import (
-    AnnouncementPriority,
-    AnnouncementScope,
-    InboxItemStatus,
-    InboxItemType,
-    InboxPriority,
-)
+from app.models.system import InboxItemStatus, InboxItemType, InboxPriority
 
 # ---------------------------------------------------------------------------
 # Inbox
@@ -43,59 +41,6 @@ class SnoozeIn(BaseModel):
 
 class DismissIn(BaseModel):
     nota: str = Field(min_length=1, max_length=500)
-
-
-# ---------------------------------------------------------------------------
-# Anuncios
-# ---------------------------------------------------------------------------
-
-
-class AnnouncementIn(BaseModel):
-    titulo: str = Field(min_length=1, max_length=100)
-    cuerpo_md: str = Field(min_length=1)
-    prioridad: AnnouncementPriority = AnnouncementPriority.normal
-    anclado: bool = False
-    alcance_tipo: AnnouncementScope = AnnouncementScope.todos
-    alcance_ids: list[int] | None = None
-    expira_at: datetime | None = None
-
-
-class AnnouncementUpdate(BaseModel):
-    """El alcance no es editable tras crear (MVP): evita reconciliar
-    confirmaciones de lectura ya hechas contra una audiencia distinta."""
-
-    titulo: str | None = Field(default=None, min_length=1, max_length=100)
-    cuerpo_md: str | None = Field(default=None, min_length=1)
-    prioridad: AnnouncementPriority | None = None
-    anclado: bool | None = None
-    expira_at: datetime | None = None
-
-
-class AnnouncementBaseOut(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: int
-    titulo: str
-    cuerpo_md: str
-    prioridad: AnnouncementPriority
-    anclado: bool
-    alcance_tipo: AnnouncementScope
-    alcance_ids: list[int] | None
-    autor_id: int
-    publicado_at: datetime
-    expira_at: datetime | None
-    activo: bool
-    created_at: datetime
-    updated_at: datetime
-
-
-class AdminAnnouncementOut(AnnouncementBaseOut):
-    read_count: int
-    audience_size: int
-
-
-class StudentAnnouncementOut(AnnouncementBaseOut):
-    leido: bool
 
 
 # ---------------------------------------------------------------------------

@@ -5,8 +5,9 @@ Cada dominio agrega sus modelos aquí. Actualmente:
 - Dominio 2 (Teams): Team, TeamMember, TeamNameProposal
 - Dominio 3 (Economía): PrivilegeCatalog, PrivilegeTicket, SplitBillContribution,
   TokenLedger, DecimalRedemptionRequest
-- Dominio 4 (Sistema): InboxItem, Announcement, AnnouncementRead, SystemFlag,
-  SystemState
+- Dominio 4 (Sistema): InboxItem, SystemFlag, SystemState
+  (Announcement/AnnouncementRead se removieron — anuncios ahora se publican
+  en Brightspace, ver plan_de_tareas_mvp.md)
 """
 
 from .economy import (  # noqa: F401
@@ -20,10 +21,6 @@ from .economy import (  # noqa: F401
     TokenSource,
 )
 from .system import (  # noqa: F401
-    Announcement,
-    AnnouncementPriority,
-    AnnouncementRead,
-    AnnouncementScope,
     InboxItem,
     InboxItemStatus,
     InboxItemType,

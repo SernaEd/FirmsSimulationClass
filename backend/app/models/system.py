@@ -1,7 +1,13 @@
-"""Modelos de Dominio 4 — Sistema (Inbox, Announcements, Flags/State).
+"""Modelos de Dominio 4 — Sistema (Inbox, Flags/State).
 
-Cubre el Inbox de Aprobaciones (§11.0), el publicador de anuncios (§11.3.1)
-y la configuración global del curso (feature flags + estado del semestre).
+Cubre el Inbox de Aprobaciones (§11.0) y la configuración global del curso
+(feature flags + estado del semestre).
+
+Nota: el publicador de anuncios (§11.3.1, `Announcement`/`AnnouncementRead`)
+se removió del MVP — los anuncios se publican directamente en Brightspace
+(decisión de agosto 2026: ni Brightspace ni WebAssign exponen una API viable
+para sincronizar contenido automáticamente, así que no tiene sentido
+mantener un canal propio duplicado). Ver plan_de_tareas_mvp.md.
 
 Convenciones:
 - `InboxItem` es la bandeja unificada: cada evento del sistema que requiere
@@ -11,14 +17,13 @@ Convenciones:
 - `SystemFlag`/`SystemState` son pares clave-valor mutables (a diferencia del
   ledger, que es append-only). Cada cambio debería auditarse cuando exista
   `AuditLog` (Iteración 4).
-- Ver §11.0, §11.3.1, §12.6 del plan v2.
+- Ver §11.0, §12.6 del plan v2.
 """
 
 from datetime import datetime
 from enum import Enum
 
 from sqlalchemy import (
-    Boolean,
     DateTime,
     Enum as SQLEnum,
     ForeignKey,
@@ -29,7 +34,7 @@ from sqlalchemy import (
     Text,
     func,
 )
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
 
@@ -114,95 +119,6 @@ class InboxItem(Base):
 
     def __repr__(self) -> str:
         return f"<InboxItem {self.tipo.value}#{self.referencia_id} ({self.estado.value})>"
-
-
-# ---------------------------------------------------------------------------
-# Anuncios
-# ---------------------------------------------------------------------------
-
-class AnnouncementPriority(str, Enum):
-    normal = "normal"
-    alta = "alta"
-
-
-class AnnouncementScope(str, Enum):
-    """A quién llega el anuncio. `alcance_ids` se interpreta según el tipo:
-    None para `todos`, lista de team_id para `equipo`, lista de user_id
-    para `alumno`."""
-
-    todos = "todos"
-    equipo = "equipo"
-    alumno = "alumno"
-
-
-class Announcement(Base):
-    __tablename__ = "announcements"
-
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    titulo: Mapped[str] = mapped_column(String(100), nullable=False)
-    cuerpo_md: Mapped[str] = mapped_column(Text, nullable=False)
-
-    prioridad: Mapped[AnnouncementPriority] = mapped_column(
-        SQLEnum(AnnouncementPriority, native_enum=False, length=10),
-        nullable=False,
-        default=AnnouncementPriority.normal,
-    )
-    anclado: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
-
-    alcance_tipo: Mapped[AnnouncementScope] = mapped_column(
-        SQLEnum(AnnouncementScope, native_enum=False, length=10),
-        nullable=False,
-        default=AnnouncementScope.todos,
-    )
-    # Lista de team_id o user_id según alcance_tipo. None cuando alcance_tipo=todos.
-    alcance_ids: Mapped[list[int] | None] = mapped_column(JSON, nullable=True)
-
-    autor_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
-
-    publicado_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False, server_default=func.now()
-    )
-    expira_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-
-    # Soft-delete: el histórico admin conserva el registro.
-    activo: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
-
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False, server_default=func.now()
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=False,
-        server_default=func.now(),
-        onupdate=func.now(),
-    )
-
-    reads: Mapped[list["AnnouncementRead"]] = relationship(
-        back_populates="announcement", cascade="all, delete-orphan"
-    )
-
-    __table_args__ = (
-        Index("ix_announcements_activo_anclado", "activo", "anclado"),
-    )
-
-
-class AnnouncementRead(Base):
-    __tablename__ = "announcement_reads"
-
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    announcement_id: Mapped[int] = mapped_column(
-        ForeignKey("announcements.id", ondelete="CASCADE"), nullable=False
-    )
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
-    read_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False, server_default=func.now()
-    )
-
-    announcement: Mapped[Announcement] = relationship(back_populates="reads")
-
-    __table_args__ = (
-        Index("ix_announcement_reads_unique", "announcement_id", "user_id", unique=True),
-    )
 
 
 # ---------------------------------------------------------------------------

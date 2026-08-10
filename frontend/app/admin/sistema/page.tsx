@@ -1,24 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  AdminAnnouncementOut,
-  AnnouncementIn,
-  AnnouncementPriority,
-  AnnouncementScope,
-  AnnouncementUpdate,
   ApiError,
   INBOX_TYPE_LABEL,
   InboxItemOut,
   InboxItemType,
   InboxPriority,
   SystemFlagOut,
-  TeamOut,
-  UserOut,
   api,
 } from "@/lib/api";
-import { renderMarkdownLite } from "@/lib/markdown-lite";
 import { useAuth } from "@/lib/useAuth";
 
 // ---------------------------------------------------------------------------
@@ -340,466 +332,7 @@ function InboxSection({
 }
 
 // ---------------------------------------------------------------------------
-// Sección 2: Publicador de anuncios
-// ---------------------------------------------------------------------------
-
-type NewAnnouncementValues = {
-  titulo: string;
-  cuerpo_md: string;
-  prioridad: AnnouncementPriority;
-  anclado: boolean;
-  alcance_tipo: AnnouncementScope;
-  alcance_ids: number[];
-  expira_at: string;
-};
-
-const emptyAnnouncement: NewAnnouncementValues = {
-  titulo: "",
-  cuerpo_md: "",
-  prioridad: "normal",
-  anclado: false,
-  alcance_tipo: "todos",
-  alcance_ids: [],
-  expira_at: "",
-};
-
-function NewAnnouncementForm({
-  teams,
-  users,
-  onCreate,
-}: {
-  teams: TeamOut[];
-  users: UserOut[];
-  onCreate: (payload: AnnouncementIn) => Promise<void>;
-}) {
-  const [open, setOpen] = useState(false);
-  const [values, setValues] = useState<NewAnnouncementValues>(emptyAnnouncement);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  function set<K extends keyof NewAnnouncementValues>(key: K, val: NewAnnouncementValues[K]) {
-    setValues((v) => ({ ...v, [key]: val }));
-  }
-
-  function toggleId(id: number) {
-    setValues((v) => ({
-      ...v,
-      alcance_ids: v.alcance_ids.includes(id)
-        ? v.alcance_ids.filter((x) => x !== id)
-        : [...v.alcance_ids, id],
-    }));
-  }
-
-  async function submit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setError(null);
-    if (values.alcance_tipo !== "todos" && values.alcance_ids.length === 0) {
-      setError("Selecciona al menos un equipo o alumno para este alcance.");
-      return;
-    }
-    setBusy(true);
-    try {
-      await onCreate({
-        titulo: values.titulo.trim(),
-        cuerpo_md: values.cuerpo_md,
-        prioridad: values.prioridad,
-        anclado: values.anclado,
-        alcance_tipo: values.alcance_tipo,
-        alcance_ids: values.alcance_tipo === "todos" ? null : values.alcance_ids,
-        expira_at: values.expira_at ? new Date(values.expira_at).toISOString() : null,
-      });
-      setValues(emptyAnnouncement);
-      setOpen(false);
-    } catch (err) {
-      setError(err instanceof ApiError ? err.detail : String(err));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  if (!open) {
-    return (
-      <button
-        onClick={() => setOpen(true)}
-        className="rounded-md border border-dashed border-surface-border hover:border-ibero-red hover:text-ibero-red px-4 py-2 text-sm text-neutral-400 w-full text-center"
-      >
-        + Nuevo anuncio
-      </button>
-    );
-  }
-
-  return (
-    <form onSubmit={submit} className="rounded-md border border-ibero-red/50 bg-surface p-4 space-y-3">
-      <p className="text-sm font-semibold text-white">Nuevo anuncio</p>
-
-      <label className="block space-y-1">
-        <span className="text-xs font-medium text-neutral-300">Título</span>
-        <input
-          value={values.titulo}
-          onChange={(e) => set("titulo", e.target.value)}
-          required
-          maxLength={100}
-          className="w-full rounded-md border border-surface-border bg-neutral-900 px-3 py-1.5 text-sm text-white focus:border-ibero-red focus:outline-none"
-        />
-      </label>
-
-      <label className="block space-y-1">
-        <span className="text-xs font-medium text-neutral-300">
-          Cuerpo (markdown básico: **negrita**, *itálica*, [link](https://…))
-        </span>
-        <textarea
-          value={values.cuerpo_md}
-          onChange={(e) => set("cuerpo_md", e.target.value)}
-          required
-          rows={4}
-          className="w-full rounded-md border border-surface-border bg-neutral-900 px-3 py-1.5 text-sm text-white font-mono focus:border-ibero-red focus:outline-none"
-        />
-        {values.cuerpo_md && (
-          <div
-            className="rounded-md border border-surface-border/60 bg-neutral-950 p-2 text-xs text-neutral-300"
-            dangerouslySetInnerHTML={{ __html: renderMarkdownLite(values.cuerpo_md) }}
-          />
-        )}
-      </label>
-
-      <div className="grid grid-cols-2 gap-3">
-        <label className="space-y-1">
-          <span className="text-xs font-medium text-neutral-300">Prioridad</span>
-          <select
-            value={values.prioridad}
-            onChange={(e) => set("prioridad", e.target.value as AnnouncementPriority)}
-            className="w-full rounded-md border border-surface-border bg-neutral-900 px-3 py-1.5 text-sm text-white focus:border-ibero-red focus:outline-none"
-          >
-            <option value="normal">Normal</option>
-            <option value="alta">Alta</option>
-          </select>
-        </label>
-        <label className="space-y-1">
-          <span className="text-xs font-medium text-neutral-300">Expira (opcional)</span>
-          <input
-            type="datetime-local"
-            value={values.expira_at}
-            onChange={(e) => set("expira_at", e.target.value)}
-            className="w-full rounded-md border border-surface-border bg-neutral-900 px-3 py-1.5 text-sm text-white focus:border-ibero-red focus:outline-none"
-          />
-        </label>
-      </div>
-
-      <label className="flex items-center gap-2 text-sm text-neutral-300">
-        <input
-          type="checkbox"
-          checked={values.anclado}
-          onChange={(e) => set("anclado", e.target.checked)}
-          className="h-4 w-4 accent-ibero-red"
-        />
-        Anclado (se queda arriba del feed)
-      </label>
-
-      <label className="block space-y-1">
-        <span className="text-xs font-medium text-neutral-300">Alcance</span>
-        <select
-          value={values.alcance_tipo}
-          onChange={(e) => {
-            set("alcance_tipo", e.target.value as AnnouncementScope);
-            set("alcance_ids", []);
-          }}
-          className="w-full rounded-md border border-surface-border bg-neutral-900 px-3 py-1.5 text-sm text-white focus:border-ibero-red focus:outline-none"
-        >
-          <option value="todos">Todos los alumnos activos</option>
-          <option value="equipo">Equipos específicos</option>
-          <option value="alumno">Alumnos específicos</option>
-        </select>
-      </label>
-
-      {values.alcance_tipo === "equipo" && (
-        <div className="max-h-32 overflow-y-auto space-y-1 rounded-md border border-surface-border/60 p-2">
-          {teams.map((t) => (
-            <label key={t.id} className="flex items-center gap-2 text-xs text-neutral-300">
-              <input
-                type="checkbox"
-                checked={values.alcance_ids.includes(t.id)}
-                onChange={() => toggleId(t.id)}
-                className="h-3.5 w-3.5 accent-ibero-red"
-              />
-              {t.nombre_firma ?? `Equipo #${t.id}`}
-            </label>
-          ))}
-        </div>
-      )}
-
-      {values.alcance_tipo === "alumno" && (
-        <div className="max-h-32 overflow-y-auto space-y-1 rounded-md border border-surface-border/60 p-2">
-          {users
-            .filter((u) => !u.is_admin)
-            .map((u) => (
-              <label key={u.id} className="flex items-center gap-2 text-xs text-neutral-300">
-                <input
-                  type="checkbox"
-                  checked={values.alcance_ids.includes(u.id)}
-                  onChange={() => toggleId(u.id)}
-                  className="h-3.5 w-3.5 accent-ibero-red"
-                />
-                {u.nombre} {u.apellidos} ({u.nickname})
-              </label>
-            ))}
-        </div>
-      )}
-
-      {error && (
-        <p className="text-xs text-red-300 border border-red-800 bg-red-950/40 rounded-md p-2">
-          {error}
-        </p>
-      )}
-
-      <div className="flex gap-2">
-        <button
-          type="submit"
-          disabled={busy}
-          className="rounded-md bg-ibero-red hover:bg-ibero-red-dark disabled:opacity-50 px-4 py-1.5 text-xs font-medium text-white"
-        >
-          {busy ? "Publicando…" : "Publicar anuncio"}
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            setOpen(false);
-            setValues(emptyAnnouncement);
-            setError(null);
-          }}
-          disabled={busy}
-          className="rounded-md border border-surface-border hover:bg-neutral-800 px-4 py-1.5 text-xs text-neutral-300"
-        >
-          Cancelar
-        </button>
-      </div>
-    </form>
-  );
-}
-
-function AnnouncementRow({
-  ann,
-  onUpdate,
-  onDelete,
-}: {
-  ann: AdminAnnouncementOut;
-  onUpdate: (id: number, payload: AnnouncementUpdate) => Promise<void>;
-  onDelete: (id: number) => Promise<void>;
-}) {
-  const [editing, setEditing] = useState(false);
-  const [titulo, setTitulo] = useState(ann.titulo);
-  const [cuerpo, setCuerpo] = useState(ann.cuerpo_md);
-  const [prioridad, setPrioridad] = useState<AnnouncementPriority>(ann.prioridad);
-  const [anclado, setAnclado] = useState(ann.anclado);
-  const [busy, setBusy] = useState<null | "save" | "delete">(null);
-  const [error, setError] = useState<string | null>(null);
-
-  async function save(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setBusy("save");
-    setError(null);
-    try {
-      await onUpdate(ann.id, { titulo, cuerpo_md: cuerpo, prioridad, anclado });
-      setEditing(false);
-    } catch (err) {
-      setError(err instanceof ApiError ? err.detail : String(err));
-    } finally {
-      setBusy(null);
-    }
-  }
-
-  async function handleDelete() {
-    if (!confirm(`¿Eliminar el anuncio "${ann.titulo}"? Desaparecerá del feed de los alumnos.`)) return;
-    setBusy("delete");
-    try {
-      await onDelete(ann.id);
-    } catch (err) {
-      setError(err instanceof ApiError ? err.detail : String(err));
-      setBusy(null);
-    }
-  }
-
-  const alcanceLabel =
-    ann.alcance_tipo === "todos"
-      ? "Todos"
-      : ann.alcance_tipo === "equipo"
-        ? `${ann.alcance_ids?.length ?? 0} equipo(s)`
-        : `${ann.alcance_ids?.length ?? 0} alumno(s)`;
-
-  if (editing) {
-    return (
-      <form onSubmit={save} className="rounded-md border border-ibero-red/50 bg-surface p-4 space-y-3">
-        <input
-          value={titulo}
-          onChange={(e) => setTitulo(e.target.value)}
-          required
-          className="w-full rounded-md border border-surface-border bg-neutral-900 px-3 py-1.5 text-sm text-white focus:border-ibero-red focus:outline-none"
-        />
-        <textarea
-          value={cuerpo}
-          onChange={(e) => setCuerpo(e.target.value)}
-          required
-          rows={3}
-          className="w-full rounded-md border border-surface-border bg-neutral-900 px-3 py-1.5 text-sm text-white font-mono focus:border-ibero-red focus:outline-none"
-        />
-        <div className="flex gap-3 items-center flex-wrap">
-          <select
-            value={prioridad}
-            onChange={(e) => setPrioridad(e.target.value as AnnouncementPriority)}
-            className="rounded-md border border-surface-border bg-neutral-900 px-2 py-1 text-xs text-white"
-          >
-            <option value="normal">Normal</option>
-            <option value="alta">Alta</option>
-          </select>
-          <label className="flex items-center gap-2 text-xs text-neutral-300">
-            <input
-              type="checkbox"
-              checked={anclado}
-              onChange={(e) => setAnclado(e.target.checked)}
-              className="h-4 w-4 accent-ibero-red"
-            />
-            Anclado
-          </label>
-        </div>
-        <p className="text-[10px] text-neutral-500">
-          El alcance ({alcanceLabel}) no se puede editar tras crear el anuncio.
-        </p>
-        {error && <p className="text-xs text-red-400">{error}</p>}
-        <div className="flex gap-2">
-          <button
-            type="submit"
-            disabled={busy !== null}
-            className="rounded-md bg-emerald-800 hover:bg-emerald-700 disabled:opacity-50 px-3 py-1.5 text-xs font-medium text-white"
-          >
-            {busy === "save" ? "Guardando…" : "Guardar"}
-          </button>
-          <button
-            type="button"
-            onClick={() => setEditing(false)}
-            disabled={busy !== null}
-            className="rounded-md border border-surface-border hover:bg-neutral-800 px-3 py-1.5 text-xs text-neutral-300"
-          >
-            Cancelar
-          </button>
-        </div>
-      </form>
-    );
-  }
-
-  return (
-    <div
-      className={
-        "rounded-md border p-4 space-y-2 " +
-        (ann.activo ? "border-surface-border bg-surface" : "border-surface-border/40 bg-surface/40 opacity-50")
-      }
-    >
-      <div className="flex justify-between gap-3 flex-wrap">
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium text-white flex items-center gap-2 flex-wrap">
-            {ann.titulo}
-            {ann.anclado && (
-              <span className="text-[10px] uppercase px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-300">
-                Anclado
-              </span>
-            )}
-            {ann.prioridad === "alta" && (
-              <span className="text-[10px] uppercase px-1.5 py-0.5 rounded bg-red-950/60 text-red-300">
-                Alta
-              </span>
-            )}
-            {!ann.activo && (
-              <span className="text-[10px] uppercase px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-500">
-                Eliminado
-              </span>
-            )}
-          </p>
-          <div
-            className="text-xs text-neutral-400 mt-1"
-            dangerouslySetInnerHTML={{ __html: renderMarkdownLite(ann.cuerpo_md) }}
-          />
-          <p className="text-[11px] text-neutral-500 mt-1">
-            Alcance: {alcanceLabel} · Leído: {ann.read_count}/{ann.audience_size} ·{" "}
-            {new Date(ann.publicado_at).toLocaleDateString("es-MX")}
-          </p>
-        </div>
-        {ann.activo && (
-          <div className="flex gap-2 shrink-0">
-            <button
-              onClick={() => setEditing(true)}
-              className="rounded-md border border-surface-border hover:bg-neutral-800 px-3 py-1.5 text-xs text-neutral-300"
-            >
-              Editar
-            </button>
-            <button
-              onClick={handleDelete}
-              disabled={busy !== null}
-              className="rounded-md border border-red-800 hover:bg-red-950/40 disabled:opacity-50 px-3 py-1.5 text-xs text-red-300"
-            >
-              {busy === "delete" ? "…" : "Eliminar"}
-            </button>
-          </div>
-        )}
-      </div>
-      {error && <p className="text-xs text-red-400">{error}</p>}
-    </div>
-  );
-}
-
-function AnnouncementsSection({
-  announcements,
-  teams,
-  users,
-  onCreate,
-  onUpdate,
-  onDelete,
-}: {
-  announcements: AdminAnnouncementOut[];
-  teams: TeamOut[];
-  users: UserOut[];
-  onCreate: (payload: AnnouncementIn) => Promise<void>;
-  onUpdate: (id: number, payload: AnnouncementUpdate) => Promise<void>;
-  onDelete: (id: number) => Promise<void>;
-}) {
-  const active = announcements.filter((a) => a.activo);
-  const inactive = announcements.filter((a) => !a.activo);
-
-  return (
-    <section className="space-y-4">
-      <h2 className="text-lg font-semibold border-b border-surface-border pb-2">
-        Publicador de anuncios ({active.length} activos)
-      </h2>
-
-      <NewAnnouncementForm teams={teams} users={users} onCreate={onCreate} />
-
-      {active.length === 0 ? (
-        <p className="text-sm text-neutral-500 bg-surface rounded-md p-4 text-center border border-surface-border">
-          No hay anuncios activos.
-        </p>
-      ) : (
-        <div className="grid gap-2">
-          {active.map((a) => (
-            <AnnouncementRow key={a.id} ann={a} onUpdate={onUpdate} onDelete={onDelete} />
-          ))}
-        </div>
-      )}
-
-      {inactive.length > 0 && (
-        <details className="text-sm">
-          <summary className="cursor-pointer text-neutral-500 hover:text-neutral-300">
-            Histórico eliminados ({inactive.length})
-          </summary>
-          <div className="grid gap-2 mt-2">
-            {inactive.map((a) => (
-              <AnnouncementRow key={a.id} ann={a} onUpdate={onUpdate} onDelete={onDelete} />
-            ))}
-          </div>
-        </details>
-      )}
-    </section>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Sección 3: Feature flags
+// Sección 2: Feature flags
 // ---------------------------------------------------------------------------
 
 function FlagRow({
@@ -917,9 +450,6 @@ export default function AdminSistemaPage() {
   const token = authState.status === "authenticated" ? authState.token : null;
 
   const [inboxItems, setInboxItems] = useState<InboxItemOut[]>([]);
-  const [announcements, setAnnouncements] = useState<AdminAnnouncementOut[]>([]);
-  const [teams, setTeams] = useState<TeamOut[]>([]);
-  const [users, setUsers] = useState<UserOut[]>([]);
   const [flags, setFlags] = useState<SystemFlagOut[]>([]);
   const [knownKeys, setKnownKeys] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -930,18 +460,12 @@ export default function AdminSistemaPage() {
     setLoading(true);
     setError(null);
     try {
-      const [inbox, anns, teamsList, usersList, flagsList, known] = await Promise.all([
+      const [inbox, flagsList, known] = await Promise.all([
         api.adminGetInbox(token),
-        api.adminListAnnouncements(token),
-        api.adminListTeams(token),
-        api.adminListUsers(token),
         api.adminListFlags(token),
         api.adminListKnownFlagKeys(token),
       ]);
       setInboxItems(inbox);
-      setAnnouncements(anns);
-      setTeams(teamsList);
-      setUsers(usersList);
       setFlags(flagsList);
       setKnownKeys(known);
     } catch (err) {
@@ -978,7 +502,8 @@ export default function AdminSistemaPage() {
           Admin · Sistema
         </h1>
         <p className="text-sm text-neutral-400">
-          Bandeja de aprobaciones, anuncios y feature flags.
+          Bandeja de aprobaciones y feature flags. Los anuncios y la
+          asistencia se manejan directamente en Brightspace.
         </p>
       </header>
 
@@ -1017,24 +542,6 @@ export default function AdminSistemaPage() {
             onMarkSeen={async (itemId) => {
               await api.adminInboxMarkSeen(token!, itemId);
               await reloadInboxOnly();
-            }}
-          />
-
-          <AnnouncementsSection
-            announcements={announcements}
-            teams={teams}
-            users={users}
-            onCreate={async (payload) => {
-              await api.adminCreateAnnouncement(token!, payload);
-              setAnnouncements(await api.adminListAnnouncements(token!));
-            }}
-            onUpdate={async (id, payload) => {
-              await api.adminUpdateAnnouncement(token!, id, payload);
-              setAnnouncements(await api.adminListAnnouncements(token!));
-            }}
-            onDelete={async (id) => {
-              await api.adminDeleteAnnouncement(token!, id);
-              setAnnouncements(await api.adminListAnnouncements(token!));
             }}
           />
 

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AnnouncementsWidget } from "@/components/AnnouncementsWidget";
 import { BalanceWidget } from "@/components/BalanceWidget";
 import { auth, pickByPronoun } from "@/lib/api";
 import { useAuth } from "@/lib/useAuth";
@@ -81,8 +80,6 @@ export default function Inicio() {
         </section>
       ) : (
         <>
-          <AnnouncementsWidget token={token} />
-
           <BalanceWidget token={token} />
 
           <section className="rounded-lg border border-surface-border bg-surface-raised p-6 space-y-4">
@@ -123,12 +120,6 @@ export default function Inicio() {
               >
                 → Canje de décimas (usar Tokens sobrantes)
               </Link>
-              <Link
-                href="/anuncios"
-                className="block rounded-md border border-surface-border hover:bg-surface px-4 py-3 text-sm"
-              >
-                → Anuncios (historial completo)
-              </Link>
               {user.is_admin && (
                 <>
                   <Link
@@ -147,7 +138,7 @@ export default function Inicio() {
                     href="/admin/sistema"
                     className="block rounded-md border border-ibero-red/60 hover:bg-ibero-red/10 px-4 py-3 text-sm text-ibero-red mt-2"
                   >
-                    → Admin · Sistema (Inbox, anuncios y feature flags)
+                    → Admin · Sistema (Inbox y feature flags)
                   </Link>
                 </>
               )}

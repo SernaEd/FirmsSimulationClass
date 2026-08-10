@@ -20,7 +20,7 @@ Al finalizar el curso, el estudiante será capaz de:
 3. Aplicar las técnicas de solución de las ecuaciones diferenciales a aquellas que surjan de un modelo que represente una situación real.
 4. Resolver una ecuación diferencial por medio de la Transformada de Laplace y comparar su resultado con un método de solución no algebraico.
 
-Estos fines guían el diseño de casos para licitaciones (§10), proyectos con datos empíricos (§7), y el pozo de ejercicios de práctica (§8.3).
+Estos fines guían el diseño de casos para licitaciones (§10) y proyectos con datos empíricos (§7).
 
 ### 1.2 Reglas de Convivencia y Aula
 
@@ -152,9 +152,9 @@ El diseño busca que **la mayoría de los Tokens venga de esfuerzo individual** 
 
 | Fuente | Rango típico | Detalle |
 |---|---|---|
-| Ejercicios de práctica auto-calificados por módulo | 40-50 Tks/módulo | Ver §8.3 |
+| ~~Ejercicios de práctica auto-calificados por módulo~~ | ~~40-50 Tks/módulo~~ | **Removido del MVP** — ver nota de recalibración en §8.3 |
 | Sustentación destacada | 15-30 Tks por ocasión | Cuando el sorteo te toca y sustentas con claridad |
-| Asistencia | 2-5 Tks por día | Registro diario operado desde el panel de admin |
+| Asistencia | 2-5 Tks por día | Fuente: reporte de asistencia de Brightspace. Se aplica como ajuste manual desde el panel de admin (§11.1) — ya no hay pase de lista dentro de la plataforma |
 | Participación significativa | 5-15 Tks por aporte | Preguntas o comentarios que aporten gran valor a la clase |
 | Post destacado en foro | 10-20 Tks | El profesor marca posts especialmente útiles o claros |
 | Racha diaria estilo Duolingo | 2 Tks/día + hitos (~386 Tks techo semestral) | Reto corto lunes-jueves; ver §5.5 |
@@ -175,7 +175,7 @@ El diseño busca que **la mayoría de los Tokens venga de esfuerzo individual** 
 
 **No existen transferencias directas de saldo entre alumnos.** El único movimiento entre cuentas es el kudos con contenido justificativo, para evitar chantajes o presión social sobre Tokens.
 
-**Ingreso típico por semestre**: 300-450 Tokens para un alumno regular. **Techo aspiracional** (racha perfecta + práctica completa + kudos activos + licitaciones ganadas): ~700 Tokens.
+**Ingreso típico por semestre**: 300-450 Tokens para un alumno regular. **Techo aspiracional** (racha perfecta + práctica completa + kudos activos + licitaciones ganadas): ~700 Tokens. *(Estos rangos se calibraron incluyendo el pozo de práctica SymPy hoy removido — ver nota de recalibración en §8.3; pendiente de ajustar con el profesor.)*
 
 ### 5.2 Catálogo de privilegios
 
@@ -229,6 +229,8 @@ Los costos y restricciones son editables desde el panel admin.
 | Retardo justificado (llegada tardía 5-15 min) | 30 | Máx. 3 por semestre |
 | Pase de asistencia (1 clase) | 100 | Máx. 1 por semestre |
 
+> Con la asistencia llevándose en Brightspace (§8.3, decisión agosto 2026), la plataforma ya no tiene un `AttendanceRecord` local que vincular automáticamente al ticket. El canje sigue emitiendo el ticket normalmente; aplicarlo (marcar al alumno justificado/presente) es un paso manual del profesor directamente en Brightspace.
+
 ### 5.3 Flujo de canje
 
 1. El alumno abre el catálogo y selecciona un privilegio.
@@ -265,14 +267,16 @@ Los Tokens no gastados al terminar el semestre **pueden canjearse por décimas**
 
 ### 5.5 Rachas diarias estilo Duolingo
 
-Reconocimiento a esfuerzo constante mediante un reto corto diario. Diseñado para respetar el fin de semana y el viernes.
+Reconocimiento a esfuerzo constante mediante evidencia diaria de trabajo. Diseñado para respetar el fin de semana y el viernes.
+
+> **Decisión de alcance (agosto 2026):** el ejercicio diario en sí se resuelve en **WebAssign**, no en nuestra plataforma. WebAssign no expone una API pública para que un sistema externo lea el estado de completado por alumno (su único mecanismo de integración es LTI, diseñado para que un LMS *lance* WebAssign, no para que un tercero *consulte* datos), así que no hay ruta técnica para automatizar la verificación. En vez de construir un motor de ejercicios paramétricos con SymPy/MathLive (§8.3, ahora fuera de alcance del MVP), la plataforma solo **recibe evidencia** de que el ejercicio del día se resolvió.
 
 #### Mecánica
 
-- **Ventana de reto**: cada día hábil de **lunes a jueves** se publica un ejercicio corto de práctica (10-15 min estimados). **Viernes, sábado y domingo son días neutros**: no cuentan para la racha ni la interrumpen.
-- **Contenido**: seleccionado automáticamente del **pozo del módulo activo** (§8.3). Parametrizado por alumno, validado con SymPy.
+- **Ventana de reto**: cada día hábil de **lunes a jueves**, el alumno resuelve su ejercicio asignado en WebAssign y luego sube evidencia a nuestra plataforma: **un link al reporte de WebAssign de esa entrega + una captura de pantalla**. **Viernes, sábado y domingo son días neutros**: no cuentan para la racha ni la interrumpen.
+- **Verificación**: la subida se marca como completada de inmediato (sin cola de revisión manual — inviable para 25 alumnos × 4 días/semana). El link y la captura quedan almacenados como evidencia para que el profesor pueda hacer verificación puntual (spot-check) o resolver una disputa si hay duda razonable. Un caso confirmado de evidencia falsa se maneja vía el procedimiento sancionatorio (§18.4).
 - **Puntaje por día completado**: 2 Tks al banco personal.
-- **La racha crece +1 por cada día hábil completado**. Un lunes-jueves cerrado sin completar el reto **reinicia la racha a 0**.
+- **La racha crece +1 por cada día hábil completado**. Un lunes-jueves cerrado sin subir evidencia **reinicia la racha a 0**.
 
 #### Excepciones (racha no se rompe)
 
@@ -394,13 +398,13 @@ Ambos mecanismos (sustentación aleatoria y datos empíricos con video) hacen qu
 ### 8.2 Estructura y desbloqueo de módulos
 
 - Los módulos están ocultos por defecto. El admin los desbloquea manualmente uno a uno para evitar que los alumnos se adelanten.
-- Cada módulo es un contenedor de Sesiones (Clases). Cada clase tiene su propia página de teoría (Notion + PDF) y su propio hilo de comentarios. Los ejercicios de práctica y entregas siguen agrupados a nivel Módulo.
-- **Módulos simultáneos**: los módulos previamente desbloqueados **permanecen accesibles** al desbloquear uno nuevo (los alumnos pueden seguir consultando notas y practicando ejercicios de módulos pasados).
-- **Módulo activo** (para efectos de racha diaria §5.5 y widget "Módulo activo" del Dashboard §14.2): es el **último módulo desbloqueado**. Es la fuente del que sale el reto del día y donde se enfoca el widget principal.
+- Cada módulo es un contenedor de Sesiones (Clases). Cada clase tiene su propia página de teoría (Notion + PDF) y su propio hilo de comentarios. Las entregas siguen agrupadas a nivel Módulo.
+- **Módulos simultáneos**: los módulos previamente desbloqueados **permanecen accesibles** al desbloquear uno nuevo (los alumnos pueden seguir consultando notas de módulos pasados).
+- **Módulo activo** (para efectos del widget "Módulo activo" del Dashboard §14.2): es el **último módulo desbloqueado**. Los ejercicios del módulo se resuelven en WebAssign (fuera de nuestra plataforma); ver nota de alcance en §8.3.
 
 #### Módulos del curso (temario oficial)
 
-El curso está estructurado en **4 módulos**. Los pozos de Tokens y ciclos de retroalimentación se calibran alrededor de esta división.
+El curso está estructurado en **4 módulos**. Los ciclos de retroalimentación se calibran alrededor de esta división.
 
 | # | Módulo | Subtemas |
 |---|---|---|
@@ -411,52 +415,15 @@ El curso está estructurado en **4 módulos**. Los pozos de Tokens y ciclos de r
 
 **Calibración por defecto** (ajustable en admin):
 
-- Pozo de práctica por módulo: **50 Tks para módulo 1** (más extenso, 6 subtemas) + **40 Tks para módulos 2, 3 y 4** = **170 Tks máximos por práctica en el semestre**.
 - Un ciclo de retroalimentación entre pares por módulo = **4 ciclos por semestre**.
 
-### 8.3 Ejercicios de práctica individuales (con SymPy)
+### 8.3 Ejercicios de práctica individuales — fuera de alcance del MVP
 
-Fuente principal de Tokens personales. Cada módulo incluye un banco de ejercicios de práctica auto-calificados con **SymPy** en el backend.
-
-- **Parametrización**: cada alumno recibe una variante con parámetros numéricos ligeramente distintos (mismo tipo de ecuación, coeficientes generados a partir de una semilla derivada de `hash(numero_cuenta + ejercicio_id)`). Reproducible y difícil de compartir.
-- **Autoría de ejercicios (Admin UI)**: el profesor cuenta con una interfaz gráfica amigable para definir los ejercicios sin tener que programar cada vez. Puede definir variables con rangos (ej. `A = random_int(1, 5)`, `B = random_choice([2, 4, 6])`) asegurando que el problema siempre tenga solución manejable. Además, se habilita un **"Modo Avanzado (Fallback a Python)"** donde el profesor puede inyectar un script corto de Python (`def generate_problem(seed): ...`) para problemas más complejos que requieran lógica condicional.
-- **Intentos**: hasta 2 por ejercicio. Primer intento correcto: 100% de Tokens. Segundo intento correcto: 60%. Fallidos: 0.
-- **Tope por módulo**: pozo fijo de Tokens disponibles por módulo (**default 40 Tks**, con excepción del **módulo 1 en 50 Tks** por su mayor extensión — ver §8.2). Cuando el pozo se agota, los ejercicios adicionales siguen practicables pero ya no otorgan Tokens.
-- **Sin límite de tiempo** por ejercicio individual, pero timestamp registrado para detección de patrones anómalos.
-
-#### 8.3.1 Captura de respuestas: editor matemático visual
-
-Para que los alumnos no dependan de sintaxis (`**`, `*`, `sqrt()`, `exp()`, etc.), integramos **MathLive** como editor WYSIWYG:
-
-- **Frontend**: componente `<math-field>` de MathLive con teclado virtual matemático (integrales, derivadas, fracciones, exponentes, raíces, símbolos griegos, matrices, límites, sumatorias).
-- **Interfaz**: los alumnos escriben la expresión tal como se ve en un cuaderno; el editor renderiza en tiempo real y produce **LaTeX** internamente.
-- **Compatibilidad móvil**: teclado virtual optimizado para pantallas táctiles (importante para licitaciones y racha diaria).
-- **Preview en tiempo real**: mientras editan ven la expresión renderizada bonita.
-- **Modo dual opcional**: alumnos experimentados pueden alternar a modo texto LaTeX si prefieren teclear directamente.
-
-#### 8.3.2 Validación con SymPy
-
-Pipeline de validación:
-
-1. Frontend envía la respuesta en **LaTeX** (salida nativa de MathLive).
-2. **Pre-procesamiento (Limpieza de LaTeX y Derivadas):** El backend aplica expresiones regulares avanzadas antes del parseo para:
-   - Normalizar multiplicación implícita (ej. convertir `2x` a `2*x`).
-   - Diferenciar variables independientes: detectar si se usa $\frac{dy}{dx}$ vs $\frac{dy}{dt}$ para convertirlos internamente a la notación correcta de `Derivative` de SymPy (`Derivative(y(x), x)` o `Derivative(y(t), t)`). Esto permite a los alumnos seguir usando notación de fracción sin que el validador colapse.
-   - Ofrecer una vista previa en el frontend para que el alumno verifique que el sistema interpretó correctamente su notación.
-3. Backend parsea LaTeX normalizado → objeto SymPy con `sympy.parsing.latex.parse_latex` (requiere paquete `antlr4-python3-runtime`).
-4. **Normalización de constantes libres**: en EDOs las soluciones incluyen constantes de integración (`C_1`, `C_2`, `K`, etc.). El validador identifica símbolos libres de la respuesta del alumno y los mapea a los símbolos libres esperados por posición y estructura antes de comparar (`Poly.match` o `wild symbols` de SymPy). Esto evita rechazar respuestas correctas solo porque el alumno usó `K` en lugar de `C_1`.
-5. Comparación con la respuesta esperada:
-   - `sympy.simplify(respuesta_alumno - respuesta_esperada) == 0` para equivalencia simbólica.
-   - Tolerancia numérica configurable para respuestas decimales.
-   - Verificación por sustitución para EDOs (la solución propuesta satisface la ecuación al derivar y sustituir). **Este es el método más robusto** para EDOs y se prioriza sobre la comparación por simplificación cuando aplica.
-6. Devuelve resultado + retroalimentación (correcto / incorrecto / equivalente pero no simplificado).
-
-#### 8.3.3 Seguridad
-
-- **Sandboxing**: `parse_latex` con lista blanca de símbolos permitidos; ningún `eval` de código arbitrario.
-- **Timeout**: cada validación tiene tope de 3 segundos para evitar consultas maliciosas que cuelguen el worker.
-- **Rate limiting**: máx. 30 validaciones por alumno por minuto.
-- **Longitud máxima** de expresión LaTeX: 2000 caracteres.
+> **Decisión de alcance (agosto 2026):** esta sección (motor de ejercicios paramétricos con validación **SymPy** + captura con **MathLive**, descrita originalmente en detalle en 8.3.1-8.3.3) **se remueve del MVP**. Los ejercicios de práctica del curso se resuelven directamente en **WebAssign**; construir un segundo motor de ejercicios en paralelo sería redundante. La plataforma solo participa como registro de evidencia para la racha (§5.5).
+>
+> **Nota de economía de Tokens**: este motor era la "fuente principal de Tokens personales" originalmente prevista, con un tope de **170 Tks máximos por semestre** (pozo por módulo: 50 Tks para módulo 1, 40 Tks para módulos 2-4). Con su remoción, la racha (§5.5: 2 Tks × hasta 4 días/semana × ~15 semanas ≈ 120 Tks/semestre) queda como la fuente principal de Tokens personales individuales, en un orden de magnitud similar. Si el profesor considera insuficiente este monto frente a licitaciones y foro, ajustar el valor por día de racha o los bonos por hitos (§5.5) es la palanca disponible — **pendiente de decidir con el profesor si se requiere recalibrar**.
+>
+> Se conserva este apartado como referencia por si el motor SymPy/MathLive se retoma en un semestre futuro sin depender de WebAssign.
 
 ---
 
@@ -558,55 +525,18 @@ Centro unificado de atención para el profesor. Todas las acciones de los alumno
 
 - **Sincronización de Notion**: botón manual + vista de diff.
 - **Desbloqueo de módulos** uno a uno.
-- **Configuración de ejercicios de práctica**: definir pozo de Tokens y ejercicios elegibles por módulo.
 - **Gestor de calificaciones**: tabla editable tipo hoja de cálculo con exportación CSV.
 - **Configuración por-tarea** del reparto entrega escrita / sustentación oral (default 70/30).
 - **Registrar sustentación destacada** al finalizar la sustentación de una entrega.
 - **Marcar post destacado** en cualquier foro, con monto configurable de bono.
 
-### 11.3 Licitaciones, foros y anuncios
+### 11.3 Licitaciones y foros
+
+> **Decisión de alcance (agosto 2026):** el publicador de anuncios (antes §11.3.1) **se remueve del MVP**. Los anuncios del curso se publican directamente en **Brightspace**, el canal que los alumnos ya revisan por defecto para el resto del curso — mantener un segundo canal de anuncios en nuestra plataforma solo fragmentaría la atención. El módulo Inbox (§11.0) y los feature flags de sistema se conservan; solo se remueve la funcionalidad de anuncios.
 
 - **Lanzamiento de licitaciones** con selector de caso y control de fases.
 - **Vista de foros** con autor real revelado en todos los posts.
 - **Vista de retroalimentación entre pares**: matrices por equipo, alertas de patrones sospechosos, factor de moderación aplicable.
-- **Publicador de anuncios** (ver §11.3.1).
-
-#### 11.3.1 Publicador de anuncios
-
-Herramienta para publicar mensajes que aparecen en el Dashboard de los alumnos (§14.2, Fila 0).
-
-**Editor:**
-
-- Título (obligatorio, máx. 100 caracteres).
-- Cuerpo en **markdown** con preview en vivo, soporta LaTeX inline y bloques (renderizado con KaTeX/MathJax).
-- Adjuntos opcionales (imágenes o PDFs, hasta 3 archivos, 10 MB cada uno).
-
-**Configuración de publicación:**
-
-| Campo | Descripción |
-|---|---|
-| **Prioridad** | `normal` o `alta`. Alta aparece con acento visual. |
-| **Anclado** | Si sí, se queda arriba del feed hasta que expire o lo desancles. |
-| **Programar** | Publicar ahora, o programar fecha/hora (CDMX). |
-| **Expiración** | Fecha opcional tras la cual el anuncio desaparece del Dashboard (queda en histórico). |
-| **Alcance** | Todos los alumnos activos; equipos específicos; alumnos específicos. |
-| **Enviar notificación** | Si se activa, dispara email a los alumnos del alcance que tengan activada la categoría "Aviso administrativo del profesor" (§12.5). |
-
-**Después de publicar:**
-
-- **Confirmaciones de lectura**: cada alumno puede marcar como visto. El admin ve porcentaje de lectura y lista detallada de quién no ha visto.
-- **Edición con historial**: modificar el anuncio deja rastro en el log de auditoría; los alumnos ven etiqueta "editado" con timestamp.
-- **Eliminación**: soft-delete; queda en histórico admin.
-- **Repostear**: botón para volver a publicar (útil para recordatorios importantes).
-
-**Usos previstos:**
-
-- Recordatorios de entregas.
-- Aviso de licitación próxima.
-- Cambios de horario o de aula.
-- Publicación de resultados de examen.
-- Anuncios administrativos generales.
-- Reglas especiales de una entrega o proyecto.
 
 ### 11.4 Banco de Tokens, privilegios y ciclo del semestre
 
@@ -638,8 +568,8 @@ Zona de acciones destructivas o irreversibles, aislada del resto del panel con c
 
 ### 12.1 Stack
 
-- **Frontend**: Next.js (React). UI **minimalista oscura**, acento rojo IBERO, tipografía profesional. Sin efectos neón, sin estética cyberpunk ni de videojuego. **MathLive** para captura visual de expresiones matemáticas. **react-notion-x** para importar y renderizar los bloques de Notion de forma nativa y estéticamente impecable en la web. **Chart.js** o **Recharts** para gráficas del Dashboard y reportes.
-- **Backend**: FastAPI (Python 3.11+). WebSockets nativos para chat y licitaciones. **SymPy** + `antlr4-python3-runtime` para validación simbólica de ejercicios de práctica (§8.3). **APScheduler** para tareas programadas (§12.4). **Jinja2** + **WeasyPrint** o similar para renderizar reportes (§17).
+- **Frontend**: Next.js (React). UI **minimalista oscura**, acento rojo IBERO, tipografía profesional. Sin efectos neón, sin estética cyberpunk ni de videojuego. **react-notion-x** para importar y renderizar los bloques de Notion de forma nativa y estéticamente impecable en la web. **Chart.js** o **Recharts** para gráficas del Dashboard y reportes.
+- **Backend**: FastAPI (Python 3.11+). WebSockets nativos para chat y licitaciones. **APScheduler** para tareas programadas (§12.4). **Jinja2** + **WeasyPrint** o similar para renderizar reportes (§17). *(SymPy/MathLive removidos del stack — ver nota de alcance en §8.3.)*
 - **Base de datos**: MySQL 8.
 - **Almacenamiento de archivos**: filesystem del VPS en `uploads/`, rutas guardadas en MySQL.
 - **Sincronización Notion**: cliente oficial de Notion API, ejecutado solo bajo demanda del admin.
@@ -668,9 +598,8 @@ Jobs definidos:
 
 | Job | Cron | Descripción |
 |---|---|---|
-| `evaluate_streaks` | 00:05 CDMX diario | Evalúa el día anterior; aplica pases, rompe rachas, otorga hitos. |
-| `publish_daily_challenge` | 07:00 CDMX Lun-Jue | Selecciona un ejercicio del pozo del módulo activo, lo asigna a cada alumno parametrizado. |
-| `send_streak_reminder` | 20:00 CDMX Lun-Jue | Envía email a alumnos con notificaciones activas que no han completado el reto del día. |
+| `evaluate_streaks` | 00:05 CDMX diario | Evalúa el día anterior; aplica pases, rompe rachas, otorga hitos. Un día lunes-jueves sin evidencia subida en WebAssign cuenta como no completado. |
+| `send_streak_reminder` | 20:00 CDMX Lun-Jue | Envía email a alumnos con notificaciones activas que no han subido evidencia del día (§5.5). |
 | `close_feedback_cycle` | 23:59 CDMX del día de cierre configurado | Cierra el ciclo de retroalimentación. El día de cierre se define por ciclo desde el panel admin (default: 5 días después del cierre del módulo). |
 | `detect_inactivity` | 06:00 CDMX lunes | Marca alumnos sin actividad ≥14 días y alerta al profesor. |
 | `daily_backup` | 03:00 CDMX diario | Dump de MySQL y rotación. |
@@ -682,12 +611,11 @@ Todos los jobs corren con un **lock persistente en la base de datos (MySQL)**. E
 - **Correo institucional del alumno** (formato `@correo.uia.mx` u otro que uses).
 - **Opt-in explícito**: por defecto están **desactivadas**. El alumno las habilita desde su perfil.
 - **Configuración granular** (checkboxes en perfil):
-  - Recordatorio de reto del día (20:00 lunes-jueves).
+  - Recordatorio de evidencia del día (20:00 lunes-jueves).
   - Aviso de módulo desbloqueado.
   - Aviso de ciclo de retroalimentación abierto.
   - Aviso de post destacado propio.
   - Aviso de kudos recibido (el correo **no revela al emisor**; solo comunica categoría y texto del kudos, preservando el anonimato definido en §4.2).
-  - Aviso administrativo del profesor.
 - Cada correo incluye link de "desactivar este tipo de notificación" (un click, sin login).
 - No se guarda historial de emails enviados más allá de logs de auditoría de 30 días.
 
@@ -704,12 +632,10 @@ Entidades principales y relaciones clave. No es el schema definitivo (se detalla
 
 **Contenido y módulos:**
 
-- `Module` — id, numero (1-4), nombre, unlocked_at (nullable), pozo_pts.
+- `Module` — id, numero (1-4), nombre, unlocked_at (nullable).
 - `CourseSession` — id, module_id, numero_sesion, titulo, notion_page_id, apuntes_pdf_url (nullable), notion_last_sync.
-- `PracticeExercise` — id, module_id, plantilla_latex, sympy_solucion, parametros_config (JSON), valor_pts, activo.
-- `ExerciseAttempt` — id, user_id, exercise_id, respuesta_latex, resultado, pts_otorgados, timestamp.
-- `Announcement` — id, titulo, cuerpo_md, prioridad, anclado, publicado_at, expira_at, alcance (JSON), autor_id, edit_history (JSON).
-- `AnnouncementRead` — announcement_id, user_id, read_at.
+
+> `PracticeExercise`/`ExerciseAttempt` (motor SymPy/MathLive) y `Announcement`/`AnnouncementRead` (publicador de anuncios) se removieron del esbozo — ver notas de alcance en §8.3 y §11.3 respectivamente.
 
 **Foros:**
 
@@ -733,7 +659,8 @@ Entidades principales y relaciones clave. No es el schema definitivo (se detalla
 
 **Racha:**
 
-- `StreakDay` — user_id, fecha, estado (`completado`|`fallido`|`neutro`|`pase_aplicado`|`sin_reto`), ejercicio_asignado_id.
+- `StreakDay` — user_id, fecha, estado (`completado`|`fallido`|`neutro`|`pase_aplicado`), evidencia_id (nullable, FK a `StreakEvidence`).
+- `StreakEvidence` — id, streak_day_id, user_id, webassign_report_url, captura_path, submitted_at. Registro de la evidencia subida (link al reporte de WebAssign + captura de pantalla, §5.5); se marca `completado` al subirse, sin cola de revisión — queda disponible para verificación puntual del profesor.
 - `StreakState` — user_id, dias_activos, pases_disponibles, hitos_alcanzados (JSON), updated_at.
 
 **Licitaciones:**
@@ -771,7 +698,7 @@ Entidades principales y relaciones clave. No es el schema definitivo (se detalla
 
 **Asistencia:**
 
-- `AttendanceRecord` — id, user_id, fecha_clase, estado (`presente`|`retardo`|`ausente`|`justificado_por_ticket`), ticket_id (nullable, si se aplicó privilegio de retardo o pase de asistencia), nota.
+> `AttendanceRecord` se remueve del esbozo — la asistencia se lleva en Brightspace (decisión agosto 2026, ver §5.2). Los Tokens y privilegios de asistencia se siguen manejando desde la plataforma, pero sin una tabla local de asistencia diaria.
 
 Relaciones críticas:
 
@@ -799,7 +726,6 @@ Relaciones críticas:
 | Publicación en foro | 5 por alumno / hora / foro | §9 |
 | Envío de mensajes en chat de equipo | 30 por alumno / min | §12 |
 | Envío de kudos | Auto-regulado por costo de 10 Tks | §4.2 |
-| Validaciones de ejercicio (SymPy) | 30 por alumno / min | §8.3.3 |
 | Peticiones a Notion API durante sync | 0.35s entre peticiones + retry con backoff | §8.1 |
 
 ---
@@ -828,31 +754,28 @@ Cada feature nueva que el alumno visita por primera vez muestra un **modal de tu
 
 Se registra por alumno qué tutoriales ya vio (`user_tutorials_seen`). Cuando el profesor actualiza un tutorial (versionado), se vuelve a mostrar al siguiente ingreso.
 
-Tutoriales previstos: registro, test de perfil, Dashboard, catálogo de privilegios, reto del día, editor MathLive, foro, ciclo de retroalimentación, kudos, licitación, canje de Tokens, y **canje de Tokens por décimas** (se activa automáticamente al abrir la ventana al final del semestre).
+Tutoriales previstos: registro, test de perfil, Dashboard, catálogo de privilegios, evidencia del día (racha), foro, ciclo de retroalimentación, kudos, licitación, canje de Tokens, y **canje de Tokens por décimas** (se activa automáticamente al abrir la ventana al final del semestre).
 
 ### 14.2 Widgets del Dashboard
 
-**Fila 0 — Anuncios (visible sin scroll):**
-
-1. **Anuncios del profesor**: banner ancho al inicio del Dashboard, muestra hasta 3 anuncios activos ordenados por prioridad y recencia. Los anuncios anclados aparecen primero. Cada anuncio es una tarjeta con título, cuerpo (renderiza markdown y LaTeX), fecha y opción "Marcar como visto". Si hay más anuncios activos, aparece link "Ver todos".
+> **Decisión de alcance (agosto 2026):** se remueve la Fila 0 (widget de Anuncios) — los anuncios ahora se publican en Brightspace, ver §11.3. El widget "Reto del día" se reemplaza por "Evidencia del día" (WebAssign + captura, ver §5.5) y se remueve el widget de Asistencia, dado que la plataforma ya no lleva el registro diario localmente (ver §12.6).
 
 **Fila 1 — Estado personal (hero):**
 
-2. **Racha activa**: calendario mensual del mes en curso con palomitas verdes por día completado, escudos azules por días con pase, borde rojo tenue por fallidos, grises para neutros. Contador grande "X días de racha". Barra de progreso al siguiente hito.
-3. **Saldo del banco**: número grande, sparkline pequeño de tendencia semanal, link "Ver movimientos".
-3.5 **Asistencia**: widget mostrando % de asistencia en el semestre y contador de faltas acumuladas (en tiempo real según el pase de lista del admin).
-4. **Reto del día**: solo visible lunes-jueves si no lo ha completado; botón grande "Empezar reto (10-15 min)". Si ya completó, muestra "✓ Reto del día listo".
+1. **Racha activa**: calendario mensual del mes en curso con palomitas verdes por día completado, escudos azules por días con pase, borde rojo tenue por fallidos, grises para neutros. Contador grande "X días de racha". Barra de progreso al siguiente hito.
+2. **Saldo del banco**: número grande, sparkline pequeño de tendencia semanal, link "Ver movimientos".
+3. **Evidencia del día**: solo visible lunes-jueves si no la ha subido; botón grande "Subir evidencia" que abre el formulario (link al reporte de WebAssign + captura). Si ya la subió, muestra "✓ Evidencia del día lista".
 
 **Fila 2 — Curso y trabajo:**
 
-5. **Módulo activo**: título del módulo, barra de progreso del pozo de Tokens (Tks ganados / Tks disponibles), links al índice de Clases de ese módulo y a los ejercicios de práctica. Al entrar a una Clase, se abre la "Vista de Clase" (Notion + PDF + Comentarios).
-6. **Próximas entregas**: lista de 3-5 con countdown ("faltan 2 días", "vence hoy"), color por urgencia.
-7. **Mi equipo**: nombre de firma, mini-cards de integrantes (nickname + perfil), botón para abrir chat, contador "N kudos esta semana".
+4. **Módulo activo**: título del módulo y link al índice de Clases de ese módulo. Al entrar a una Clase, se abre la "Vista de Clase" (Notion + PDF + Comentarios).
+5. **Próximas entregas**: lista de 3-5 con countdown ("faltan 2 días", "vence hoy"), color por urgencia.
+6. **Mi equipo**: nombre de firma, mini-cards de integrantes (nickname + perfil), botón para abrir chat, contador "N kudos esta semana".
 
 **Fila 3 — Comunidad y acciones:**
 
-8. **Retroalimentación pendiente**: aparece solo cuando hay ciclo activo con evaluaciones sin completar; contador y botón "Completar ahora".
-9. **Actividad reciente**: feed cronológico (kudos recibidos, posts destacados, hitos, aprobación de canje de privilegio, etc.).
+7. **Retroalimentación pendiente**: aparece solo cuando hay ciclo activo con evaluaciones sin completar; contador y botón "Completar ahora".
+8. **Actividad reciente**: feed cronológico (kudos recibidos, posts destacados, hitos, aprobación de canje de privilegio, etc.).
 
 Cada widget es colapsable. El orden es fijo en la propuesta inicial; se puede permitir reordenamiento drag-and-drop en una iteración posterior.
 
@@ -876,7 +799,6 @@ Cada fase incluye pruebas antes de pasar a la siguiente.
 Trabajo del profesor (no requiere código):
 
 - Estructurar el contenido de los 4 módulos en Notion con la misma jerarquía prevista para la sincronización.
-- Redactar borradores de **40-50 ejercicios de práctica** para módulos 1 y 2 (mínimo para lanzar Fase 3 con contenido real). El resto se puede ir agregando durante el semestre.
 - Redactar **3-5 casos** para licitaciones iniciales.
 - Redactar las **8-10 preguntas del test de perfil** con sus 3 opciones cada una.
 - Redactar borrador de la página de reglas y políticas (§18) para revisión legal antes de la Fase 8.
@@ -900,10 +822,6 @@ Trabajo del profesor (no requiere código):
 - Sincronización manual con vista de diff.
 - Desbloqueo de módulos.
 - Foros por módulo con opción anónimo/nickname y marcado de post destacado.
-- **Editor matemático visual con MathLive** (frontend) para captura de respuestas sin dependencia de sintaxis.
-- Motor de ejercicios de práctica parametrizados con validación **SymPy** (parseo desde LaTeX, equivalencia simbólica, verificación por sustitución para EDOs, sandboxing y timeout).
-- Editor de plantillas de ejercicio en admin.
-- Pozo de Tokens por módulo (default 40 Tks; módulo 1: 50 Tks).
 
 ### Fase 4 — Retroalimentación y banco unificado (semana 6)
 - Ciclos de retroalimentación entre pares (**sin auto-otorgamiento de Tokens**).
@@ -911,7 +829,7 @@ Trabajo del profesor (no requiere código):
 - Banco unificado de Tokens con vista de saldo y catálogo de privilegios.
 - Ajustes discrecionales del profesor con nota justificativa.
 - Flujo de canje con tickets.
-- **Motor de rachas diarias estilo Duolingo**: publicación automática del reto de lunes a jueves, cálculo nocturno, aplicación automática de pases de racha, otorgamiento de bonos por hitos.
+- **Motor de rachas diarias estilo Duolingo**: subida de evidencia (link a WebAssign + captura) de lunes a jueves, cálculo nocturno, aplicación automática de pases de racha, otorgamiento de bonos por hitos.
 - Alertas anti-abuso.
 
 ### Fase 5 — Licitaciones (semana 7)
@@ -996,7 +914,6 @@ en_curso → canje_abierto → cerrado → archivado → (reset limpio) → en_c
 **Transición `en_curso → canje_abierto`** (botón "Abrir canje por décimas" en admin §11.4):
 
 - Efectos automáticos:
-  - Los **ejercicios de práctica dejan de otorgar Tokens** (siguen practicables, pero el pozo de cada módulo queda congelado).
   - Aparece en el Dashboard de los alumnos la interfaz de canje por décimas (§5.4) con el tutorial correspondiente (§14.1).
 - **No se bloquean**: racha diaria, licitaciones, kudos, foros, chat, entregas pendientes ni sustentaciones. Estas actividades pueden continuar generando Tokens hasta el cierre manual.
 - El profesor comienza a recibir solicitudes de canje en su **Inbox de Aprobaciones** (§11.0) como items de tipo `canje_decima`.
@@ -1011,7 +928,7 @@ en_curso → canje_abierto → cerrado → archivado → (reset limpio) → en_c
 - Efectos automáticos:
   - **Bloqueo total del acceso de alumnos al Dashboard**: al iniciar sesión, los alumnos ven **únicamente una pantalla estática** con el mensaje: *"Semestre cerrado. Envía un correo al profesor si quieres acceso a algún material o contenido."* No pueden ver widgets, historial, foros, chat, banco de Tokens, licitaciones, retroalimentación, ni ninguna otra vista. Solo el botón de cerrar sesión.
   - Se rechazan automáticamente las solicitudes de canje pendientes sin aprobación (con nota "cerrado sin resolver"; el profesor puede revertir individualmente si es error).
-  - Se detienen los cron jobs de racha (`evaluate_streaks`, `publish_daily_challenge`, `send_streak_reminder`).
+  - Se detienen los cron jobs de racha (`evaluate_streaks`, `send_streak_reminder`).
   - Se cierran todos los foros: los hilos se conservan en la BD para generación de reportes y archivo, pero no son accesibles a los alumnos.
 - El profesor puede seguir usando el panel completo: generar reportes finales, hacer ajustes discrecionales de último momento (con nota), revisar retroalimentación.
 
@@ -1070,7 +987,7 @@ Se puede generar **en cualquier momento del semestre**. Es útil si la coordinac
 Sección aislada del panel, con **fondo rojo tenue** y ventana de confirmación en dos pasos (escribir literalmente `CONFIRMO` para habilitar el botón). Acciones:
 
 - **Archivar semestre**: exporta todo el estado (BD + `uploads/`) a un tarball con timestamp y lo guarda fuera de la BD activa.
-- **Reset limpio para nuevo semestre**: purga alumnos, equipos, tickets, Tokens, rachas, retroalimentaciones, chats, foros, anuncios pasados, disputas cerradas. **Conserva** ejercicios de práctica, plantillas de casos para licitaciones, configuración del catálogo, feature flags, plantillas de anuncios y **calendario base** (definido como: patrones recurrentes marcados por el profesor como plantilla — por ejemplo, "el 1 de noviembre siempre es festivo" — pero **no** las marcas específicas del semestre pasado, que se archivan con el snapshot).
+- **Reset limpio para nuevo semestre**: purga alumnos, equipos, tickets, Tokens, rachas (incluida la evidencia subida — `StreakEvidence`), retroalimentaciones, chats, foros, disputas cerradas. **Conserva** plantillas de casos para licitaciones, configuración del catálogo, feature flags y **calendario base** (definido como: patrones recurrentes marcados por el profesor como plantilla — por ejemplo, "el 1 de noviembre siempre es festivo" — pero **no** las marcas específicas del semestre pasado, que se archivan con el snapshot).
 - **Purga selectiva de archivos huérfanos** en `uploads/` (referencias inexistentes en BD).
 - **Regenerar índices** de MySQL.
 - **Exportar snapshot completo de la BD** (dump SQL para respaldo manual).
@@ -1101,7 +1018,7 @@ Página pública accesible desde el pie de página de la plataforma y **obligato
 
 ### 18.3 Política de disputas
 
-- Los alumnos pueden abrir una disputa por: privilegio no consumido correctamente, ajuste discrecional considerado injusto, calificación de ejercicio de práctica, evaluación de retroalimentación.
+- Los alumnos pueden abrir una disputa por: privilegio no consumido correctamente, ajuste discrecional considerado injusto, racha marcada como fallida por error, evaluación de retroalimentación.
 - Canal: formulario en su perfil ("Levantar una disputa"), que llega al **Inbox de Aprobaciones** (§11.0) como ítem de tipo `disputa`.
 - Plazo de respuesta del profesor: 5 días hábiles.
 - Escalamiento: si el alumno considera que la respuesta no es satisfactoria, puede acudir a la coordinación académica del programa (fuera de la plataforma).
@@ -1148,7 +1065,7 @@ El proceso completo vive como ítem tipo `sancion` en el **Inbox de Aprobaciones
 | Reset accidental por parte del profesor | Danger zone con confirmación en dos pasos, PIN, log separado y notificación por email. |
 | Alumnos no reciben recordatorios y pierden racha | Notificaciones opcionales por correo con recordatorio a las 20:00 lunes-jueves. |
 | Privilegio de IA autorizado prematuramente | Feature flag `ai_in_exam_enabled` desactivado por defecto hasta autorización de coordinación. |
-| MathLive/SymPy rechaza notaciones válidas (falsos negativos) | Suite de pruebas de regresión con 100+ expresiones típicas de EDOs antes de Fase 3 QA; canal "reportar problema con validador" en el editor. |
+| Evidencia de racha falsa o de otro compañero (sin verificación automática, ver §5.5) | Requiere link al reporte de WebAssign **y** captura (sube el costo de fabricarla); verificación puntual del profesor; procedimiento sancionatorio (§18.4) ante un caso confirmado. |
 | Sobrecarga operativa del profesor (muchas acciones manuales) | Sección "Acciones pendientes" en el Dashboard admin con priorización; agrupación por tipo (aprobaciones, sustentaciones, disputas); notificaciones diarias por email al profesor con conteo pendiente. |
 | Coordinación IBERO no autoriza el privilegio de IA | El flag oculta el privilegio sin generar deuda; el plan funciona sin él. |
 | Videos empíricos saturan el disco del VPS | Límite de 100 MB y 2 min por video; monitoreo del uso de `uploads/`; alerta al llegar a 80% de la partición. |

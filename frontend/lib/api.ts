@@ -400,45 +400,6 @@ export type InboxItemOut = {
   nota_resolucion: string | null;
 };
 
-export type AnnouncementPriority = "normal" | "alta";
-export type AnnouncementScope = "todos" | "equipo" | "alumno";
-
-export type AnnouncementIn = {
-  titulo: string;
-  cuerpo_md: string;
-  prioridad?: AnnouncementPriority;
-  anclado?: boolean;
-  alcance_tipo?: AnnouncementScope;
-  alcance_ids?: number[] | null;
-  expira_at?: string | null;
-};
-
-export type AnnouncementUpdate = Partial<
-  Pick<AnnouncementIn, "titulo" | "cuerpo_md" | "prioridad" | "anclado" | "expira_at">
->;
-
-export type AdminAnnouncementOut = {
-  id: number;
-  titulo: string;
-  cuerpo_md: string;
-  prioridad: AnnouncementPriority;
-  anclado: boolean;
-  alcance_tipo: AnnouncementScope;
-  alcance_ids: number[] | null;
-  autor_id: number;
-  publicado_at: string;
-  expira_at: string | null;
-  activo: boolean;
-  created_at: string;
-  updated_at: string;
-  read_count: number;
-  audience_size: number;
-};
-
-export type StudentAnnouncementOut = Omit<AdminAnnouncementOut, "read_count" | "audience_size"> & {
-  leido: boolean;
-};
-
 export type SystemFlagOut = {
   key: string;
   enabled: boolean;
@@ -640,12 +601,6 @@ export const api = {
       token,
     ),
 
-  // Dominio 4 — alumno
-  myAnnouncements: (token: string) =>
-    request<StudentAnnouncementOut[]>("/me/announcements", {}, token),
-  markAnnouncementRead: (token: string, id: number) =>
-    request<void>(`/me/announcements/${id}/mark-read`, { method: "POST" }, token),
-
   // Dominio 4 — admin: Inbox
   adminGetInbox: (
     token: string,
@@ -678,24 +633,6 @@ export const api = {
     ),
   adminInboxMarkSeen: (token: string, id: number) =>
     request<InboxItemOut>(`/admin/inbox/${id}/mark_seen`, { method: "POST" }, token),
-
-  // Dominio 4 — admin: Anuncios
-  adminListAnnouncements: (token: string) =>
-    request<AdminAnnouncementOut[]>("/admin/announcements", {}, token),
-  adminCreateAnnouncement: (token: string, body: AnnouncementIn) =>
-    request<AdminAnnouncementOut>(
-      "/admin/announcements",
-      { method: "POST", body: JSON.stringify(body) },
-      token,
-    ),
-  adminUpdateAnnouncement: (token: string, id: number, body: AnnouncementUpdate) =>
-    request<AdminAnnouncementOut>(
-      `/admin/announcements/${id}`,
-      { method: "PATCH", body: JSON.stringify(body) },
-      token,
-    ),
-  adminDeleteAnnouncement: (token: string, id: number) =>
-    request<void>(`/admin/announcements/${id}`, { method: "DELETE" }, token),
 
   // Dominio 4 — admin: Feature flags
   adminListFlags: (token: string) =>
