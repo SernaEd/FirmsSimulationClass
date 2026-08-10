@@ -98,8 +98,8 @@
 
 ### 🔔 Dominio 4 — Sistema (Inbox, Announcements, Flags/State)
 
-- [ ] Modelos `InboxItem`, `Announcement`, `AnnouncementRead`, `SystemFlag`, `SystemState`.
-- [ ] Migración Alembic.
+- [x] Modelos `InboxItem`, `Announcement`, `AnnouncementRead`, `SystemFlag`, `SystemState` + enums (`InboxItemType` con las 10 categorías del plan, `InboxPriority`, `InboxItemStatus`, `AnnouncementPriority`, `AnnouncementScope`).
+- [x] Migración Alembic (`f28e6bc07eca`).
 - [ ] `POST /admin/announcements` — publicador (§11.3.1); funciones esenciales: título, markdown, prioridad, anclado, alcance (todos/equipo/alumno).
 - [ ] `GET /me/announcements` — feed activo para el alumno.
 - [ ] `POST /me/announcements/{id}/mark-read`.

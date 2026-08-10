@@ -5,6 +5,8 @@ Cada dominio agrega sus modelos aquí. Actualmente:
 - Dominio 2 (Teams): Team, TeamMember, TeamNameProposal
 - Dominio 3 (Economía): PrivilegeCatalog, PrivilegeTicket, SplitBillContribution,
   TokenLedger, DecimalRedemptionRequest
+- Dominio 4 (Sistema): InboxItem, Announcement, AnnouncementRead, SystemFlag,
+  SystemState
 """
 
 from .economy import (  # noqa: F401
@@ -16,6 +18,18 @@ from .economy import (  # noqa: F401
     TicketStatus,
     TokenLedger,
     TokenSource,
+)
+from .system import (  # noqa: F401
+    Announcement,
+    AnnouncementPriority,
+    AnnouncementRead,
+    AnnouncementScope,
+    InboxItem,
+    InboxItemStatus,
+    InboxItemType,
+    InboxPriority,
+    SystemFlag,
+    SystemState,
 )
 from .team import ProposalStatus, Team, TeamMember, TeamNameProposal, TeamNameStatus  # noqa: F401
 from .user import User, UserProfile, UserPronouns, UserStatus  # noqa: F401
