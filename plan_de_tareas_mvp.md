@@ -100,13 +100,15 @@
 
 - [x] Modelos `InboxItem`, `Announcement`, `AnnouncementRead`, `SystemFlag`, `SystemState` + enums (`InboxItemType` con las 10 categorías del plan, `InboxPriority`, `InboxItemStatus`, `AnnouncementPriority`, `AnnouncementScope`).
 - [x] Migración Alembic (`f28e6bc07eca`).
-- [ ] `POST /admin/announcements` — publicador (§11.3.1); funciones esenciales: título, markdown, prioridad, anclado, alcance (todos/equipo/alumno).
-- [ ] `GET /me/announcements` — feed activo para el alumno.
-- [ ] `POST /me/announcements/{id}/mark-read`.
-- [ ] `GET /admin/inbox` — bandeja con **2 categorías iniciales**: `registro` y `nombre_firma`. Se agregan más en iteraciones posteriores.
-- [ ] `POST /admin/inbox/{id}/[resolve|snooze|dismiss|mark_seen]`.
-- [ ] Frontend alumno: widget "Anuncios del profesor" en Fila 0 del Dashboard (§14.2).
-- [ ] Frontend admin: Inbox de Aprobaciones + Publicador de anuncios.
+- [x] `POST /admin/announcements` — publicador (§11.3.1): título, markdown, prioridad, anclado, alcance (todos/equipo/alumno), expiración opcional. `GET /admin/announcements` (con `read_count`/`audience_size`), `PATCH`, `DELETE` (soft-delete vía `activo=false`).
+- [x] `GET /me/announcements` — feed activo para el alumno (filtra por alcance, expiración y `activo`; ordena anclado → prioridad → recencia).
+- [x] `POST /me/announcements/{id}/mark-read` — idempotente.
+- [x] `GET /admin/inbox` — bandeja con **2 categorías iniciales**: `registro` y `nombre_firma` (el enum completo de 10 categorías ya está definido en el modelo para cuando existan las demás features). Filtros por tipo/prioridad/estado; por default muestra pendientes + pospuestos ya vencidos (sin necesidad de cron).
+- [x] `POST /admin/inbox/{id}/[resolve|snooze|dismiss|mark_seen]`.
+- [x] **Hooks de sincronización**: registrar un alumno crea el `InboxItem`; aprobar/rechazar desde `/admin/users` (Dominio 1) resuelve el item aunque no se use el Inbox. Proponer nombre de firma crea el item; aprobar/rechazar/renombrar/asignar-default desde `/admin/teams` (Dominio 2) resuelve el item propio y los que quedan `superseded`.
+- [x] **Feature flags conectados**: se cerró el TODO de Dominio 3 — `is_privilege_available_for_users` ahora consulta `SystemFlag` real en vez de ocultar siempre. `GET /admin/system/flags`, `GET /admin/system/flags/known-keys` (claves referenciadas por el catálogo sin fila aún), `PUT /admin/system/flags/{key}`.
+- [ ] Frontend alumno: widget "Anuncios del profesor" en Fila 0 del Dashboard (§14.2). *(commit 3/3)*
+- [ ] Frontend admin: Inbox de Aprobaciones + Publicador de anuncios + Feature flags. *(commit 3/3)*
 
 ---
 

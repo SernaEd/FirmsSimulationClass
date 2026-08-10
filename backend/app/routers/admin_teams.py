@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session, selectinload
 
 from app.database import get_db
 from app.deps import get_current_admin
+from app.models.system import InboxItemType
 from app.models.team import (
     ProposalStatus,
     Team,
@@ -26,6 +27,7 @@ from app.schemas.team import (
     TeamMemberOut,
     TeamOut,
 )
+from app.services.inbox import resolve_inbox_items
 from app.services.teams import (
     generate_balanced_teams,
     next_default_firma_name,
@@ -114,9 +116,11 @@ def _set_team_name(
     team: Team,
     nombre: str,
     nuevo_estado: TeamNameStatus,
+    admin_id: int | None = None,
 ) -> None:
     """Aplica un nombre a un equipo, valida unicidad y superseda propuestas
-    pendientes. NO hace commit — el caller decide."""
+    pendientes (resolviendo también sus items del Inbox). NO hace commit —
+    el caller decide."""
     other = db.scalar(select(Team).where(Team.nombre_firma == nombre, Team.id != team.id))
     if other is not None:
         raise HTTPException(
@@ -130,6 +134,13 @@ def _set_team_name(
         if p.estado == ProposalStatus.pendiente_mod:
             p.estado = ProposalStatus.superseded
             p.resolved_at = now
+            resolve_inbox_items(
+                db,
+                InboxItemType.nombre_firma,
+                p.id,
+                admin_id=admin_id,
+                nota="El admin asignó el nombre del equipo directamente.",
+            )
 
 
 @router.post("/teams/{team_id}/rename", response_model=TeamOut)
@@ -137,13 +148,13 @@ def rename_team(
     team_id: int,
     payload: RenameTeamIn,
     db: Session = Depends(get_db),
-    _admin: User = Depends(get_current_admin),
+    admin: User = Depends(get_current_admin),
 ) -> TeamOut:
     """Cambio de nombre a criterio del admin. Estado resultante: `aprobado`."""
     team = db.get(Team, team_id)
     if team is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Equipo no existe.")
-    _set_team_name(db, team, payload.nombre, TeamNameStatus.aprobado)
+    _set_team_name(db, team, payload.nombre, TeamNameStatus.aprobado, admin_id=admin.id)
     db.commit()
     db.refresh(team)
     return _team_to_out(db, team)
@@ -154,7 +165,7 @@ def assign_default_name(
     team_id: int,
     payload: AssignDefaultNameIn,
     db: Session = Depends(get_db),
-    _admin: User = Depends(get_current_admin),
+    admin: User = Depends(get_current_admin),
 ) -> TeamOut:
     """Asigna nombre fallback 'Firma A/B/…'. Estado: `asignado_por_sistema`."""
     team = db.get(Team, team_id)
@@ -162,7 +173,7 @@ def assign_default_name(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Equipo no existe.")
 
     nombre = payload.nombre or next_default_firma_name(db)
-    _set_team_name(db, team, nombre, TeamNameStatus.asignado_por_sistema)
+    _set_team_name(db, team, nombre, TeamNameStatus.asignado_por_sistema, admin_id=admin.id)
     db.commit()
     db.refresh(team)
     return _team_to_out(db, team)
@@ -215,6 +226,7 @@ def approve_proposal(
     proposal.estado = ProposalStatus.aprobado
     proposal.resolved_at = now
     proposal.resolved_by = admin.id
+    resolve_inbox_items(db, InboxItemType.nombre_firma, proposal.id, admin_id=admin.id)
 
     # Superseder otras propuestas pendientes del mismo equipo
     others_stmt = (
@@ -226,6 +238,13 @@ def approve_proposal(
     for other_prop in db.scalars(others_stmt).all():
         other_prop.estado = ProposalStatus.superseded
         other_prop.resolved_at = now
+        resolve_inbox_items(
+            db,
+            InboxItemType.nombre_firma,
+            other_prop.id,
+            admin_id=admin.id,
+            nota="Se aprobó otra propuesta del mismo equipo.",
+        )
 
     db.commit()
     db.refresh(team)
@@ -251,6 +270,9 @@ def reject_proposal(
     proposal.resolved_at = datetime.now(timezone.utc)
     proposal.resolved_by = admin.id
     proposal.nota_moderacion = payload.nota_moderacion
+    resolve_inbox_items(
+        db, InboxItemType.nombre_firma, proposal.id, admin_id=admin.id, nota=payload.nota_moderacion
+    )
     db.commit()
     db.refresh(proposal)
     return proposal

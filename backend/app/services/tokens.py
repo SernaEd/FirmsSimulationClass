@@ -91,17 +91,17 @@ def _add_ledger_entry(
 # Catálogo — validaciones
 # =========================================================================
 
-def is_privilege_available_for_users(catalog: PrivilegeCatalog) -> bool:
-    """Un privilegio es visible al alumnado si `visible=True` y su feature flag
-    (si existe) está encendido. Como la infraestructura de flags llega en el
-    Dominio 4, mientras tanto todos los privilegios con `feature_flag_key`
-    quedan ocultos por defecto (safe default).
+def is_privilege_available_for_users(db: Session, catalog: PrivilegeCatalog) -> bool:
+    """Un privilegio es visible al alumnado si `visible=True` y, cuando tiene
+    un feature flag asociado (ej. `ai_in_exam_enabled`, §5.2), ese flag está
+    encendido en `SystemFlag`. Ausencia del flag = desactivado (safe default).
     """
     if not catalog.visible:
         return False
     if catalog.feature_flag_key:
-        # TODO(d4): consultar SystemFlag[catalog.feature_flag_key]
-        return False
+        from app.services.system_config import get_flag  # import perezoso: evita ciclo
+
+        return get_flag(db, catalog.feature_flag_key)
     return True
 
 
@@ -138,7 +138,7 @@ def _resolve_available_catalog_entry(db: Session, catalog_id: int) -> PrivilegeC
     catalog = db.get(PrivilegeCatalog, catalog_id)
     if catalog is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Privilegio no existe.")
-    if not is_privilege_available_for_users(catalog):
+    if not is_privilege_available_for_users(db, catalog):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Este privilegio no está disponible actualmente.",

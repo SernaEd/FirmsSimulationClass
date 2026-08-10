@@ -6,9 +6,13 @@ from slowapi.errors import RateLimitExceeded
 from app.config import settings
 from app.rate_limit import limiter
 from app.routers import (
+    admin_announcements,
     admin_economy,
+    admin_inbox,
+    admin_system,
     admin_teams,
     admin_users,
+    announcements,
     auth,
     economy,
     health,
@@ -18,7 +22,7 @@ from app.routers import (
 app = FastAPI(
     title="Plataforma Cálculo 3",
     description="Backend de la plataforma de aprendizaje para Cálculo 3 (Ecuaciones Diferenciales).",
-    version="0.4.0",
+    version="0.5.0",
 )
 
 app.state.limiter = limiter
@@ -39,13 +43,17 @@ app.include_router(admin_teams.router)
 app.include_router(teams.router)
 app.include_router(economy.router)
 app.include_router(admin_economy.router)
+app.include_router(admin_inbox.router)
+app.include_router(announcements.router)
+app.include_router(admin_announcements.router)
+app.include_router(admin_system.router)
 
 
 @app.get("/")
 def root():
     return {
         "name": "Plataforma Cálculo 3",
-        "version": "0.4.0",
+        "version": "0.5.0",
         "environment": settings.environment,
         "docs": "/docs",
     }

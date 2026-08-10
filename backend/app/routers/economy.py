@@ -80,7 +80,7 @@ def list_visible_privileges(
     all_entries = db.scalars(
         select(PrivilegeCatalog).order_by(PrivilegeCatalog.categoria, PrivilegeCatalog.costo)
     ).all()
-    return [e for e in all_entries if is_privilege_available_for_users(e)]
+    return [e for e in all_entries if is_privilege_available_for_users(db, e)]
 
 
 # ---------------------------------------------------------------------------

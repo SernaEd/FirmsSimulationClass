@@ -9,10 +9,12 @@ from sqlalchemy.orm import Session
 from app.config import settings
 from app.database import get_db
 from app.deps import get_current_user
+from app.models.system import InboxItemType, InboxPriority
 from app.models.user import User, UserStatus
 from app.rate_limit import limiter
 from app.schemas.auth import LoginIn, RegisterIn, TokenOut, UserOut
 from app.security import create_access_token, hash_pin, verify_pin
+from app.services.inbox import create_inbox_item
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -45,6 +47,21 @@ def register(payload: RegisterIn, db: Session = Depends(get_db)) -> User:
         terms_accepted_at=datetime.now(timezone.utc),
     )
     db.add(user)
+    db.flush()  # user.id disponible sin cerrar la transacción
+
+    create_inbox_item(
+        db,
+        tipo=InboxItemType.registro,
+        referencia_id=user.id,
+        prioridad=InboxPriority.media,
+        payload={
+            "nombre": user.nombre,
+            "apellidos": user.apellidos,
+            "numero_cuenta": user.numero_cuenta,
+            "nickname": user.nickname,
+        },
+    )
+
     db.commit()
     db.refresh(user)
     return user

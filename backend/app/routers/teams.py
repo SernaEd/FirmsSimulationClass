@@ -6,10 +6,12 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.deps import get_current_active_user
+from app.models.system import InboxItemType, InboxPriority
 from app.models.team import ProposalStatus, TeamNameProposal, TeamNameStatus
 from app.models.user import User
 from app.routers.admin_teams import _team_to_out
 from app.schemas.team import ProposalOut, ProposeNameIn, TeamOut
+from app.services.inbox import create_inbox_item, resolve_inbox_items
 from app.services.teams import get_active_team_of_user, user_is_member_of_team
 
 router = APIRouter(tags=["teams"])
@@ -60,6 +62,12 @@ def propose_name(
     for prev in db.scalars(stmt).all():
         prev.estado = ProposalStatus.superseded
         prev.resolved_at = now
+        resolve_inbox_items(
+            db,
+            InboxItemType.nombre_firma,
+            prev.id,
+            nota="Reemplazada por una propuesta más reciente del equipo.",
+        )
 
     proposal = TeamNameProposal(
         team_id=team_id,
@@ -67,6 +75,21 @@ def propose_name(
         propuesto_por=user.id,
     )
     db.add(proposal)
+    db.flush()  # proposal.id disponible sin cerrar la transacción
+
+    create_inbox_item(
+        db,
+        tipo=InboxItemType.nombre_firma,
+        referencia_id=proposal.id,
+        prioridad=InboxPriority.baja,
+        payload={
+            "team_id": team_id,
+            "propuesta": proposal.propuesta,
+            "propuesto_por_id": user.id,
+            "propuesto_por_nickname": user.nickname,
+        },
+    )
+
     db.commit()
     db.refresh(proposal)
     return proposal

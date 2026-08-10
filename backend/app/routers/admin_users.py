@@ -1,5 +1,7 @@
-"""Endpoints admin sobre usuarios (Dominio 1). El manejo de la cola de
-aprobación completo (Inbox) llega en el Dominio 4."""
+"""Endpoints admin sobre usuarios (Dominio 1). Aprobar/rechazar aquí también
+resuelve el item correspondiente del Inbox de Aprobaciones (Dominio 4), para
+que quede sincronizado sin importar si el profesor actuó desde esta vista
+directa o desde /admin/inbox."""
 
 import secrets
 import string
@@ -9,9 +11,11 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.deps import get_current_admin
+from app.models.system import InboxItemType
 from app.models.user import User, UserStatus
 from app.schemas.auth import UserOut
 from app.security import hash_pin
+from app.services.inbox import resolve_inbox_items
 
 router = APIRouter(prefix="/admin/users", tags=["admin:users"])
 
@@ -49,7 +53,7 @@ def reset_pin(
 def approve(
     user_id: int,
     db: Session = Depends(get_db),
-    _admin: User = Depends(get_current_admin),
+    admin: User = Depends(get_current_admin),
 ) -> User:
     user = db.get(User, user_id)
     if user is None:
@@ -60,6 +64,7 @@ def approve(
             detail=f"Cuenta en estado '{user.estado.value}', no puede aprobarse.",
         )
     user.estado = UserStatus.active
+    resolve_inbox_items(db, InboxItemType.registro, user_id, admin_id=admin.id)
     db.commit()
     db.refresh(user)
     return user
@@ -69,12 +74,13 @@ def approve(
 def reject(
     user_id: int,
     db: Session = Depends(get_db),
-    _admin: User = Depends(get_current_admin),
+    admin: User = Depends(get_current_admin),
 ) -> User:
     user = db.get(User, user_id)
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no existe.")
     user.estado = UserStatus.rejected
+    resolve_inbox_items(db, InboxItemType.registro, user_id, admin_id=admin.id)
     db.commit()
     db.refresh(user)
     return user
@@ -85,7 +91,8 @@ def list_pending(
     db: Session = Depends(get_db),
     _admin: User = Depends(get_current_admin),
 ) -> list[User]:
-    """Vista provisional hasta que llegue el Inbox de Aprobaciones (Dominio 4)."""
+    """Vista específica de Dominio 1. El Inbox unificado (GET /admin/inbox,
+    Dominio 4) muestra lo mismo junto con las demás categorías."""
     return (
         db.query(User)
         .filter(User.estado.in_([UserStatus.pending_approval, UserStatus.pending_profile]))
