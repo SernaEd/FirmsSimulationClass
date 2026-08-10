@@ -356,6 +356,97 @@ export const CATEGORY_ORDER = [
   "asistencia",
 ];
 
+// ---- Tipos Dominio 4 (Sistema: Inbox, Anuncios, Flags) ----
+
+export type InboxItemType =
+  | "registro"
+  | "nombre_firma"
+  | "canje_decima"
+  | "disputa"
+  | "sancion"
+  | "feedback_sospechoso"
+  | "sustentacion_destacada_pendiente"
+  | "post_destacado_pendiente"
+  | "alerta_inactividad"
+  | "alerta_sistema";
+
+export type InboxPriority = "alta" | "media" | "baja";
+export type InboxItemStatus = "pendiente" | "atendido" | "pospuesto" | "descartado" | "visto";
+
+export const INBOX_TYPE_LABEL: Record<InboxItemType, string> = {
+  registro: "Registro pendiente",
+  nombre_firma: "Propuesta de nombre",
+  canje_decima: "Canje por décimas",
+  disputa: "Disputa",
+  sancion: "Proceso sancionatorio",
+  feedback_sospechoso: "Retroalimentación sospechosa",
+  sustentacion_destacada_pendiente: "Sustentación destacada pendiente",
+  post_destacado_pendiente: "Post destacado pendiente",
+  alerta_inactividad: "Alerta de inactividad",
+  alerta_sistema: "Alerta de sistema",
+};
+
+export type InboxItemOut = {
+  id: number;
+  tipo: InboxItemType;
+  referencia_id: number | null;
+  payload_json: Record<string, unknown> | null;
+  prioridad: InboxPriority;
+  estado: InboxItemStatus;
+  snoozed_until: string | null;
+  created_at: string;
+  resuelto_at: string | null;
+  resuelto_por: number | null;
+  nota_resolucion: string | null;
+};
+
+export type AnnouncementPriority = "normal" | "alta";
+export type AnnouncementScope = "todos" | "equipo" | "alumno";
+
+export type AnnouncementIn = {
+  titulo: string;
+  cuerpo_md: string;
+  prioridad?: AnnouncementPriority;
+  anclado?: boolean;
+  alcance_tipo?: AnnouncementScope;
+  alcance_ids?: number[] | null;
+  expira_at?: string | null;
+};
+
+export type AnnouncementUpdate = Partial<
+  Pick<AnnouncementIn, "titulo" | "cuerpo_md" | "prioridad" | "anclado" | "expira_at">
+>;
+
+export type AdminAnnouncementOut = {
+  id: number;
+  titulo: string;
+  cuerpo_md: string;
+  prioridad: AnnouncementPriority;
+  anclado: boolean;
+  alcance_tipo: AnnouncementScope;
+  alcance_ids: number[] | null;
+  autor_id: number;
+  publicado_at: string;
+  expira_at: string | null;
+  activo: boolean;
+  created_at: string;
+  updated_at: string;
+  read_count: number;
+  audience_size: number;
+};
+
+export type StudentAnnouncementOut = Omit<AdminAnnouncementOut, "read_count" | "audience_size"> & {
+  leido: boolean;
+};
+
+export type SystemFlagOut = {
+  key: string;
+  enabled: boolean;
+  description: string | null;
+  updated_at: string;
+  updated_by: number | null;
+};
+
 // ---- API pública ----
 export const api = {
   // Dominio 1
@@ -538,6 +629,85 @@ export const api = {
     ),
   adminListUsers: (token: string) =>
     request<UserOut[]>("/admin/users", {}, token),
+  adminApproveUser: (token: string, userId: number) =>
+    request<UserOut>(`/admin/users/${userId}/approve`, { method: "POST" }, token),
+  adminRejectUser: (token: string, userId: number) =>
+    request<UserOut>(`/admin/users/${userId}/reject`, { method: "POST" }, token),
+  adminResetUserPin: (token: string, userId: number) =>
+    request<{ user_id: number; temp_pin: string; message: string }>(
+      `/admin/users/${userId}/reset-pin`,
+      { method: "POST" },
+      token,
+    ),
+
+  // Dominio 4 — alumno
+  myAnnouncements: (token: string) =>
+    request<StudentAnnouncementOut[]>("/me/announcements", {}, token),
+  markAnnouncementRead: (token: string, id: number) =>
+    request<void>(`/me/announcements/${id}/mark-read`, { method: "POST" }, token),
+
+  // Dominio 4 — admin: Inbox
+  adminGetInbox: (
+    token: string,
+    opts: { tipo?: InboxItemType[]; prioridad?: InboxPriority[]; estado?: InboxItemStatus[] } = {},
+  ) => {
+    const params = new URLSearchParams();
+    opts.tipo?.forEach((t) => params.append("tipo", t));
+    opts.prioridad?.forEach((p) => params.append("prioridad", p));
+    opts.estado?.forEach((e) => params.append("estado", e));
+    const qs = params.toString();
+    return request<InboxItemOut[]>(`/admin/inbox${qs ? `?${qs}` : ""}`, {}, token);
+  },
+  adminInboxResolve: (token: string, id: number, nota?: string) =>
+    request<InboxItemOut>(
+      `/admin/inbox/${id}/resolve`,
+      { method: "POST", body: JSON.stringify({ nota }) },
+      token,
+    ),
+  adminInboxSnooze: (token: string, id: number, until: string) =>
+    request<InboxItemOut>(
+      `/admin/inbox/${id}/snooze`,
+      { method: "POST", body: JSON.stringify({ until }) },
+      token,
+    ),
+  adminInboxDismiss: (token: string, id: number, nota: string) =>
+    request<InboxItemOut>(
+      `/admin/inbox/${id}/dismiss`,
+      { method: "POST", body: JSON.stringify({ nota }) },
+      token,
+    ),
+  adminInboxMarkSeen: (token: string, id: number) =>
+    request<InboxItemOut>(`/admin/inbox/${id}/mark_seen`, { method: "POST" }, token),
+
+  // Dominio 4 — admin: Anuncios
+  adminListAnnouncements: (token: string) =>
+    request<AdminAnnouncementOut[]>("/admin/announcements", {}, token),
+  adminCreateAnnouncement: (token: string, body: AnnouncementIn) =>
+    request<AdminAnnouncementOut>(
+      "/admin/announcements",
+      { method: "POST", body: JSON.stringify(body) },
+      token,
+    ),
+  adminUpdateAnnouncement: (token: string, id: number, body: AnnouncementUpdate) =>
+    request<AdminAnnouncementOut>(
+      `/admin/announcements/${id}`,
+      { method: "PATCH", body: JSON.stringify(body) },
+      token,
+    ),
+  adminDeleteAnnouncement: (token: string, id: number) =>
+    request<void>(`/admin/announcements/${id}`, { method: "DELETE" }, token),
+
+  // Dominio 4 — admin: Feature flags
+  adminListFlags: (token: string) =>
+    request<SystemFlagOut[]>("/admin/system/flags", {}, token),
+  adminListKnownFlagKeys: (token: string) =>
+    request<string[]>("/admin/system/flags/known-keys", {}, token),
+  adminSetFlag: (token: string, key: string, enabled: boolean, description?: string) =>
+    request<SystemFlagOut>(
+      `/admin/system/flags/${key}`,
+      { method: "PUT", body: JSON.stringify({ enabled, description }) },
+      token,
+    ),
 };
 
 // ---- Token en localStorage ----

@@ -107,8 +107,9 @@
 - [x] `POST /admin/inbox/{id}/[resolve|snooze|dismiss|mark_seen]`.
 - [x] **Hooks de sincronización**: registrar un alumno crea el `InboxItem`; aprobar/rechazar desde `/admin/users` (Dominio 1) resuelve el item aunque no se use el Inbox. Proponer nombre de firma crea el item; aprobar/rechazar/renombrar/asignar-default desde `/admin/teams` (Dominio 2) resuelve el item propio y los que quedan `superseded`.
 - [x] **Feature flags conectados**: se cerró el TODO de Dominio 3 — `is_privilege_available_for_users` ahora consulta `SystemFlag` real en vez de ocultar siempre. `GET /admin/system/flags`, `GET /admin/system/flags/known-keys` (claves referenciadas por el catálogo sin fila aún), `PUT /admin/system/flags/{key}`.
-- [ ] Frontend alumno: widget "Anuncios del profesor" en Fila 0 del Dashboard (§14.2). *(commit 3/3)*
-- [ ] Frontend admin: Inbox de Aprobaciones + Publicador de anuncios + Feature flags. *(commit 3/3)*
+- [x] Frontend alumno: widget "Anuncios del profesor" en Fila 0 del Dashboard (§14.2) — hasta 3, anclados/prioridad alta primero, marcar como visto inline; página `/anuncios` con el histórico completo. Render de markdown básico propio (`lib/markdown-lite.ts`, sin dependencias nuevas — escapa HTML primero y solo entonces aplica negrita/itálica/código/links http(s), bloqueando XSS y `javascript:` URIs).
+- [x] Frontend admin: página `/admin/sistema` con 3 secciones — Inbox de Aprobaciones (acciones específicas Aprobar/Rechazar para `registro` y `nombre_firma`, más resolver/posponer/descartar/marcar-visto genéricos para cualquier tipo futuro), Publicador de anuncios (crear con selector de alcance equipo/alumno, editar inline, eliminar, histórico), Feature flags (toggle con descripción, incluye claves referenciadas por el catálogo aún sin configurar).
+- [x] Wrappers nuevos en `lib/api.ts` para aprobar/rechazar/reset-pin de usuarios (Dominio 1) y listar equipos — no existían en frontend porque nunca se había construido una UI admin para esas acciones (se probaban solo por `/docs`).
 
 ---
 
