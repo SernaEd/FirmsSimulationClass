@@ -1,0 +1,100 @@
+name: Bootstrap VPS
+
+# Se dispara a mano UNA sola vez (o de nuevo si algo falló a la mitad — los
+# scripts que llama son seguros de re-correr) para dejar el VPS listo desde
+# cero: hardening, Docker, usuario "deploy", y los dos ambientes
+# (staging + production) clonados, configurados y arrancados por primera
+# vez. Después de correrlo, sigue el checklist que imprime al final
+# (pestaña Summary de esta ejecución) — ahí se explica cómo terminar de
+# conectar todo sin volver a tocar el servidor. Ver DEPLOYMENT.md.
+#
+# Requiere, ya creados como Secrets del repo (Settings → Secrets and
+# variables → Actions):
+#   VPS_HOST           IP del VPS
+#   VPS_ROOT_PASSWORD  contraseña root que dio Hostinger (BÓRRALA después)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generar llave SSH para el usuario deploy
+        run: ssh-keygen -t ed25519 -C "github-actions-calc3" -f ./deploy_key -N ""
+
+      - name: Instalar sshpass
+        run: sudo apt-get update -y && sudo apt-get install -y sshpass
+
+      - name: Registrar el host en known_hosts
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: "Paso 1/2: hardening + Docker + usuario deploy (root)"
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_ROOT_PASSWORD: ${{ secrets.VPS_ROOT_PASSWORD }}
+        run: |
+          PUBKEY="$(cat deploy_key.pub)"
+          sshpass -p "$VPS_ROOT_PASSWORD" scp scripts/bootstrap-server.sh "root@$VPS_HOST:/root/bootstrap-server.sh"
+          sshpass -p "$VPS_ROOT_PASSWORD" ssh "root@$VPS_HOST" "bash /root/bootstrap-server.sh '$PUBKEY'"
+
+      - name: "Paso 2/2: preparar staging y production (deploy)"
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+        run: |
+          chmod 600 deploy_key
+          scp -i deploy_key scripts/bootstrap-environment.sh "deploy@$VPS_HOST:/opt/calc3/bootstrap-environment.sh"
+          REPO_URL="https://github.com/${{ github.repository }}.git"
+          ssh -i deploy_key "deploy@$VPS_HOST" "bash /opt/calc3/bootstrap-environment.sh staging 3100 8100 $VPS_HOST $REPO_URL"
+          ssh -i deploy_key "deploy@$VPS_HOST" "bash /opt/calc3/bootstrap-environment.sh production 3000 8000 $VPS_HOST $REPO_URL"
+
+      - name: Guardar la llave privada como artefacto descargable
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-ssh-key
+          path: deploy_key
+          retention-days: 1
+
+      - name: Checklist de siguientes pasos
+        if: always()
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+        run: |
+          {
+            echo "## Bootstrap del VPS — siguientes pasos"
+            echo ""
+            echo "Si los dos pasos de arriba terminaron en verde, el servidor y"
+            echo "ambos ambientes ya están corriendo:"
+            echo ""
+            echo "- Staging: http://$VPS_HOST:3100 (API en :8100)"
+            echo "- Production: http://$VPS_HOST:3000 (API en :8000)"
+            echo ""
+            echo "### Para terminar de conectar todo (esto SÍ hazlo, en GitHub, no en el servidor):"
+            echo ""
+            echo "1. Baja a **Artifacts** en esta misma ejecución, descarga \`deploy-ssh-key\`."
+            echo "2. Abre el archivo \`deploy_key\` con un editor de texto, copia TODO su contenido."
+            echo "3. Settings → Secrets and variables → Actions → **New repository secret**:"
+            echo "   - Nombre: \`VPS_SSH_KEY\` — valor: lo que copiaste."
+            echo "   - Nombre: \`VPS_USER\` — valor: \`deploy\`."
+            echo "   - Nombre: \`VPS_SSH_PORT\` — valor: \`22\`."
+            echo "4. Settings → Secrets and variables → Actions → **Environments** → crea"
+            echo "   \`staging\` y \`production\` (si no existen) y agrégales estas"
+            echo "   **Environment variables** (no Secrets):"
+            echo "   - staging: \`DEPLOY_PATH=/opt/calc3/staging\`, \`COMPOSE_PROJECT_NAME=calc3-staging\`"
+            echo "   - production: \`DEPLOY_PATH=/opt/calc3/production\`, \`COMPOSE_PROJECT_NAME=calc3-prod\`"
+            echo "5. En el environment \`production\`, activa **Required reviewers** (recomendado)."
+            echo "6. Borra el secret \`VPS_ROOT_PASSWORD\` — ya no se necesita."
+            echo "7. En el panel de Hostinger, cambia la contraseña de root del VPS."
+            echo "8. Borra el artefacto \`deploy-ssh-key\` de esta ejecución una vez que"
+            echo "   hayas guardado el secret \`VPS_SSH_KEY\` (Actions → esta ejecución →"
+            echo "   ⚙️ → Delete artifact)."
+            echo ""
+            echo "Con eso, el pipeline normal (.github/workflows/deploy.yml) ya puede"
+            echo "desplegar: push a main → staging automático; Run workflow → production."
+          } >> "$GITHUB_STEP_SUMMARY"

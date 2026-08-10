@@ -38,9 +38,14 @@ services:
       JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
       JWT_ACCESS_TOKEN_MINUTES: ${JWT_ACCESS_TOKEN_MINUTES:-1440}
       JWT_REFRESH_TOKEN_DAYS: ${JWT_REFRESH_TOKEN_DAYS:-7}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-}
       TZ: ${TZ:-America/Mexico_City}
     ports:
-      - "${BACKEND_PORT:-8000}:8000"
+      # FRONTEND_BIND/BACKEND_BIND por default en todas las interfaces
+      # (0.0.0.0, igual que antes). Producción los pone en 127.0.0.1 una
+      # vez que nginx queda al frente sirviendo HTTPS (ver DEPLOYMENT.md
+      # Fase 5) — así el único punto de entrada público queda en 80/443.
+      - "${BACKEND_BIND:-0.0.0.0}:${BACKEND_PORT:-8000}:8000"
     volumes:
       # Hot reload: monta el código fuente en el contenedor
       - ./backend:/app
@@ -60,7 +65,7 @@ services:
       INTERNAL_API_URL: ${INTERNAL_API_URL:-http://backend:8000}
       TZ: ${TZ:-America/Mexico_City}
     ports:
-      - "${FRONTEND_PORT:-3000}:3000"
+      - "${FRONTEND_BIND:-0.0.0.0}:${FRONTEND_PORT:-3000}:3000"
     volumes:
       # Hot reload: monta el código fuente pero preserva node_modules del contenedor
       - ./frontend:/app

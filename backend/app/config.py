@@ -12,12 +12,17 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     jwt_access_token_minutes: int = 1440
     jwt_refresh_token_days: int = 7
+    # Orígenes permitidos por CORS fuera de development (coma-separado, sin
+    # barra final). En staging/producción no hay forma de adivinar el
+    # dominio/puerto público del frontend, así que se lee de aquí.
+    # Ej: ALLOWED_ORIGINS=http://203.0.113.10:3000,https://calculo3.ejemplo.mx
+    allowed_origins: str = ""
 
     @property
     def cors_origins(self) -> List[str]:
         if self.environment == "development":
             return ["http://localhost:3000", "http://127.0.0.1:3000"]
-        return []
+        return [origin.strip() for origin in self.allowed_origins.split(",") if origin.strip()]
 
 
 settings = Settings()

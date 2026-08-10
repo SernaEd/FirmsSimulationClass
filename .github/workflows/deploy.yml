@@ -1,0 +1,123 @@
+name: Deploy
+
+# staging se despliega automáticamente en cada push a main.
+# production SOLO se despliega manualmente (botón "Run workflow" en la
+# pestaña Actions), y únicamente si el commit está en main — así un push
+# nunca actualiza el sitio que ven los alumnos sin que el profesor lo pida
+# explícitamente. Ver DEPLOYMENT.md para la configuración completa.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Ambiente a desplegar"
+        required: true
+        type: choice
+        options: [staging, production]
+        default: staging
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Instalar dependencias
+        run: pip install --no-cache-dir -r backend/requirements.txt
+      - name: Verificar que la app importa sin errores
+        working-directory: backend
+        env:
+          # Dummies solo para que Settings() no falle al importar — no se
+          # conecta de verdad a MySQL en este paso (create_engine es lazy).
+          DATABASE_URL: "mysql+pymysql://ci:ci@localhost:3306/ci"
+          JWT_SECRET: "ci_dummy_secret_at_least_32_characters_long"
+        run: python -c "import main"
+
+  test-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+      - name: Instalar dependencias
+        working-directory: frontend
+        run: npm ci
+      - name: Build (incluye chequeo de tipos)
+        working-directory: frontend
+        env:
+          NEXT_PUBLIC_API_URL: "http://localhost:8000"
+          INTERNAL_API_URL: "http://backend:8000"
+        run: npm run build
+
+  deploy-staging:
+    needs: [test-backend, test-frontend]
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.environment == 'staging')
+    runs-on: ubuntu-latest
+    environment: staging
+    concurrency:
+      group: deploy-staging
+      cancel-in-progress: false
+    steps:
+      - name: Desplegar en el VPS
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_PORT: ${{ secrets.VPS_SSH_PORT }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+          COMPOSE_PROJECT_NAME: ${{ vars.COMPOSE_PROJECT_NAME }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$VPS_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p "$VPS_SSH_PORT" "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+          ssh -i ~/.ssh/deploy_key -p "$VPS_SSH_PORT" "$VPS_USER@$VPS_HOST" "
+            set -e
+            cd '$DEPLOY_PATH'
+            git fetch origin main
+            git reset --hard origin/main
+            docker compose -p '$COMPOSE_PROJECT_NAME' -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+            docker compose -p '$COMPOSE_PROJECT_NAME' exec -T backend alembic upgrade head
+            docker image prune -f
+          "
+
+  deploy-production:
+    needs: [test-backend, test-frontend]
+    if: github.event_name == 'workflow_dispatch' && inputs.environment == 'production' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    steps:
+      - name: Desplegar en el VPS
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_PORT: ${{ secrets.VPS_SSH_PORT }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+          COMPOSE_PROJECT_NAME: ${{ vars.COMPOSE_PROJECT_NAME }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$VPS_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p "$VPS_SSH_PORT" "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+          ssh -i ~/.ssh/deploy_key -p "$VPS_SSH_PORT" "$VPS_USER@$VPS_HOST" "
+            set -e
+            cd '$DEPLOY_PATH'
+            git fetch origin main
+            git reset --hard origin/main
+            docker compose -p '$COMPOSE_PROJECT_NAME' -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+            docker compose -p '$COMPOSE_PROJECT_NAME' exec -T backend alembic upgrade head
+            docker image prune -f
+          "
