@@ -37,6 +37,11 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 
 En prod el código no se monta con bind mount (usa la imagen), MySQL no expone puerto al host y Uvicorn corre con 4 workers.
 
+Para el despliegue real al VPS (configuración inicial del servidor + pipeline
+de GitHub Actions), ver [`DEPLOYMENT.md`](DEPLOYMENT.md) — incluye la guía
+paso a paso completa. El workflow vive en
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml).
+
 ## Estructura
 
 ```

@@ -1,0 +1,68 @@
+name: Diagnóstico del VPS
+
+# Workflow de SOLO LECTURA — no instala ni cambia nada en el servidor.
+# Córrelo ANTES de "Bootstrap VPS" para ver qué hay ya en el VPS: puertos
+# en uso, si ufw está activo, si hay nginx/apache con otros sitios
+# configurados, contenedores Docker existentes, etc. Especialmente
+# importante si el VPS ya tiene otros proyectos corriendo — el resultado
+# te dice si hace falta ajustar puertos o reglas de firewall antes de
+# seguir. Ver DEPLOYMENT.md.
+#
+# Requiere los mismos 2 secrets temporales que "Bootstrap VPS"
+# (VPS_HOST, VPS_ROOT_PASSWORD) — así que córrelo mientras esos secrets
+# todavía existan (antes de borrar VPS_ROOT_PASSWORD en la Fase 3).
+
+on:
+  workflow_dispatch:
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar sshpass
+        run: sudo apt-get update -y && sudo apt-get install -y sshpass
+
+      - name: Registrar el host en known_hosts
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Correr diagnóstico (solo lectura)
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_ROOT_PASSWORD: ${{ secrets.VPS_ROOT_PASSWORD }}
+        run: |
+          sshpass -p "$VPS_ROOT_PASSWORD" scp scripts/diagnose-server.sh "root@$VPS_HOST:/root/diagnose-server.sh"
+          {
+            echo "## Diagnóstico del VPS"
+            echo
+            echo '```'
+            sshpass -p "$VPS_ROOT_PASSWORD" ssh "root@$VPS_HOST" "bash /root/diagnose-server.sh"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Recordatorio
+        if: always()
+        run: |
+          {
+            echo
+            echo "### Qué revisar antes de correr \"Bootstrap VPS\""
+            echo
+            echo "- **Puertos 3000, 8000, 3100, 8100** (los que usa este proyecto):"
+            echo "  ¿aparecen en la sección \"Puertos escuchando\" de arriba? Si sí,"
+            echo "  algún otro proceso ya los usa — avísame para cambiar los puertos"
+            echo "  de calc3 antes de seguir."
+            echo "- **ufw**: si dice \`Status: active\` y ya tiene reglas para tus otros"
+            echo "  proyectos, no hay nada que hacer — bootstrap solo agrega las suyas"
+            echo "  encima. Si dice \`Status: inactive\` (o ufw ni está instalado),"
+            echo "  bootstrap tampoco lo va a activar solo — queda para la Fase 3.5"
+            echo "  (\"Habilitar firewall\"), donde puedes agregar los puertos de tus"
+            echo "  otros proyectos antes de encenderlo."
+            echo "- **nginx/apache**: si tienen sitios configurados, anota qué puertos"
+            echo "  usan (normalmente 80/443 hacia afuera, y algún puerto interno hacia"
+            echo "  la app) para incluirlos en la Fase 3.5."
+          } >> "$GITHUB_STEP_SUMMARY"

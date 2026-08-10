@@ -1,0 +1,72 @@
+name: Habilitar firewall (ufw)
+
+# Paso SEPARADO y deliberado de "Bootstrap VPS": ese workflow deja las
+# reglas de calc3 listas pero nunca activa ufw solo, justo para no
+# arriesgar el acceso a otros proyectos que ya corran en el VPS. Este
+# workflow es donde tú decides activar el firewall — opcionalmente
+# agregando primero los puertos que le falten a tus otros proyectos (usa
+# "Diagnóstico del VPS" para saber cuáles son).
+#
+# No necesita la contraseña de root: usa la llave del usuario deploy
+# (VPS_SSH_KEY) más un sudo acotado SOLO al comando ufw que bootstrap-server.sh
+# ya dejó configurado — por eso este workflow puede correr después de que
+# hayas borrado VPS_ROOT_PASSWORD en la Fase 3. Ver DEPLOYMENT.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      extra_ports:
+        description: "Puertos adicionales a permitir, separados por coma (ej: 80,443,5000). Vacío si tus otros proyectos no necesitan ninguno nuevo."
+        required: false
+        default: ""
+
+jobs:
+  enable-firewall:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Registrar el host en known_hosts
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_SSH_PORT: ${{ secrets.VPS_SSH_PORT }}
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p "$VPS_SSH_PORT" "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Agregar puertos extra (si los hay) y activar ufw
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_PORT: ${{ secrets.VPS_SSH_PORT }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          EXTRA_PORTS: ${{ inputs.extra_ports }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$VPS_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+          REMOTE_CMDS="set -e;"
+          if [ -n "$EXTRA_PORTS" ]; then
+            IFS=',' read -ra PORTS <<< "$EXTRA_PORTS"
+            for p in "${PORTS[@]}"; do
+              p_trimmed="$(echo "$p" | xargs)"
+              REMOTE_CMDS="$REMOTE_CMDS sudo ufw allow ${p_trimmed}/tcp;"
+            done
+          fi
+          REMOTE_CMDS="$REMOTE_CMDS sudo ufw --force enable; sudo ufw status verbose;"
+
+          ssh -i ~/.ssh/deploy_key -p "$VPS_SSH_PORT" "$VPS_USER@$VPS_HOST" "$REMOTE_CMDS"
+
+      - name: Resumen
+        if: always()
+        run: |
+          {
+            echo "## Firewall activado"
+            echo
+            echo "Revisa el log del paso anterior (\`ufw status verbose\`) para"
+            echo "confirmar que están todos los puertos que necesitas — los de"
+            echo "calc3 (22, 3000, 8000, 3100, 8100) y los que hayas agregado ahora."
+            echo
+            echo "Si te falta alguno, vuelve a correr este workflow con el input"
+            echo "\`extra_ports\` — es seguro repetirlo, \`ufw allow\` no duplica ni"
+            echo "rompe nada si la regla ya existe."
+          } >> "$GITHUB_STEP_SUMMARY"
