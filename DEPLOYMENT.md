@@ -28,9 +28,9 @@ esto antes de tocar nada.
 - [Fase 3 — Terminar de conectar todo en GitHub](#fase-3--terminar-de-conectar-todo-en-github)
 - [Fase 3.5 — Habilitar el firewall](#fase-35--habilitar-el-firewall)
 - [Fase 4 — Probar el pipeline](#fase-4--probar-el-pipeline)
+- [Fase 5 — Dominio + HTTPS en producción](#fase-5--dominio--https-en-producción)
 - [Operación diaria (y cómo conectarte por SSH si lo necesitas)](#operación-diaria-y-cómo-conectarte-por-ssh-si-lo-necesitas)
 - [Troubleshooting](#troubleshooting)
-- [Próximos pasos opcionales: dominio + HTTPS](#próximos-pasos-opcionales-dominio--https)
 
 ## Arquitectura de lo que vamos a construir
 
@@ -41,20 +41,27 @@ GitHub repo
   │     prepara el servidor desde cero: hardening, Docker, usuario deploy,
   │     y arranca staging + production por primera vez.
   │
+  ├── Actions → "Configurar dominio + HTTPS" (un clic, una sola vez,
+  │     opcional — Fase 5)
+  │
   └── Actions → "Deploy" (uso normal, día a día)
         push a main ──────────────► deploy-staging (automático)
         Run workflow → production ─► deploy-production (manual, solo desde main)
   │
   ▼
 VPS Hostinger (un solo servidor)
-  ├── /opt/calc3/staging/     (puertos 3100 frontend / 8100 backend)
-  └── /opt/calc3/production/  (puertos 3000 frontend / 8000 backend)
+  ├── nginx (80/443) ── https://uia.calculo3.grapheke.com ──► frontend :3000 ┐
+  │                  └─ https://api.uia.calculo3.grapheke.com ─► backend :8000 ┤ solo producción
+  ├── /opt/calc3/production/  (puertos 3000/8000, solo en localhost tras Fase 5)
+  └── /opt/calc3/staging/     (puertos 3100 frontend / 8100 backend, público por IP:puerto)
 ```
 
 Ambos ambientes corren en el **mismo VPS**, como stacks de Docker Compose
 completamente independientes: cada uno con su propia base de datos MySQL,
 su propio `.env` (con contraseñas generadas al azar, distintas entre sí) y
-su propio nombre de proyecto de Compose.
+su propio nombre de proyecto de Compose. Solo producción pasa por dominio +
+HTTPS (Fase 5, opcional); staging se queda accesible por IP:puerto ya que
+solo tú lo usas para probar antes de producción.
 
 `production` **no se despliega solo**: solo se actualiza cuando tú lo pides
 explícitamente desde la pestaña Actions. `staging` sí se actualiza
@@ -73,11 +80,9 @@ tu servidor), **sin conectarte tú mismo al servidor**:
 
 Eso es todo lo que necesitas para arrancar. El resto lo hace el workflow.
 
-> Si quieres confirmar si ya tienes un dominio apuntando a este VPS, corre
-> `nslookup tudominio.com` **desde tu computadora** (no es interacción con
-> el servidor, es una consulta DNS pública) y compara el resultado con la
-> IP de arriba. No es necesario para lo que sigue — ver
-> [Próximos pasos opcionales](#próximos-pasos-opcionales-dominio--https).
+> Producción va a vivir en `uia.calculo3.grapheke.com` (Fase 5, al final de
+> esta guía) — no hace falta configurar el DNS todavía, solo cuando llegues
+> ahí.
 
 ---
 
@@ -307,6 +312,94 @@ producción disparado manualmente y aprobado por ti, ambos en verde.
 
 ---
 
+## Fase 5 — Dominio + HTTPS en producción
+
+Opcional, pero es lo que le compartirías a los 25 alumnos en vez de una IP
+con puerto. Pone **nginx + Let's Encrypt** delante de **producción**
+(`uia.calculo3.grapheke.com` para el frontend,
+`api.uia.calculo3.grapheke.com` para el backend) y, una vez que el
+certificado está andando, restringe los puertos 3000/8000 a `localhost` —
+el único punto de entrada público queda en 80/443. **Staging no se toca**,
+sigue en `http://<VPS_IP>:3100`.
+
+### 5.1 DNS (fuera de GitHub — donde administres `grapheke.com`)
+
+Agrega dos registros **A**, apuntando ambos a la IP del VPS:
+
+| Tipo | Host | Valor |
+|---|---|---|
+| A | `uia.calculo3` (o el nombre completo `uia.calculo3.grapheke.com`, según pida tu proveedor) | `<VPS_IP>` |
+| A | `api.uia.calculo3` | `<VPS_IP>` |
+
+La propagación puede tardar de minutos a un par de horas. Confirma desde tu
+computadora:
+
+```bash
+nslookup uia.calculo3.grapheke.com
+nslookup api.uia.calculo3.grapheke.com
+```
+
+Ambos deben devolver la IP del VPS antes de seguir — el workflow lo revisa
+automáticamente y se detiene con un error claro si todavía no propagó, en
+vez de fallar a la mitad con un error críptico de Let's Encrypt.
+
+### 5.2 Correr el workflow
+
+1. **Settings → Secrets and variables → Actions → Secrets** → si ya habías
+   borrado `VPS_ROOT_PASSWORD` (Fase 3, paso 6), créalo de nuevo con la
+   contraseña root actual — este workflow instala paquetes a nivel de
+   sistema (nginx, certbot), igual que "Bootstrap VPS".
+2. Pestaña **Actions** → workflow **Configurar dominio + HTTPS
+   (producción)** → **Run workflow**. Los campos `frontend_domain` /
+   `api_domain` ya vienen con `uia.calculo3.grapheke.com` /
+   `api.uia.calculo3.grapheke.com` por default — ajústalos si cambiaste de
+   idea. `letsencrypt_email` es solo para avisos de expiración (no
+   necesitas hacer nada con ellos, la renovación es automática). → **Run
+   workflow**.
+
+### Qué hace por dentro
+
+1. En el runner, verifica que ambos dominios ya resuelvan a la IP del VPS
+   (Fase 5.1) — si no, se detiene ahí mismo.
+2. Se conecta como `root` (única vez) y corre
+   [`scripts/setup-https.sh`](scripts/setup-https.sh):
+   - Si nginx **no** está instalado, primero confirma que 80/443 estén
+     libres (si tus otros proyectos ya escuchan ahí directamente, sin
+     pasar por un reverse proxy, se detiene con un error en vez de
+     intentar arrancar nginx encima). Si nginx **ya** está instalado
+     (por ejemplo, por otro de tus proyectos), no lo reinstala ni toca su
+     configuración existente.
+   - Agrega dos sitios nuevos en `/etc/nginx/sites-available/` (uno para
+     cada dominio de calc3) — sitios *adicionales*, no reemplaza nada que
+     ya tengas configurado ahí.
+   - Abre 80/443 en `ufw` (agrega reglas, igual que en la Fase 2/3.5).
+   - Corre `certbot --nginx` para emitir los certificados y subir ambos
+     sitios a HTTPS con redirect automático desde HTTP. Activa la
+     renovación automática (`certbot.timer` — no requiere nada de tu
+     parte después).
+   - Actualiza el `.env` de producción: `NEXT_PUBLIC_API_URL` y
+     `ALLOWED_ORIGINS` pasan a los dominios HTTPS, y agrega
+     `FRONTEND_BIND=127.0.0.1` / `BACKEND_BIND=127.0.0.1`.
+   - Recrea los contenedores de producción con esa configuración.
+
+✅ **Deberías ver:** `https://uia.calculo3.grapheke.com` cargando con
+candado en el navegador, y login funcionando de extremo a extremo (prueba
+uno real — confirma que `ALLOWED_ORIGINS` quedó bien).
+
+### 5.3 Después de correrlo
+
+1. Si volviste a crear `VPS_ROOT_PASSWORD` para este paso, bórralo otra vez.
+2. Cambia la contraseña de root en hPanel de Hostinger otra vez.
+3. Ya no visites `http://<VPS_IP>:3000` para producción — sigue existiendo
+   a nivel de red pero solo escucha en `localhost` del VPS, no es
+   alcanzable desde afuera. La URL real ahora es la de HTTPS.
+
+> Si más adelante quieres lo mismo para staging (un subdominio propio con
+> HTTPS), es el mismo patrón — avísame y ajustamos el workflow para que
+> acepte también sus dominios.
+
+---
+
 ## Operación diaria (y cómo conectarte por SSH si lo necesitas)
 
 Para el día a día **no necesitas SSH para nada**:
@@ -427,17 +520,20 @@ ssh -i ~/.ssh/calc3_deploy deploy@<VPS_IP>
 docker ps -a   # todos los contenedores, de staging y production juntos
 ```
 
----
+**"Configurar dominio + HTTPS" falla en "Verificar que el DNS ya apunta al VPS":**
+- El DNS todavía no propagó, o el A record no coincide con `VPS_HOST`.
+  Espera un poco y vuelve a correr el workflow — es seguro repetirlo.
 
-## Próximos pasos opcionales: dominio + HTTPS
+**Falla en el paso de certbot (`nginx` instaló bien pero el certificado no):**
+- Confirma otra vez el DNS (a veces propaga distinto según el resolver).
+- Let's Encrypt tiene límites de tasa (5 certificados por dominio exacto
+  por semana) — si lo corriste varias veces seguidas fallando por otra
+  razón, puede que tengas que esperar. El log de certbot en el paso del
+  workflow dice exactamente cuál fue el error.
 
-Esta guía despliega sirviendo por IP y puerto (`http://<VPS_IP>:3000`), sin
-TLS. Es suficiente para probar el flujo completo, pero no es lo que le
-compartirías a 25 alumnos en producción real. Cuando tengas un dominio
-apuntando al VPS, el siguiente paso natural — **no cubierto en esta guía**
-— es poner un reverse proxy (Nginx o Traefik) delante de ambos stacks con
-certificados de Let's Encrypt, sirviendo algo como
-`https://calculo3.tudominio.mx` (producción) y
-`https://staging.calculo3.tudominio.mx` (staging), en vez de exponer los
-puertos directamente. Avísame cuando tengas el dominio listo y armamos esa
-fase (también automatizable casi por completo desde GitHub Actions).
+**nginx no arranca después de instalarlo (Fase 5):**
+- Probablemente el puerto 80 o 443 ya estaba en uso por otro proceso de
+  tus otros proyectos que escucha directo ahí (sin reverse proxy). El
+  script ya revisa esto antes de instalar nginx y se detiene con un error
+  claro — si aun así pasó, conéctate por SSH y revisa
+  `ss -tulpn | grep -E ':80|:443'` para ver qué lo está usando.

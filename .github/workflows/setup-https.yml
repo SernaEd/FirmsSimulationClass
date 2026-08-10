@@ -1,0 +1,96 @@
+name: Configurar dominio + HTTPS (producción)
+
+# Pone nginx + Let's Encrypt delante de PRODUCCIÓN en los subdominios que
+# indiques, y restringe los puertos 3000/8000 a localhost (el único punto
+# de entrada público queda en 80/443). Staging no se toca — se queda en
+# IP:puerto. Ver DEPLOYMENT.md Fase 5.
+#
+# Requiere, ya apuntando al VPS por DNS (A record) ANTES de correr esto:
+#   frontend_domain e api_domain (los inputs de abajo).
+#
+# Requiere, temporalmente, el mismo secret que "Bootstrap VPS":
+#   VPS_ROOT_PASSWORD (bórralo de nuevo al terminar — ver checklist final).
+
+on:
+  workflow_dispatch:
+    inputs:
+      frontend_domain:
+        description: "Dominio del frontend de producción"
+        required: true
+        default: "uia.calculo3.grapheke.com"
+      api_domain:
+        description: "Dominio del backend/API de producción"
+        required: true
+        default: "api.uia.calculo3.grapheke.com"
+      letsencrypt_email:
+        description: "Correo para avisos de Let's Encrypt (expiración, etc.)"
+        required: true
+        default: "sernaed95@gmail.com"
+
+jobs:
+  setup-https:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verificar que el DNS ya apunta al VPS
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          FRONTEND_DOMAIN: ${{ inputs.frontend_domain }}
+          API_DOMAIN: ${{ inputs.api_domain }}
+        run: |
+          sudo apt-get update -y && sudo apt-get install -y dnsutils
+          RESOLVED_FRONTEND="$(dig +short "$FRONTEND_DOMAIN" | tail -1)"
+          RESOLVED_API="$(dig +short "$API_DOMAIN" | tail -1)"
+          echo "$FRONTEND_DOMAIN -> ${RESOLVED_FRONTEND:-<sin resolver>}"
+          echo "$API_DOMAIN -> ${RESOLVED_API:-<sin resolver>}"
+          if [ "$RESOLVED_FRONTEND" != "$VPS_HOST" ] || [ "$RESOLVED_API" != "$VPS_HOST" ]; then
+            echo "::error::El DNS todavía no apunta a $VPS_HOST para ambos dominios. Agrega los A records y espera a que propaguen antes de volver a correr este workflow."
+            exit 1
+          fi
+          echo "DNS OK — ambos dominios ya apuntan a $VPS_HOST."
+
+      - name: Instalar sshpass
+        run: sudo apt-get install -y sshpass
+
+      - name: Registrar el host en known_hosts
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Instalar nginx + certbot y emitir certificados (root)
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_ROOT_PASSWORD: ${{ secrets.VPS_ROOT_PASSWORD }}
+          FRONTEND_DOMAIN: ${{ inputs.frontend_domain }}
+          API_DOMAIN: ${{ inputs.api_domain }}
+          LE_EMAIL: ${{ inputs.letsencrypt_email }}
+        run: |
+          sshpass -p "$VPS_ROOT_PASSWORD" scp scripts/setup-https.sh "root@$VPS_HOST:/root/setup-https.sh"
+          sshpass -p "$VPS_ROOT_PASSWORD" ssh "root@$VPS_HOST" "bash /root/setup-https.sh '$FRONTEND_DOMAIN' '$API_DOMAIN' '$LE_EMAIL'"
+
+      - name: Checklist de siguientes pasos
+        if: always()
+        env:
+          FRONTEND_DOMAIN: ${{ inputs.frontend_domain }}
+          API_DOMAIN: ${{ inputs.api_domain }}
+        run: |
+          {
+            echo "## HTTPS configurado — siguientes pasos"
+            echo ""
+            echo "Si el paso de arriba terminó en verde:"
+            echo ""
+            echo "- Producción: https://$FRONTEND_DOMAIN (API en https://$API_DOMAIN)"
+            echo "- Verifica en el navegador que carga con candado (certificado válido)."
+            echo "- Prueba login end-to-end — \`ALLOWED_ORIGINS\`/\`NEXT_PUBLIC_API_URL\` ya"
+            echo "  quedaron actualizados al dominio, y los contenedores se recrearon."
+            echo ""
+            echo "### Pendiente (en GitHub y Hostinger, no en el servidor):"
+            echo "1. Si guardaste \`VPS_ROOT_PASSWORD\` solo para esto, bórralo de"
+            echo "   Settings → Secrets and variables → Actions."
+            echo "2. Cambia la contraseña de root en hPanel de Hostinger."
+            echo "3. La renovación de certificados es automática (\`certbot.timer\`) —"
+            echo "   no requiere ninguna acción periódica de tu parte."
+          } >> "$GITHUB_STEP_SUMMARY"
