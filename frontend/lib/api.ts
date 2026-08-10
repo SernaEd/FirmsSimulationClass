@@ -647,8 +647,19 @@ export const api = {
     ),
 };
 
-// ---- Token en localStorage ----
+// ---- Sesión en localStorage (token + usuario cacheado) ----
 const TOKEN_KEY = "calc3_token";
+const USER_KEY = "calc3_user";
+
+// Notifica a AuthContext (montado una sola vez en el layout raíz) que la
+// sesión cambió, sin necesidad de que cada página que hace login/logout
+// conozca el contexto — solo llama auth.setToken()/clearToken() como ya hacía.
+export const AUTH_CHANGE_EVENT = "calc3-auth-changed";
+
+function notifyAuthChange(): void {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event(AUTH_CHANGE_EVENT));
+}
 
 export const auth = {
   getToken(): string | null {
@@ -658,9 +669,26 @@ export const auth = {
   setToken(token: string): void {
     if (typeof window === "undefined") return;
     window.localStorage.setItem(TOKEN_KEY, token);
+    notifyAuthChange();
   },
   clearToken(): void {
     if (typeof window === "undefined") return;
     window.localStorage.removeItem(TOKEN_KEY);
+    window.localStorage.removeItem(USER_KEY);
+    notifyAuthChange();
+  },
+  getCachedUser(): UserOut | null {
+    if (typeof window === "undefined") return null;
+    const raw = window.localStorage.getItem(USER_KEY);
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw) as UserOut;
+    } catch {
+      return null;
+    }
+  },
+  setCachedUser(user: UserOut): void {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(USER_KEY, JSON.stringify(user));
   },
 };
