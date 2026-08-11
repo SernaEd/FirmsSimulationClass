@@ -67,7 +67,16 @@ MYSQL_DB_VAL="$(grep '^MYSQL_DATABASE=' .env | head -1 | cut -d= -f2-)"
 sed -i "s#^DATABASE_URL=.*#DATABASE_URL=mysql+pymysql://${MYSQL_USER_VAL}:${MYSQL_PW_VAL}@mysql:3306/${MYSQL_DB_VAL}#" .env
 
 echo "=== [$ENV_NAME] Primer arranque (docker compose up --build) ==="
-docker compose -p "$COMPOSE_PROJECT" -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+# --force-recreate: si una corrida anterior de este script falló a medias
+# (por ejemplo, un contenedor quedó "Created" pero nunca "Started" porque
+# otro servicio de la misma pila falló antes), Compose podría arrancar ese
+# contenedor viejo tal cual en vez de recrearlo con la red/config actual —
+# y un contenedor adjunto a una red vieja no resuelve los nombres de los
+# contenedores nuevos (name resolution failure hacia "mysql"). Forzar
+# recreación en cada corrida de bootstrap garantiza una pila consistente;
+# no se usa en deploy.yml (los despliegues normales sí deben ser
+# incrementales, no recrear mysql en cada push).
+docker compose -p "$COMPOSE_PROJECT" -f docker-compose.yml -f docker-compose.prod.yml up -d --build --force-recreate --remove-orphans
 
 echo "=== [$ENV_NAME] Migraciones (alembic upgrade head) ==="
 # Reintenta el comando real (no solo si el contenedor acepta exec): en el
@@ -86,7 +95,16 @@ for i in $(seq 1 15); do
 done
 if [ "$MIGRATION_OK" -ne 1 ]; then
   echo "ERROR [$ENV_NAME]: alembic upgrade head siguió fallando tras 15 intentos (~75s)."
-  echo "Revisa 'docker compose -p $COMPOSE_PROJECT logs mysql' en el VPS."
+  echo "--- Diagnóstico automático ---"
+  echo "> docker compose ps"
+  docker compose -p "$COMPOSE_PROJECT" ps
+  echo "> Resolución de 'mysql' desde dentro del backend"
+  docker compose -p "$COMPOSE_PROJECT" exec -T backend getent hosts mysql || echo "(no resolvió)"
+  echo "> Redes del backend y de mysql"
+  docker inspect "${COMPOSE_PROJECT}-backend-1" --format '{{json .NetworkSettings.Networks}}' 2>/dev/null || true
+  docker inspect "${COMPOSE_PROJECT}-mysql-1" --format '{{json .NetworkSettings.Networks}}' 2>/dev/null || true
+  echo "> Últimas 30 líneas de logs de mysql"
+  docker compose -p "$COMPOSE_PROJECT" logs --tail 30 mysql
   exit 1
 fi
 
