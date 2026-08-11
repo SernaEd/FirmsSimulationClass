@@ -17,6 +17,10 @@ class Settings(BaseSettings):
     # dominio/puerto público del frontend, así que se lee de aquí.
     # Ej: ALLOWED_ORIGINS=http://203.0.113.10:3000,https://calculo3.ejemplo.mx
     allowed_origins: str = ""
+    # Secreto para POST /auth/bootstrap-admin (crea el primer admin de un
+    # ambiente sin depender de que ya exista otro admin que lo apruebe).
+    # Vacío = endpoint deshabilitado (responde 404). Ver .env.example.
+    admin_bootstrap_token: str = ""
 
     @property
     def cors_origins(self) -> List[str]:

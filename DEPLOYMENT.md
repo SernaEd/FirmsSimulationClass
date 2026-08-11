@@ -30,6 +30,7 @@ no 8000, para el backend).
 - [Fase 3 — Terminar de conectar todo en GitHub](#fase-3--terminar-de-conectar-todo-en-github)
 - [Fase 3.5 — Habilitar el firewall](#fase-35--habilitar-el-firewall)
 - [Fase 4 — Probar el pipeline](#fase-4--probar-el-pipeline)
+- [Fase 4.5 — Crear tu usuario admin (en cada ambiente)](#fase-45--crear-tu-usuario-admin-en-cada-ambiente)
 - [Fase 5 — Dominio + HTTPS en producción](#fase-5--dominio--https-en-producción)
 - [Operación diaria (y cómo conectarte por SSH si lo necesitas)](#operación-diaria-y-cómo-conectarte-por-ssh-si-lo-necesitas)
 - [Troubleshooting](#troubleshooting)
@@ -315,6 +316,56 @@ aprobarlo y terminar, `http://<VPS_IP>:3000` debe reflejar el cambio.
 
 ✅ **Deberías tener:** un despliegue a staging disparado por push, y uno a
 producción disparado manualmente y aprobado por ti, ambos en verde.
+
+---
+
+## Fase 4.5 — Crear tu usuario admin (en cada ambiente)
+
+Ningún usuario nace admin: `POST /auth/register` siempre crea cuentas
+normales (`is_admin=False`, pendientes de aprobación), y aprobar/promover
+gente ya requiere ser admin — problema del huevo y la gallina para el primer
+admin de un ambiente nuevo. `POST /auth/bootstrap-admin` lo resuelve: crea
+una cuenta ya activa y admin, protegida por un secreto propio
+(`ADMIN_BOOTSTRAP_TOKEN`) en vez de por un rol admin que todavía no existe.
+Repite esto **una vez por ambiente** (staging y producción tienen `.env`
+independientes, así que un token no sirve para el otro ambiente).
+
+1. Genera un secreto en tu computadora (no lo generes en el VPS — es tuyo,
+   no del servidor): `openssl rand -hex 32`.
+2. Por SSH (ver [Operación diaria](#operación-diaria-y-cómo-conectarte-por-ssh-si-lo-necesitas)),
+   agrega ese valor a `ADMIN_BOOTSTRAP_TOKEN` en el `.env` del ambiente
+   (`/opt/calc3/staging/.env` o `/opt/calc3/production/.env`) y recrea el
+   backend para que lo recoja:
+   ```bash
+   cd /opt/calc3/staging   # o /opt/calc3/production
+   docker compose -p calc3-staging up -d --build backend   # -p calc3-prod en producción
+   ```
+3. Llama al endpoint con ese secreto contra el puerto del **backend**
+   (`8100` en staging, `8001`/tu dominio en producción — no el del
+   frontend):
+   ```bash
+   curl -X POST http://<VPS_IP>:8100/auth/bootstrap-admin \
+     -H "Content-Type: application/json" \
+     -d '{
+       "secret": "el-valor-que-generaste",
+       "nombre": "Tu nombre",
+       "apellidos": "Tus apellidos",
+       "numero_cuenta": "0000000",
+       "nickname": "profe",
+       "pin": "un-pin-fuerte",
+       "acepta_reglas": true
+     }'
+   ```
+4. Confirma que puedes iniciar sesión (`POST /auth/login`) con ese número
+   de cuenta y PIN, y que `is_admin: true` aparece en la respuesta de
+   `GET /auth/me`.
+5. (Opcional, recomendado) Vacía `ADMIN_BOOTSTRAP_TOKEN` en el `.env` y
+   vuelve a correr el `docker compose up -d --build backend` del paso 2 —
+   así el endpoint vuelve a responder 404 hasta que lo necesites de nuevo
+   (por ejemplo, para agregar un segundo admin).
+
+✅ **Deberías tener:** un usuario con `is_admin: true` en staging y otro en
+producción, y `ADMIN_BOOTSTRAP_TOKEN` vacío otra vez en ambos `.env`.
 
 ---
 

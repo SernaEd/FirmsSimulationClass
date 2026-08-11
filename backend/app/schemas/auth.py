@@ -31,6 +31,13 @@ class RegisterIn(BaseModel):
         return v_stripped
 
 
+class BootstrapAdminIn(RegisterIn):
+    """Igual que RegisterIn más el secreto de ADMIN_BOOTSTRAP_TOKEN. Ver
+    POST /auth/bootstrap-admin."""
+
+    secret: str = Field(min_length=1)
+
+
 class LoginIn(BaseModel):
     numero_cuenta: str
     pin: str
