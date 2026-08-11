@@ -74,7 +74,7 @@ server {
     server_name $API_DOMAIN;
 
     location / {
-        proxy_pass http://127.0.0.1:8000;
+        proxy_pass http://127.0.0.1:8001;
         proxy_http_version 1.1;
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
@@ -121,5 +121,5 @@ sudo -u deploy -H bash -c "
 "
 
 echo "=== Listo: https://$FRONTEND_DOMAIN (API en https://$API_DOMAIN) ==="
-echo "Los puertos 3000/8000 ya solo escuchan en localhost — el único punto"
+echo "Los puertos 3000/8001 ya solo escuchan en localhost — el único punto"
 echo "de entrada público para producción es 80/443 vía nginx."

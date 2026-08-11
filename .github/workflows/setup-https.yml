@@ -1,7 +1,7 @@
 name: Configurar dominio + HTTPS (producción)
 
 # Pone nginx + Let's Encrypt delante de PRODUCCIÓN en los subdominios que
-# indiques, y restringe los puertos 3000/8000 a localhost (el único punto
+# indiques, y restringe los puertos 3000/8001 a localhost (el único punto
 # de entrada público queda en 80/443). Staging no se toca — se queda en
 # IP:puerto. Ver DEPLOYMENT.md Fase 5.
 #

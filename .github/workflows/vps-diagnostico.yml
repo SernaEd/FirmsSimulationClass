@@ -52,7 +52,7 @@ jobs:
             echo
             echo "### Qué revisar antes de correr \"Bootstrap VPS\""
             echo
-            echo "- **Puertos 3000, 8000, 3100, 8100** (los que usa este proyecto):"
+            echo "- **Puertos 3000, 8001, 3100, 8100** (los que usa este proyecto):"
             echo "  ¿aparecen en la sección \"Puertos escuchando\" de arriba? Si sí,"
             echo "  algún otro proceso ya los usa — avísame para cambiar los puertos"
             echo "  de calc3 antes de seguir."

@@ -13,10 +13,12 @@ ya no es un paso obligatorio del despliegue.
 
 **Si el VPS ya tiene otros proyectos corriendo** (no necesariamente
 Docker): esta guía está pensada para convivir con ellos — usa puertos
-propios (3000/8000/3100/8100), una carpeta propia (`/opt/calc3/`), y nunca
+propios (3000/8001/3100/8100), una carpeta propia (`/opt/calc3/`), y nunca
 activa el firewall automáticamente para no arriesgar el acceso a lo que ya
 tienes andando. La Fase 1.5 (diagnóstico) es precisamente para confirmar
-esto antes de tocar nada.
+esto antes de tocar nada — de hecho, así se descubrió que el puerto 8000
+"a secas" ya lo usa otro proyecto en este VPS (por eso producción usa 8001,
+no 8000, para el backend).
 
 ## Índice
 
@@ -51,8 +53,8 @@ GitHub repo
   ▼
 VPS Hostinger (un solo servidor)
   ├── nginx (80/443) ── https://uia.calculo3.grapheke.com ──► frontend :3000 ┐
-  │                  └─ https://api.uia.calculo3.grapheke.com ─► backend :8000 ┤ solo producción
-  ├── /opt/calc3/production/  (puertos 3000/8000, solo en localhost tras Fase 5)
+  │                  └─ https://api.uia.calculo3.grapheke.com ─► backend :8001 ┤ solo producción
+  ├── /opt/calc3/production/  (puertos 3000/8001, solo en localhost tras Fase 5)
   └── /opt/calc3/staging/     (puertos 3100 frontend / 8100 backend, público por IP:puerto)
 ```
 
@@ -143,7 +145,7 @@ existan (antes del paso 6 de la Fase 3, que borra el segundo).
 Al terminar, abre el **Summary** de la ejecución — vas a ver, entre otras
 cosas:
 
-- **Puertos escuchando** ahora mismo en el VPS. Si `3000`, `8000`, `3100` u
+- **Puertos escuchando** ahora mismo en el VPS. Si `3000`, `8001`, `3100` u
   `8100` ya aparecen ahí (usados por otro de tus proyectos), avísame antes
   de seguir — hay que cambiar los puertos de calc3.
 - **Estado de `ufw`**: activo (con qué reglas) o inactivo.
@@ -318,7 +320,7 @@ Opcional, pero es lo que le compartirías a los 25 alumnos en vez de una IP
 con puerto. Pone **nginx + Let's Encrypt** delante de **producción**
 (`uia.calculo3.grapheke.com` para el frontend,
 `api.uia.calculo3.grapheke.com` para el backend) y, una vez que el
-certificado está andando, restringe los puertos 3000/8000 a `localhost` —
+certificado está andando, restringe los puertos 3000/8001 a `localhost` —
 el único punto de entrada público queda en 80/443. **Staging no se toca**,
 sigue en `http://<VPS_IP>:3100`.
 

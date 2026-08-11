@@ -64,7 +64,7 @@ jobs:
             echo
             echo "Revisa el log del paso anterior (\`ufw status verbose\`) para"
             echo "confirmar que están todos los puertos que necesitas — los de"
-            echo "calc3 (22, 3000, 8000, 3100, 8100) y los que hayas agregado ahora."
+            echo "calc3 (22, 3000, 8001, 3100, 8100) y los que hayas agregado ahora."
             echo
             echo "Si te falta alguno, vuelve a correr este workflow con el input"
             echo "\`extra_ports\` — es seguro repetirlo, \`ufw allow\` no duplica ni"
