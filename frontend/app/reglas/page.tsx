@@ -84,13 +84,13 @@ export default function Reglas() {
         </h2>
         <p className="text-neutral-300">
           Puedes abrir una disputa por: privilegio no consumido correctamente,
-          ajuste discrecional considerado injusto, calificación de un ejercicio de
-          práctica, o evaluación de retroalimentación.
+          ajuste discrecional considerado injusto, racha marcada como fallida
+          por error, o evaluación de retroalimentación.
         </p>
         <ul className="list-disc pl-5 space-y-2 text-neutral-300">
           <li>
             <strong className="text-white">Canal:</strong> formulario en tu perfil
-            ("Levantar una disputa"), que llega a la bandeja del profesor.
+            (&quot;Levantar una disputa&quot;), que llega a la bandeja del profesor.
           </li>
           <li>
             <strong className="text-white">Plazo de respuesta:</strong> 5 días
