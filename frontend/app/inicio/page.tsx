@@ -91,6 +91,12 @@ export default function Inicio() {
 
             <div className="grid gap-2">
               <Link
+                href="/clase1"
+                className="block rounded-md border border-surface-border hover:bg-surface px-4 py-3 text-sm"
+              >
+                → Sesión 1 (presentación de la clase)
+              </Link>
+              <Link
                 href="/mi-equipo"
                 className="block rounded-md border border-surface-border hover:bg-surface px-4 py-3 text-sm"
               >
