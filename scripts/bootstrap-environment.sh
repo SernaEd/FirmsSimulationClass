@@ -51,15 +51,24 @@ echo "=== [$ENV_NAME] Primer arranque (docker compose up --build) ==="
 docker compose -p "$COMPOSE_PROJECT" -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 
 echo "=== [$ENV_NAME] Migraciones (alembic upgrade head) ==="
-# Espera a que el backend esté healthy antes de exec (el primer build puede
-# tardar; up -d ya espera 'depends_on: service_healthy' de mysql, pero el
-# propio backend puede tardar unos segundos más en aceptar exec).
-for i in $(seq 1 30); do
-  if docker compose -p "$COMPOSE_PROJECT" exec -T backend true 2>/dev/null; then
+# Reintenta el comando real (no solo si el contenedor acepta exec): en el
+# primer arranque, MySQL puede reportarse "healthy" un momento antes de que
+# su puerto TCP real acepte conexiones (ver nota en docker-compose.yml
+# sobre el healthcheck), así que el primer intento puede fallar aunque
+# 'depends_on: service_healthy' ya se haya cumplido.
+MIGRATION_OK=0
+for i in $(seq 1 15); do
+  if docker compose -p "$COMPOSE_PROJECT" exec -T backend alembic upgrade head; then
+    MIGRATION_OK=1
     break
   fi
-  sleep 2
+  echo "[$ENV_NAME] alembic upgrade head falló (intento $i/15), reintentando en 5s..."
+  sleep 5
 done
-docker compose -p "$COMPOSE_PROJECT" exec -T backend alembic upgrade head
+if [ "$MIGRATION_OK" -ne 1 ]; then
+  echo "ERROR [$ENV_NAME]: alembic upgrade head siguió fallando tras 15 intentos (~75s)."
+  echo "Revisa 'docker compose -p $COMPOSE_PROJECT logs mysql' en el VPS."
+  exit 1
+fi
 
 echo "=== [$ENV_NAME] Listo: http://$PUBLIC_HOST:$FRONTEND_PORT (API en :$BACKEND_PORT) ==="

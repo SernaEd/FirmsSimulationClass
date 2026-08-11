@@ -18,7 +18,15 @@ services:
     volumes:
       - ./data/mysql:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      # -h 127.0.0.1 (no "localhost"): con "localhost" el cliente de MySQL
+      # conecta por socket Unix en vez de TCP. En el primer arranque, MySQL
+      # levanta un servidor temporal (solo por socket) para correr el SQL
+      # de inicialización antes de abrir el puerto TCP real — un ping por
+      # socket puede reportar "healthy" mientras el TCP que usan los demás
+      # contenedores (mysql:3306, por red de Docker) todavía no acepta
+      # conexiones, causando un "Connection refused" en el primer
+      # despliegue en vez de esperar de verdad.
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 10
