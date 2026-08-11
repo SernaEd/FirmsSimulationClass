@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cálculo III - Ecuaciones Diferenciales | Presentación del Curso</title>
+  <link rel="icon" type="image/x-icon" href="../favicon.ico">
+
+  <!-- Reveal.js Core & Theme CSS (CDN with local vendor fallback setup) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/black.css" id="theme">
+  
+  <!-- KaTeX CSS for mathematical equations -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Custom Applied Engineering Styles -->
+  <link rel="stylesheet" href="css/custom.css">
+</head>
+<body>
+
+  <!-- Main Reveal Presentation Container -->
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- ========================================== -->
+      <!-- SLIDE 1: WELCOME & COURSE IDENTITY -->
+      <!-- ========================================== -->
+      <section id="slide-welcome" class="welcome-slide">
+        <img src="../logo.svg" alt="Logo IBERO" style="position: absolute; top: 0px; left: 0px; width: 150px; border: none; background: transparent; box-shadow: none;">
+        <div class="welcome-header-badge">UNIVERSIDAD IBEROAMERICANA • PLAN DE ESTUDIOS MANRESA</div>
+        <h1 class="welcome-title">Cálculo III</h1>
+        <h2 class="welcome-subtitle">Ecuaciones Diferenciales en Ingeniería</h2>
+        
+        <div class="meta-badge-grid">
+          <div class="meta-badge">
+            <span class="badge-label">CLAVE</span>
+            <span class="badge-value">2202</span>
+          </div>
+          <div class="meta-badge">
+            <span class="badge-label">SIGLA</span>
+            <span class="badge-value">MT024</span>
+          </div>
+          <div class="meta-badge">
+            <span class="badge-label">CRÉDITOS</span>
+            <span class="badge-value">8 Créditos</span>
+          </div>
+          <div class="meta-badge">
+            <span class="badge-label">PRERREQUISITO</span>
+            <span class="badge-value">2201 Cálculo II</span>
+          </div>
+        </div>
+
+        <div class="majors-banner">
+          <span class="majors-title">MAJORS DE INGENIERÍA:</span>
+          <div class="majors-tags">
+            <span class="major-tag">Ingeniería Química</span>
+            <span class="major-tag">Ingeniería de Alimentos</span>
+            <span class="major-tag">Ingeniería Civil</span>
+            <span class="major-tag">Ing. Mecánica y Eléctrica</span>
+            <span class="major-tag">Ingeniería Industrial</span>
+          </div>
+        </div>
+
+        <div class="welcome-intro-box">
+          <p class="welcome-description">
+            Bienvenido a la simulación de <strong>Firmas Consultoras de Ingeniería</strong>. Durante este semestre transformarás fenómenos físicos complejos en modelos matemáticos rigurosos usando EDOs, Transformadas de Laplace y EDPs.
+          </p>
+          <div class="math-teaser">
+            $$\frac{dy}{dx} + P(x)y = Q(x) \quad \Longleftrightarrow \quad \mathcal{L}\{f(t)\} = \int_0^\infty e^{-st} f(t) \, dt$$
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SLIDE 1.5: COURSE CONCEPT                  -->
+      <!-- ========================================== -->
+      <section id="slide-course-intro">
+        <div class="section-badge badge-blue">DESCRIPCIÓN GENERAL DEL CURSO</div>
+        <h2>El Mundo de las Ecuaciones Diferenciales</h2>
+        <p class="subtitle-text">De la matemática abstracta a la ingeniería del mundo real</p>
+        
+        <div class="roles-summary-grid" style="margin-top: 2rem;">
+          <div class="role-card role-summary-card">
+            <div class="role-icon">🌊</div>
+            <h4>Modelar el Cambio</h4>
+            <p>La ingeniería estudia cosas que cambian en el tiempo o el espacio: el enfriamiento de un motor, la deformación de una viga, o la corriente en un circuito.</p>
+          </div>
+          <div class="role-card role-summary-card">
+            <div class="role-icon">🔮</div>
+            <h4>Predecir el Futuro</h4>
+            <p>Una ecuación diferencial es el lenguaje matemático que nos permite predecir exactamente cómo se comportará un sistema físico antes de construirlo.</p>
+          </div>
+          <div class="role-card role-summary-card">
+            <div class="role-icon">🛠️</div>
+            <h4>Tomar Decisiones</h4>
+            <p>En este curso no solo aprenderemos a resolver ecuaciones, sino a interpretar sus resultados para tomar decisiones críticas de diseño en ingeniería.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SLIDE 2: SYLLABUS & LEARNING OBJECTIVES -->
+      <!-- ========================================== -->
+      <section id="slide-syllabus">
+        
+        <!-- Overview Sub-slide -->
+        <section id="syllabus-overview">
+          <div class="section-badge">PLAN DE ESTUDIOS</div>
+          <h2>Temario Oficial y Objetivos de Aprendizaje</h2>
+          <p class="subtitle-text">Fines de Aprendizaje Oficiales y Mapa Curricular de 4 Módulos</p>
+
+          <div class="objectives-grid">
+            <div class="objective-card">
+              <div class="obj-num">01</div>
+              <h4>Resolver EDOs</h4>
+              <p>Aplicar técnicas analíticas a ecuaciones diferenciales ordinarias en campos de la ingeniería.</p>
+            </div>
+            <div class="objective-card">
+              <div class="obj-num">02</div>
+              <h4>Modelado Físico</h4>
+              <p>Formular modelos matemáticos afines a situaciones reales y problemas profesionales.</p>
+            </div>
+            <div class="objective-card">
+              <div class="obj-num">03</div>
+              <h4>Validación de Resultados</h4>
+              <p>Interpretar la validez física y matemática de las soluciones obtenidas en el modelo.</p>
+            </div>
+            <div class="objective-card">
+              <div class="obj-num">04</div>
+              <h4>Transformada de Laplace</h4>
+              <p>Resolver EDOs con PVI algebraicamente y comparar con métodos de solución no algebraicos.</p>
+            </div>
+          </div>
+          <div class="nav-hint">⬇ Desliza hacia abajo para explorar los 4 Módulos Curriculares</div>
+        </section>
+
+        <!-- Sub-slide M1: Técnica Básica -->
+        <section id="m1">
+          <div class="module-header-row">
+            <span class="module-badge">MÓDULO 1</span>
+
+          </div>
+          <h3>Técnica Básica (Ecuaciones Diferenciales Ordinarias)</h3>
+          
+          <div class="module-content-grid">
+            <div class="subtopics-list">
+              <h4>Subtemas Oficiales:</h4>
+              <ul>
+                <li><strong>1.1 Clasificación:</strong> Lineales vs no-lineales, orden, grado y tipo.</li>
+                <li><strong>1.2 Problema de Valores Iniciales (PVI):</strong> Interpretación geométrica y física.</li>
+                <li><strong>1.3 Técnicas de 1er Orden:</strong> Separación de variables, ecuaciones exactas y factor integrante.</li>
+                <li><strong>1.4 ED Lineal de 1er Orden:</strong> Método del factor integrante $\mu(x) = e^{\int P(x)dx}$.</li>
+                <li><strong>1.5 EDs de Orden Superior:</strong> Homogéneas/no-homogéneas, coeficientes constantes.</li>
+                <li><strong>1.6 Aplicaciones:</strong> Circuitos RLC, mezclas de fluidos y sistemas masa-resorte.</li>
+              </ul>
+            </div>
+            <div class="module-formula-card">
+              <div class="formula-title">Ecuación Lineal de 1er Orden:</div>
+              $$\frac{dy}{dx} + P(x)y = Q(x)$$
+              <div class="formula-title">Factor Integrante:</div>
+              $$\mu(x) = \exp\left(\int P(x)\,dx\right)$$
+              <div class="formula-title">Solución General:</div>
+              $$y(x) = \frac{1}{\mu(x)} \left[ \int \mu(x)Q(x)\,dx + C \right]$$
+            </div>
+          </div>
+        </section>
+
+        <!-- Sub-slide M2: Transformada de Laplace -->
+        <section id="m2">
+          <div class="module-header-row">
+            <span class="module-badge">MÓDULO 2</span>
+
+          </div>
+          <h3>Transformada de Laplace</h3>
+
+          <div class="module-content-grid">
+            <div class="subtopics-list">
+              <h4>Subtemas Oficiales:</h4>
+              <ul>
+                <li><strong>2.1 Definición Integral:</strong> $\mathcal{L}\{f(t)\} = F(s) = \int_0^\infty e^{-st} f(t) \, dt$.</li>
+                <li><strong>2.2 Propiedades de Traslación:</strong> Primer Teorema $\mathcal{L}\{e^{at}f(t)\} = F(s-a)$ y Función Escalón Unitario $\mathcal{U}(t-a)$.</li>
+                <li><strong>2.3 Solución de PVIs:</strong> Transformada de derivadas $\mathcal{L}\{y''\} = s^2Y(s) - sy(0) - y'(0)$.</li>
+                <li><strong>2.4 Función de Transferencia:</strong> $H(s) = \frac{Y(s)}{X(s)}$ en sistemas de control e ingeniería.</li>
+              </ul>
+            </div>
+            <div class="module-formula-card">
+              <div class="formula-title">Transformada de Laplace:</div>
+              $$\mathcal{L}\{f(t)\} = \int_0^\infty e^{-st} f(t) \, dt$$
+              <div class="formula-title">Solución de PVI (2do Orden):</div>
+              $$\mathcal{L}\{y''\} = s^2 Y(s) - s y(0) - y'(0)$$
+              <div class="formula-title">Función de Transferencia:</div>
+              $$H(s) = \frac{\text{Respuesta } Y(s)}{\text{Entrada } X(s)}$$
+            </div>
+          </div>
+        </section>
+
+        <!-- Sub-slide M3: Teoría Cualitativa -->
+        <section id="m3">
+          <div class="module-header-row">
+            <span class="module-badge">MÓDULO 3</span>
+
+          </div>
+          <h3>Teoría Cualitativa y Sistemas Dinámicos</h3>
+
+          <div class="module-content-grid">
+            <div class="subtopics-list">
+              <h4>Subtemas Oficiales:</h4>
+              <ul>
+                <li><strong>3.1 Sistemas Dinámicos:</strong> Sistemas autónomos $\mathbf{x}' = \mathbf{A}\mathbf{x}$.</li>
+                <li><strong>3.2 Órbitas y Trayectorias:</strong> Representación paramétrica en el espacio de estados.</li>
+                <li><strong>3.3 Plano Fase:</strong> Análisis de retratos de fase $(x_1, x_2)$.</li>
+                <li><strong>3.4 Tokens de Equilibrio y Estabilidad:</strong> Nodos (atractores/repulsores), Tokens Silla (inestable) y Espirales/Centros.</li>
+              </ul>
+            </div>
+            <div class="module-formula-card">
+              <div class="formula-title">Sistema Lineal 2x2:</div>
+              $$\begin{pmatrix} x' \\ y' \end{pmatrix} = \begin{pmatrix} a & b \\ c & d \end{pmatrix} \begin{pmatrix} x \\ y \end{pmatrix}$$
+              <div class="formula-title">Ecuación Característica:</div>
+              $$\det(\mathbf{A} - \lambda \mathbf{I}) = \lambda^2 - \text{tr}(\mathbf{A})\lambda + \det(\mathbf{A}) = 0$$
+              <div class="stability-types">
+                <span class="stab-tag node">Nodos ($\Delta > 0$)</span>
+                <span class="stab-tag saddle">Silla ($\det < 0$)</span>
+                <span class="stab-tag spiral">Espiral ($\Delta < 0$)</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Sub-slide M4: EDPs -->
+        <section id="m4">
+          <div class="module-header-row">
+            <span class="module-badge">MÓDULO 4</span>
+
+          </div>
+          <h3>Ecuaciones Diferenciales Parciales (EDPs)</h3>
+
+          <div class="module-content-grid">
+            <div class="subtopics-list">
+              <h4>Subtemas Oficiales:</h4>
+              <ul>
+                <li><strong>4.1 Problema de Sturm-Liouville:</strong> Valores y funciones propias orthogonales.</li>
+                <li><strong>4.2 Separación de Variables:</strong> Suposición $u(x,t) = X(x)T(t)$ para EDPs lineales.</li>
+                <li><strong>4.3 Series de Fourier:</strong> Representación de condiciones iniciales no armónicas.</li>
+                <li><strong>4.4 Aplicaciones Físicas 1D:</strong> Ecuación de Onda 1D, Ecuación de Calor 1D y Ecuación de Laplace.</li>
+              </ul>
+            </div>
+            <div class="module-formula-card">
+              <div class="formula-title">Ecuación de Calor 1D:</div>
+              $$\frac{\partial u}{\partial t} = k \frac{\partial^2 u}{\partial x^2}$$
+              <div class="formula-title">Ecuación de Onda 1D:</div>
+              $$\frac{\partial^2 u}{\partial t^2} = c^2 \frac{\partial^2 u}{\partial x^2}$$
+              <div class="formula-title">Serie de Fourier:</div>
+              $$f(x) = \frac{a_0}{2} + \sum_{n=1}^\infty \left[ a_n \cos\frac{n\pi x}{L} + b_n \sin\frac{n\pi x}{L} \right]$$
+            </div>
+          </div>
+        </section>
+
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SLIDE 3: ENGINEERING CONSULTANCY METAPHOR -->
+      <!-- ========================================== -->
+      <section id="slide-metaphor">
+        
+        <section id="metaphor-overview">
+          <div class="section-badge">MARCO PEDAGÓGICO</div>
+          <h2>Metáfora: Firmas Consultoras de Ingeniería</h2>
+          <p class="subtitle-text">Equipos multidisciplinarios resolviendo problemas reales con metodología Belbin & Felder-Brent</p>
+          
+          <div class="metaphor-intro-card" style="text-align: left; padding: 1.5rem;">
+            <p style="margin-bottom: 1rem;">
+              <strong>¿Por qué simulamos una Firma Consultora?</strong> Allá afuera, los ingenieros no resuelven ecuaciones aislados en un escritorio; trabajan en equipos multidisciplinarios para entregar soluciones a clientes reales.
+            </p>
+            <p>
+              En este curso, formarás una <strong>Firma Consultora de Ingeniería</strong> (3 a 4 integrantes) con roles técnicos definidos. <strong>¿Para qué?</strong> Para que aprendas a argumentar tus modelos, distribuir cargas de trabajo y experimentar la presión y satisfacción de un verdadero encargo profesional.
+            </p>
+          </div>
+
+          <div class="roles-summary-grid">
+            <div class="role-card role-summary-card role-analyst-border">
+              <div class="role-icon">📊</div>
+              <h4>Analista</h4>
+              <p>Rigor Matemático & Demostración</p>
+            </div>
+            <div class="role-card role-summary-card role-modeler-border">
+              <div class="role-icon">⚙️</div>
+              <h4>Modelador</h4>
+              <p>Abstracción & Formulación Física</p>
+            </div>
+            <div class="role-card role-summary-card role-integrator-border">
+              <div class="role-icon">📐</div>
+              <h4>Integrador</h4>
+              <p>Síntesis & Comunicación Ejecutiva</p>
+            </div>
+          </div>
+          <div class="nav-hint">⬇ Desliza hacia abajo para ver el perfil detallado de cada rol</div>
+        </section>
+
+        <!-- Sub-slide Analista -->
+        <section id="role-analyst">
+          <div class="role-card role-detail-card role-analyst-theme">
+            <div class="role-header">
+              <span class="role-big-icon">📊</span>
+              <div>
+                <h3>Perfil: Analista Técnico</h3>
+                <span class="role-dimension">Métrica entre pares: RIGOR MATEMÁTICO</span>
+              </div>
+            </div>
+            <ul class="role-tasks">
+              <li><strong>Clasificación y Existencia:</strong> Revisa el orden, linealidad y verifica teoremas de existencia y unicidad de soluciones (Picard-Lindelöf).</li>
+              <li><strong>Verificación Formal:</strong> Audita los pasos de integración, sustituciones y operaciones algebraicas de la firma.</li>
+              <li><strong>Condiciones Iniciales y Frontera:</strong> Valida la aplicación exacta de PVI/PVF y evalúa la consistencia dimensional de las unidades.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Sub-slide Modelador -->
+        <section id="role-modeler">
+          <div class="role-card role-detail-card role-modeler-theme">
+            <div class="role-header">
+              <span class="role-big-icon">⚙️</span>
+              <div>
+                <h3>Perfil: Modelador de Sistemas</h3>
+                <span class="role-dimension">Métrica entre pares: APORTE TÉCNICO</span>
+              </div>
+            </div>
+            <ul class="role-tasks">
+              <li><strong>Traducción Física a Matemática:</strong> Formula EDOs/EDPs desde leyes físicas fundamentales (Leyes de Kirchhoff, Enfriamiento de Newton, Balance de Masa/Calor, 2ª Ley de Newton).</li>
+              <li><strong>Selección de Métodos:</strong> Identifica si conviene aplicar Factores Integrantes, Transformadas de Laplace o Análisis en Plano Fase.</li>
+              <li><strong>Simulación y Diagramas:</strong> Modela retratos de fase, identifica Tokens de equilibrio y evalúa la estabilidad cualitativa del sistema.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Sub-slide Integrador -->
+        <section id="role-integrator">
+          <div class="role-card role-detail-card role-integrator-theme">
+            <div class="role-header">
+              <span class="role-big-icon">📐</span>
+              <div>
+                <h3>Perfil: Integrador de Soluciones</h3>
+                <span class="role-dimension">Métrica entre pares: COLABORACIÓN Y SÍNTESIS</span>
+              </div>
+            </div>
+            <ul class="role-tasks">
+              <li><strong>Consolidación del Entregable:</strong> Unifica la solución analítica/numérica en un informe de consultoría ejecutivo.</li>
+              <li><strong>Interpretación Física:</strong> Traduce los resultados de ecuaciones diferenciales a recomendaciones prácticas para ingeniería.</li>
+              <li><strong>Liderazgo y Defensa:</strong> Coordina la entrega única de la firma, prepara al equipo para la sustentación en pizarrón y lidera la producción del video empírico.</li>
+            </ul>
+          </div>
+        </section>
+
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SLIDE 3.5: CLASS RULES & ATTENDANCE        -->
+      <!-- ========================================== -->
+      <section id="slide-rules">
+        
+        <!-- Do's and Don'ts -->
+        <section id="rules-dos-donts">
+          <div class="section-badge badge-warning">CÓDIGO DE CONDUCTA</div>
+          <h2>Reglas de Convivencia y Aula</h2>
+          <p class="subtitle-text">Para simular un entorno profesional, aplicamos las siguientes directrices:</p>
+          
+          <div class="anti-ai-grid" style="margin-top: 2rem;">
+            <!-- Permitido -->
+            <div class="anti-ai-card">
+              <div class="anti-ai-card-header">
+                <span class="anti-ai-number">✔️</span>
+                <h4>Permitido (Do's)</h4>
+              </div>
+              <div class="anti-ai-card-body" style="text-align: left;">
+                <ul style="font-size: 1.1rem; line-height: 1.6; margin-left: 1.5rem;">
+                  <li><strong>Trabajo colaborativo cruzado:</strong> Está permitido pedir ayuda a otras firmas consultoras.</li>
+                  <li><strong>Uso de tecnología:</strong> Tablets, iPads o laptops exclusivas para cálculos o toma de apuntes.</li>
+                  <li><strong>Consulta de material:</strong> Consultar la bibliografía oficial durante las sesiones de trabajo.</li>
+                  <li><strong>Participación significativa:</strong> Hacer preguntas o comentarios que sumen a la clase (esto les otorgará Tokens).</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- No Permitido -->
+            <div class="anti-ai-card">
+              <div class="anti-ai-card-header">
+                <span class="anti-ai-number" style="color: #f87171;">❌</span>
+                <h4 style="color: #f87171;">No Permitido (Don'ts)</h4>
+              </div>
+              <div class="anti-ai-card-body" style="text-align: left;">
+                <ul style="font-size: 1.1rem; line-height: 1.6; margin-left: 1.5rem;">
+                  <li><strong>Distracciones:</strong> Uso de teléfonos celulares para redes sociales o mensajería personal.</li>
+                  <li><strong>Interrupciones:</strong> Salir y entrar del aula interrumpiendo la clase sin justificación.</li>
+                  <li><strong>Dependencia de IA:</strong> Uso de ChatGPT, Photomath u otras IAs para generar respuestas directas sin razonamiento propio.</li>
+                  <li><strong>Falta de respeto:</strong> Actitudes no profesionales hacia colegas u otras firmas, especialmente durante las licitaciones.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="nav-hint">⬇ Desliza hacia abajo para conocer cómo registramos asistencia y participaciones</div>
+        </section>
+
+        <!-- Attendance and Participation -->
+        <section id="rules-attendance">
+          <div class="section-badge badge-blue">LOGÍSTICA DIARIA</div>
+          <h2>Asistencia y Participación</h2>
+          
+          <div class="eval-grid" style="margin-top: 2rem;">
+            <!-- Attendance -->
+            <div class="eval-badge eval-exam" style="background: var(--bg-card); border-color: var(--border-card);">
+              <div class="eval-title" style="color: var(--text-primary);">Pase de Lista y Faltas</div>
+              <div class="eval-desc" style="text-align: left; margin-top: 1rem; color: var(--text-muted);">
+                El pase de lista y el registro oficial de faltas se llevará a cabo exclusivamente a través de <strong>Brightspace</strong> (la plataforma oficial de comunicación de la universidad). <br><br>
+                Ustedes podrán visualizar la evolución de su asistencia y su contador de faltas directamente desde ahí.
+              </div>
+            </div>
+
+            <!-- Participation -->
+            <div class="eval-badge eval-homework" style="background: var(--bg-card); border-color: var(--border-card);">
+              <div class="eval-title" style="color: var(--text-primary);">Participaciones Significativas</div>
+              <div class="eval-desc" style="text-align: left; margin-top: 1rem; color: var(--text-muted);">
+                Las participaciones no son obligatorias, pero <strong>sí son recompensadas</strong>. <br><br>
+                Cualquier pregunta interesante, corrección constructiva o comentario que aporte valor real a la clase será premiado con <strong>Tokens</strong> directos a su cuenta, abonados desde el panel de administración.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Basic Rules -->
+        <section id="rules-platform">
+          <div class="section-badge badge-warning">PLATAFORMA Y GAMIFICACIÓN</div>
+          <h2>Reglas Básicas del Curso</h2>
+          
+          <div class="metaphor-intro-card" style="text-align: left; padding: 1.5rem; margin-top: 2rem; font-size: 1.1rem; line-height: 1.6;">
+            <ul style="padding-left: 1.5rem;">
+              <li style="margin-bottom: 0.5rem;"><strong>Economía de Tokens:</strong> Los puntos no se suman a la calificación oficial, se canjean por privilegios académicos en la plataforma.</li>
+              <li style="margin-bottom: 0.5rem;"><strong>Excepciones de Privilegios:</strong> El examen final y el proyecto final <strong>no admiten</strong> alteraciones ni privilegios de ningún tipo.</li>
+              <li style="margin-bottom: 0.5rem;"><strong>Reconocimiento entre Pares (Kudos):</strong> Cuestan 10 puntos a quien los emite y deben justificarse por escrito al interior de la firma.</li>
+              <li style="margin-bottom: 0.5rem;"><strong>Rachas Diarias:</strong> Mantener participación constante de lunes a jueves ayuda al progreso y otorga multiplicadores.</li>
+              <li><strong>Manejo de Disputas:</strong> Todo ajuste puede ser disputado formalmente a través del portal web en un plazo de 5 días hábiles.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Plagiarism -->
+        <section id="rules-plagiarism">
+          <div class="section-badge badge-warning">INTEGRIDAD ACADÉMICA</div>
+          <h2>Plagio y Uso de IA</h2>
+          
+          <div class="anti-ai-card" style="margin-top: 2rem;">
+            <div class="anti-ai-card-body" style="text-align: left; padding: 2rem; display: flex; align-items: center; gap: 2rem;">
+              <div style="flex: 1;">
+                <p style="font-size: 1.2rem; line-height: 1.6; margin-bottom: 1.5rem; color: var(--text-main);">
+                  El plagio es una ofensa académica grave con consecuencias importantes. Por favor, familiarícese con la discusión sobre el plagio en las <a href="https://ibero.mx/corpus-reglamentario" target="_blank" style="color: var(--accent-cyan-light); text-decoration: underline;">políticas de la universidad</a>.
+                </p>
+                <p style="font-size: 1.2rem; line-height: 1.6; color: var(--text-main);">
+                  El uso de IA y herramientas tecnológicas en esta clase es permitido como apoyo para el aprendizaje. Sin embargo, <strong>si se usa con motivos de evitar realizar algún trabajo o para resolver un examen, dicho instrumento NO se calificará (tendrá 0 inmediatamente)</strong>.
+                </p>
+              </div>
+              <div style="background: white; padding: 10px; border-radius: 8px; flex-shrink: 0;">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://ibero.mx/corpus-reglamentario" alt="QR Políticas IBERO" style="width: 150px; height: 150px; margin: 0; display: block; border: none; box-shadow: none;">
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Contact Method -->
+        <section id="rules-contact">
+          <div class="section-badge badge-blue">COMUNICACIÓN OFICIAL</div>
+          <h2>Medios de Contacto Autorizados</h2>
+          
+          <div class="metaphor-intro-card" style="text-align: center; padding: 3rem 2rem; margin-top: 2rem;">
+            <h3 style="margin-bottom: 1.5rem; color: var(--text-main);">Toda comunicación oficial deberá realizarse exclusivamente por:</h3>
+            <div style="display: flex; justify-content: center; gap: 2rem; margin-top: 2rem; flex-wrap: wrap;">
+              <div style="background: var(--bg-card); padding: 1.5rem 3rem; border-radius: 12px; border: 1px solid var(--border-card);">
+                <span style="font-size: 3rem; display: block; margin-bottom: 0.5rem;">📧</span>
+                <strong style="color: var(--text-main);">Microsoft Outlook</strong><br>
+                <span style="font-size: 0.9rem; color: var(--text-muted);">Correo Institucional</span>
+              </div>
+              <div style="background: var(--bg-card); padding: 1.5rem 3rem; border-radius: 12px; border: 1px solid var(--border-card);">
+                <span style="font-size: 3rem; display: block; margin-bottom: 0.5rem;">💬</span>
+                <strong style="color: var(--text-main);">Microsoft Teams</strong><br>
+                <span style="font-size: 0.9rem; color: var(--text-muted);">Chat Institucional</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SLIDE 4: OFFICIAL EVALUATION & ANTI-AI SYSTEM -->
+      <!-- ========================================== -->
+      <section id="slide-evaluation">
+        
+        <!-- Breakdown Sub-slide -->
+        <section id="eval-breakdown">
+          <div class="section-badge">REGLAMENTO INSTITUCIONAL</div>
+          <h2>Sistema Oficial de Evaluación</h2>
+          <p class="subtitle-text">Ponderaciones Oficiales Irrenunciables</p>
+
+          <div class="eval-grid" style="grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+            <div class="eval-badge eval-work">
+              <span class="eval-percent">10%</span>
+              <span class="eval-label">Tareas</span>
+              <span class="eval-detail">Ejercicios de modelado por firma.</span>
+            </div>
+            <div class="eval-badge eval-project">
+              <span class="eval-percent">10%</span>
+              <span class="eval-label">Proyecto Final</span>
+              <span class="eval-detail">Proyecto integrador empírico con video y sustentación.</span>
+            </div>
+            <div class="eval-badge eval-exam">
+              <span class="eval-percent">20%</span>
+              <span class="eval-label">Examen Parcial 1</span>
+              <span class="eval-detail">Evaluación individual, presencial en aula.</span>
+            </div>
+            <div class="eval-badge eval-exam">
+              <span class="eval-percent">20%</span>
+              <span class="eval-label">Examen Parcial 2</span>
+              <span class="eval-detail">Evaluación individual, presencial en aula.</span>
+            </div>
+            <div class="eval-badge eval-exam">
+              <span class="eval-percent">20%</span>
+              <span class="eval-label">Examen Parcial 3</span>
+              <span class="eval-detail">Evaluación individual, presencial en aula.</span>
+            </div>
+            <div class="eval-badge eval-exam">
+              <span class="eval-percent">20%</span>
+              <span class="eval-label">Examen Final</span>
+              <span class="eval-detail">Acumulativa, individual, presencial en aula.</span>
+            </div>
+          </div>
+
+          <div class="eval-note-box">
+            ⚠️ <strong>Regla Institucional:</strong> Los porcentajes oficiales son fijos e irrenunciables. El Banco de Tokens otorga privilegios académicos, pero jamás modifica los pesos oficiales.
+          </div>
+          <div class="nav-hint">⬇ Desliza hacia abajo para conocer las Normativas Institucionales</div>
+        </section>
+
+        <!-- Sub-slide Institutional Policies -->
+        <section id="eval-policies">
+          <div class="section-badge badge-warning">ALINEACIÓN INSTITUCIONAL</div>
+          <h2>Normativas Oficiales del Curso</h2>
+          <p class="subtitle-text">Reglas académicas irrevocables para el semestre</p>
+          
+          <div class="anti-ai-grid" style="grid-template-columns: 1fr 1fr; margin-top: 2rem;">
+            <div class="anti-ai-card">
+              <div class="anti-ai-card-header">
+                <h4>1. Asistencia del 80%</h4>
+              </div>
+              <div class="anti-ai-card-body">
+                <p>Cumplir con el 80% de asistencia es un <strong>requisito institucional</strong> para tener derecho a calificación. No aporta puntos extra, pero su incumplimiento implica reprobar automáticamente.</p>
+              </div>
+            </div>
+            
+            <div class="anti-ai-card">
+              <div class="anti-ai-card-header">
+                <h4>2. Prohibición de Exenciones</h4>
+              </div>
+              <div class="anti-ai-card-body">
+                <p><strong>No hay exenciones.</strong> Todo estudiante, sin importar su desempeño en los parciales, está obligado a presentar y aprobar el Examen Final.</p>
+              </div>
+            </div>
+            
+            <div class="anti-ai-card">
+              <div class="anti-ai-card-header">
+                <h4>3. Justificación Obligatoria</h4>
+              </div>
+              <div class="anti-ai-card-body">
+                <p><strong>Resultado sin procedimiento vale cero.</strong> Todo problema, incluyendo preguntas de opción múltiple (o verdadero/falso), debe estar rigurosamente justificado por escrito.</p>
+                <div style="margin-top: 10px; padding: 10px; background: rgba(0,255,255,0.1); border-left: 3px solid var(--accent-cyan-light); font-size: 0.95rem;">
+                  💡 <strong>Consejo Práctico:</strong> Simplifiquen algebraicamente al máximo antes de usar la calculadora. Menos operaciones tecleadas = menos probabilidad de error.
+                </div>
+              </div>
+            </div>
+            
+            <div class="anti-ai-card">
+              <div class="anti-ai-card-header">
+                <h4>4. Política de Redondeo</h4>
+              </div>
+              <div class="anti-ai-card-body">
+                <p>Aplica <strong>solo a la calificación final</strong>. Sube al siguiente entero a partir de <strong>.5</strong>. <u>Excepción:</u> Las calificaciones reprobatorias no se redondean (ej. 5.9 se queda en 5).</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="nav-hint" style="margin-top: 2rem;">⬇ Desliza hacia abajo para conocer el Protocolo de Defensa Anti-IA</div>
+        </section>
+
+        <!-- Sub-slide Anti-AI Defense -->
+        <section id="anti-ai">
+          <div class="section-badge badge-warning">EVALUACIÓN DE AUTENTICIDAD</div>
+          <h3>Sistema de Defensa Anti-IA y Verificación Empírica</h3>
+
+          <div class="anti-ai-grid">
+            <!-- Defense 1 -->
+            <div class="anti-ai-card">
+              <div class="anti-ai-card-header">
+                <span class="anti-ai-number">01</span>
+                <h4>Sustentación Oral Aleatoria en Pizarrón</h4>
+              </div>
+              <div class="anti-ai-card-body">
+                <p><strong>Ponderación:</strong> 30% de la nota de las <strong>Tareas</strong>.</p>
+                <p><strong>Mecánica (Solo Tareas):</strong> El día de la entrega de la tarea, un integrante del equipo es elegido al azar para resolver y explicar el modelo en el pizarrón sin apuntes generados por IA.</p>
+                <p><strong>Penalización Grupal:</strong> Si el estudiante elegido al azar no puede justificar el procedimiento, <u>toda la firma pierde el 30%</u> de esa entrega.</p>
+                <p><strong>Sustentaciones Destacadas:</strong> Si tu sustentación es excepcionalmente buena, ganas un bono individual (+15 a +30 Tks al banco).</p>
+              </div>
+            </div>
+
+            <!-- Defense 2 -->
+            <div class="anti-ai-card">
+              <div class="anti-ai-card-header">
+                <span class="anti-ai-number">02</span>
+                <h4>Proyecto Empírico con Evidencia en Video</h4>
+              </div>
+              <div class="anti-ai-card-body">
+                <p><strong>Requisito:</strong> Construir o medir un fenómeno físico real (enfriamiento de fluidos, vaciado de tanques, oscilación masa-resorte RLC).</p>
+                <div class="tech-specs-box">
+                  <div class="spec-item">⏱️ Duración Máx: <strong>120 s (2 min)</strong></div>
+                  <div class="spec-item">📦 Tamaño Máx: <strong>100 MB</strong></div>
+                  <div class="spec-item">📼 Formatos: <strong>MP4, MOV, WebM</strong></div>
+                </div>
+                <p><strong>Evidencia Requerida:</strong> Rostro de al menos un integrante, instrumentos de medición visibles (termómetro, regla, cronómetro) y el proceso físico en tiempo real.</p>
+                <p style="margin-top: 10px; color: var(--accent-rose-light);"><strong>Sustentación del Proyecto:</strong> A diferencia de las tareas, la sustentación del Proyecto Final no es aleatoria; <u>todos los miembros de la firma</u> deberán defender su modelo y resultados frente a la clase.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SLIDE 5: COURSE ECONOMY & GAMIFICATION -->
+      <!-- ========================================== -->
+      <section id="slide-economy">
+        
+        <!-- Sub-slide Points Bank & Conversion -->
+        <section id="bank-conversion">
+          <div class="section-badge badge-emerald">ECONOMÍA DEL CURSO</div>
+          <h2>Banco de Tokens</h2>
+          <p class="subtitle-text">Banco unificado de Tokens extra-académicos (65% individual / 35% grupal)</p>
+
+          <div class="bank-explanation-grid">
+            <div class="bank-info-box">
+              <h4>¿Cómo funciona el Banco de Tokens?</h4>
+              <ul>
+                <li><strong>Origen:</strong> Resolviendo ejercicios de práctica, manteniendo rachas diarias (+2 Tks/día), ganando licitaciones en vivo y sustentaciones destacadas.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="nav-hint">⬇ Desliza hacia abajo para ver el Catálogo de Privilegios y Split Bill</div>
+        </section>
+
+        <!-- Sub-slide Privileges Catalog & Split Bill -->
+        <section id="privileges">
+          <div class="section-badge badge-cyan">TIENDA DE BENEFICIOS</div>
+          <h3>Catálogo de Privilegios y Mecanismo Split Bill</h3>
+
+          <div class="privileges-layout">
+            <div class="privilege-catalog-column">
+              <h4>Beneficios Destacados</h4>
+              <div class="privilege-mini-grid">
+                <div class="privilege-card priv-card">
+                  <span class="priv-cost">40 Tks</span>
+                  <h5>Prórroga de Entrega +24h</h5>
+                  <p>Aumenta 24h el límite de entrega de tarea de firma.</p>
+                </div>
+                <div class="privilege-card priv-card">
+                  <span class="priv-cost">30 Tks</span>
+                  <h5>Saltar Pregunta Tarea</h5>
+                  <p>Omite un inciso de tarea sin penalización.</p>
+                </div>
+                <div class="privilege-card priv-card">
+                  <span class="priv-cost">100 Tks</span>
+                  <h5>Hoja de Fórmulas Examen</h5>
+                  <p>Permite ingresar formulario personal a parcial.</p>
+                </div>
+                <div class="privilege-card priv-card">
+                  <span class="priv-cost">100 Tks</span>
+                  <h5>Posponer Sustentación</h5>
+                  <p>Pasa la sustentación oral a la siguiente clase.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Split Bill Simulator Widget Container -->
+            <div class="split-bill-widget-card" id="split-bill-widget-container">
+              <h4>🤝 Simulador Split Bill (Co-financiamiento)</h4>
+              <p class="split-desc">Financia privilegios grupales de firma entre varios integrantes:</p>
+              
+              <div class="split-field">
+                <label for="split-privilege-select">Privilegio a Comprar:</label>
+                <select id="split-privilege-select">
+                  <option value="ext24" data-cost="40">Prórroga 24h (40 Tks total)</option>
+                  <option value="ext48" data-cost="80">Prórroga 48h (80 Tks total)</option>
+                  <option value="prerev" data-cost="120">Pre-revisión de Proyecto (120 Tks total)</option>
+                  <option value="ext72" data-cost="150">Prórroga 72h (150 Tks total)</option>
+                </select>
+              </div>
+
+              <div class="split-inputs-grid">
+                <div class="split-input-item">
+                  <label>Analista:</label>
+                  <input type="number" class="split-member-input" id="split-m1" value="10" min="0" max="150"> Tks
+                </div>
+                <div class="split-input-item">
+                  <label>Modelador:</label>
+                  <input type="number" class="split-member-input" id="split-m2" value="10" min="0" max="150"> Tks
+                </div>
+                <div class="split-input-item">
+                  <label>Integrador:</label>
+                  <input type="number" class="split-member-input" id="split-m3" value="10" min="0" max="150"> Tks
+                </div>
+                <div class="split-input-item">
+                  <label>Consultor 4:</label>
+                  <input type="number" class="split-member-input" id="split-m4" value="10" min="0" max="150"> Tks
+                </div>
+              </div>
+
+              <div class="split-progress-container">
+                <div class="split-progress-bar" id="split-progress-bar" style="width: 100%;"></div>
+              </div>
+              <div class="split-status-text" id="split-status-text">Recaudado: 40 / 40 Tks (100% Completado)</div>
+              <button type="button" class="btn-primary" id="split-submit-btn">Emitir Folio de Ticket Grupal</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Sub-slide Streaks & Peer Feedback -->
+        <section id="streaks-peer">
+          <div class="section-badge badge-amber">RECOMPENSAS Y COMUNIDAD</div>
+          <h3>Rachas Diarias y Retroalimentación entre Pares</h3>
+
+          <div class="streaks-peer-grid">
+            <!-- Daily Streak Engine -->
+            <div class="streak-engine-card" id="streak-widget">
+              <h4>🔥 Motor de Rachas Diarias (Lun-Jue)</h4>
+              <p>Retos de 10-15 min publicados de <strong>Lunes a Jueves</strong> (Viernes, Sábados y Domingos son días neutros).</p>
+              <div class="streak-days-row">
+                <span class="day-badge active">LUN (+2)</span>
+                <span class="day-badge active">MAR (+2)</span>
+                <span class="day-badge active">MIÉ (+2)</span>
+                <span class="day-badge active">JUE (+2)</span>
+                <span class="day-badge neutral">VIE (Neutro)</span>
+                <span class="day-badge neutral">SÁB</span>
+                <span class="day-badge neutral">DOM</span>
+              </div>
+              <div class="milestones-row">
+                <span class="milestone-tag">4 días: +10 Tks</span>
+                <span class="milestone-tag">12 días: +30 Tks</span>
+                <span class="milestone-tag">24 días: +70 Tks</span>
+                <span class="milestone-tag">48 días: +180 Tks</span>
+              </div>
+              <div class="freeze-pass-box">
+                🛡️ Pases de Congelación: 2 gratis al registro (+30 Tks por adicional en tienda).
+              </div>
+            </div>
+
+            <!-- Peer Feedback & Kudos Transfer Widget -->
+            <div class="kudos-widget-card" id="kudos-widget-container">
+              <h4>⭐ Retroalimentación 3D y Envíos Kudos</h4>
+              <p>Evaluación modular en 3D (Rigor, Técnico, Colaboración) y reconocimiento entre pares.</p>
+              
+              <div class="kudos-form">
+                <div class="kudos-field">
+                  <label for="kudos-recipient">Compañero Destinatario:</label>
+                  <select id="kudos-recipient">
+                    <option value="analyst">Analista de Firma</option>
+                    <option value="modeler">Modelador de Firma</option>
+                    <option value="integrator">Integrador de Firma</option>
+                  </select>
+                </div>
+                <div class="kudos-field">
+                  <label for="kudos-category">Categoría Kudos:</label>
+                  <select id="kudos-category">
+                    <option value="rigor">#rigor - Rigor Matemático Impecable</option>
+                    <option value="creatividad">#creatividad - Planteamiento Creativo</option>
+                    <option value="claridad">#claridad - Explicación Clara</option>
+                    <option value="apoyo">#apoyo - Excelente Trabajo en Equipo</option>
+                  </select>
+                </div>
+                <div class="kudos-field">
+                  <label for="kudos-feedback-text">Retroalimentación Detallada (mín. 20 caracteres):</label>
+                  <textarea id="kudos-feedback-text" placeholder="Escribe tu retroalimentación detallada (mínimo 20 caracteres)..." minlength="20"></textarea>
+                  <div style="text-align: right; margin-top: 0.25rem;">
+                    <span id="kudos-char-counter" class="badge-char-counter">0 / 20 mín</span>
+                  </div>
+                </div>
+                <div class="kudos-cost-note">
+                  Costo al emisor: <strong>10 Tks</strong> ➔ El receptor recibe: <strong>10 Tks netos</strong>
+                </div>
+                <button type="button" class="btn-success" id="send-kudos-btn">Enviar 10 Tokens Kudos</button>
+                <div class="kudos-status-msg" id="kudos-status-msg"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SLIDE 6: LIVE TENDERS -->
+      <!-- ========================================== -->
+      <section id="slide-tenders">
+        
+        <!-- Rules Sub-slide -->
+        <section id="tender-rules">
+          <div class="section-badge badge-rose">COMPETENCIA EN AULA</div>
+          <h2>Licitaciones en Vivo</h2>
+          <p class="subtitle-text">Encargos técnicos en tiempo real para Firmas Consultoras (Bisemanal)</p>
+
+          <div class="tender-phases-grid">
+            <div class="phase-card">
+              <div class="phase-num">01</div>
+              <h4>Presentación</h4>
+              <p>5-8 min: Se proyecta el encargo técnico real en pantalla.</p>
+            </div>
+            <div class="phase-card">
+              <div class="phase-num">02</div>
+              <h4>Planteamiento</h4>
+              <p>10-15 min: La firma formula la EDO y estrategia de solución.</p>
+            </div>
+            <div class="phase-card">
+              <div class="phase-num">03</div>
+              <h4>Resolución</h4>
+              <p>10-15 min: Se resuelve y envía la respuesta por plataforma.</p>
+            </div>
+            <div class="phase-card">
+              <div class="phase-num">04</div>
+              <h4>Podio & Tokens</h4>
+              <p>5-7 min: Asignación inmediata de Tokens al saldo de cada integrante.</p>
+            </div>
+          </div>
+
+          <div class="podium-scoring-card">
+            <h4>🏆 Puntuación Oficial por Podio (Tokens por integrante presente):</h4>
+            <div class="podium-tiers-row">
+              <div class="podium-badge gold">🥇 1er Lugar: 35 – 40 Tks</div>
+              <div class="podium-badge silver">🥈 2do Lugar: 22 – 25 Tks</div>
+              <div class="podium-badge bronze">🥉 3er Lugar: 15 – 18 Tks</div>
+              <div class="podium-badge correct">✅ Correcta: 10 Tks</div>
+              <div class="podium-badge partial">📝 Participación: 5 Tks</div>
+            </div>
+          </div>
+          <div class="nav-hint">⬇ Desliza hacia abajo para interactuar con la Tarjeta de Licitación en Vivo</div>
+        </section>
+
+        <!-- Interactive Tender Card Sub-slide -->
+        <section id="tender-card">
+          <div class="tender-widget-wrapper" id="tender-card-widget">
+            <div class="tender-card-header">
+              <div class="tender-live-tag">⚡ LICITACIÓN EN VIVO ACTIVA</div>
+              <div class="tender-folio">ENCARGO #EDO-04</div>
+            </div>
+
+            <h3 class="tender-widget-title">Modelado de Enfriamiento en Reactor Químico</h3>
+            
+            <div class="tender-widget-body">
+              <div class="tender-problem-statement">
+                <p>
+                  Un reactor químico industrial opera a $T(0) = 180^\circ\text{C}$. El refrigerante externo se mantiene a $T_{\text{amb}} = 20^\circ\text{C}$. Si la constante de enfriamiento es $k = 0.05\,\text{min}^{-1}$ y se genera calor interno constante $Q_{\text{gen}} = 2^\circ\text{C/min}$:
+                </p>
+                <div class="tender-math-box">
+                  $$\frac{dT}{dt} = -k(T - T_{\text{amb}}) + Q_{\text{gen}}$$
+                </div>
+                <p>Determina la temperatura del reactor $T(t)$ a los $t = 30\text{ minutos}$.</p>
+              </div>
+
+              <div class="tender-interaction-panel">
+                <div class="tender-timer-box">
+                  <span class="timer-label">Tiempo Restante:</span>
+                  <span class="timer-value" id="tender-timer-display">03:00</span>
+                  <button type="button" id="tender-timer-reset-btn" class="btn btn-secondary">Reiniciar</button>
+                </div>
+
+                <div class="tender-form">
+                  <div class="form-group">
+                    <label for="tender-answer-input">Resultado Temperatura $T(30)$ en °C:</label>
+                    <input type="text" id="tender-answer-input" placeholder="Ej. 55.7 °C" class="tender-input">
+                  </div>
+                  <div class="form-group">
+                    <label for="tender-firm-select">Firma Consultora:</label>
+                    <select id="tender-firm-select" class="tender-select">
+                      <option value="alpha">Firma Alpha (Analistas de Fluidos)</option>
+                      <option value="beta">Firma Beta (Termodinámica)</option>
+                      <option value="gamma">Firma Gamma (Sistemas Complejos)</option>
+                    </select>
+                  </div>
+                  <button type="button" class="btn-tender-submit" id="tender-submit-btn">Enviar Propuesta de Licitación</button>
+                  <div class="tender-feedback-msg" id="tender-feedback-msg"></div>
+                </div>
+
+                <div class="tender-live-leaderboard">
+                  <h5>Tabla de Posiciones en Tiempo Real</h5>
+                  <div class="leaderboard-item place-1">
+                    <span>1° Firma Alpha</span>
+                    <span class="score">+40 Tks</span>
+                  </div>
+                  <div class="leaderboard-item place-2">
+                    <span>2° Firma Beta</span>
+                    <span class="score">+25 Tks</span>
+                  </div>
+                  <div class="leaderboard-item place-3">
+                    <span>3° Firma Gamma</span>
+                    <span class="score">+18 Tks</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SLIDE 7: ACADEMIC CONTENT (1.1 CLASIFICACIÓN) -->
+      <!-- ========================================== -->
+      <section id="slide-session1-content">
+        
+        <!-- Intro & Definición -->
+        <section id="class-intro">
+          <div class="section-badge badge-blue">1.1 CLASIFICACIÓN</div>
+          <h2>¿Qué es una Ecuación Diferencial?</h2>
+          <p class="subtitle-text">Definición fundamental según Dennis G. Zill</p>
+          
+          <div class="metaphor-intro-card" style="text-align: left; padding: 1.5rem; margin-top: 2rem;">
+            <p>
+              Una <strong>ecuación diferencial</strong> es cualquier ecuación que contiene las derivadas de una o más variables dependientes respecto a una o más variables independientes.
+            </p>
+            <div class="math-teaser" style="margin-top: 1rem;">
+              $$\frac{d^2y}{dx^2} + 0.5 \frac{dy}{dx} + 7y = 0$$
+            </div>
+            <p style="margin-top: 1rem;">
+              En ingeniería, las derivadas representan <strong>tasas de cambio</strong>, y la ecuación en sí define la relación entre estas tasas y las variables involucradas.
+            </p>
+          </div>
+          <div class="nav-hint">⬇ Desliza hacia abajo para conocer los tres criterios de clasificación</div>
+        </section>
+
+        <!-- Por Tipo -->
+        <section id="class-type">
+          <div class="section-badge badge-cyan">CRITERIO 1</div>
+          <h2>Clasificación por Tipo</h2>
+          
+          <div class="eval-grid" style="margin-top: 2rem;">
+            <div class="eval-badge eval-exam" style="background: var(--bg-card); border-color: var(--border-card);">
+              <div class="eval-title" style="color: var(--text-primary);">Ordinarias (EDO)</div>
+              <div class="eval-desc" style="text-align: left; margin-top: 1rem; color: var(--text-muted);">
+                Contienen derivadas respecto a <strong>una sola variable independiente</strong>.<br><br>
+                Ejemplo: $\frac{dy}{dx} + 5y = e^x$ <br>
+                <span style="font-size: 0.9em;">(Var. indep: $x$, dependiente: $y$)</span>
+              </div>
+            </div>
+
+            <div class="eval-badge eval-homework" style="background: var(--bg-card); border-color: var(--border-card);">
+              <div class="eval-title" style="color: var(--text-primary);">Parciales (EDP)</div>
+              <div class="eval-desc" style="text-align: left; margin-top: 1rem; color: var(--text-muted);">
+                Contienen derivadas parciales respecto a <strong>dos o más variables independientes</strong>.<br><br>
+                Ejemplo: $\frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial y^2} = 0$
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Por Orden -->
+        <section id="class-order">
+          <div class="section-badge badge-emerald">CRITERIO 2</div>
+          <h2>Clasificación por Orden</h2>
+          <p class="subtitle-text">El orden de la derivada más alta en la ecuación</p>
+          
+          <div class="module-content-grid" style="margin-top: 2rem;">
+            <div class="subtopics-list">
+              <h4>Ejemplos de Orden:</h4>
+              <ul style="line-height: 1.8;">
+                <li><strong>Primer Orden:</strong> $\frac{dy}{dx} = 0.2xy$</li>
+                <li><strong>Segundo Orden:</strong> $\frac{d^2y}{dx^2} - \frac{dy}{dx} + 6y = 0$</li>
+                <li><strong>Tercer Orden:</strong> $y''' + 2e^x y'' - y = x$</li>
+              </ul>
+              <p style="margin-top:1.5rem; font-size:0.95em; color:var(--text-muted); border-left: 4px solid var(--primary); padding-left: 1rem;">
+                <strong>Nota clave:</strong> No confundir el <em>orden</em> de la derivada con el <em>grado</em> (la potencia a la que está elevada la derivada).
+              </p>
+            </div>
+            <div class="module-formula-card">
+              <div class="formula-title">Forma General (Orden n):</div>
+              $$F\left(x, y, y', \dots, y^{(n)}\right) = 0$$
+              <div class="formula-title">Forma Normal:</div>
+              $$\frac{d^n y}{dx^n} = f\left(x, y, y', \dots, y^{(n-1)}\right)$$
+            </div>
+          </div>
+        </section>
+
+        <!-- Por Linealidad -->
+        <section id="class-linearity">
+          <div class="section-badge badge-amber">CRITERIO 3</div>
+          <h2>Clasificación por Linealidad</h2>
+          <p class="subtitle-text">Condiciones para que una EDO de orden n sea Lineal</p>
+          
+          <div class="anti-ai-grid" style="margin-top: 2rem;">
+            <div class="anti-ai-card">
+              <div class="anti-ai-card-header">
+                <span class="anti-ai-number">01</span>
+                <h4>Potencia 1 (Grado 1)</h4>
+              </div>
+              <div class="anti-ai-card-body" style="text-align: left;">
+                <p>La variable dependiente $y$ y todas sus derivadas $y', y'', \dots, y^{(n)}$ son de <strong>primer grado</strong>. Es decir, la potencia de cada término con $y$ es 1.</p>
+              </div>
+            </div>
+
+            <div class="anti-ai-card">
+              <div class="anti-ai-card-header">
+                <span class="anti-ai-number">02</span>
+                <h4>Coeficientes dependientes de $x$</h4>
+              </div>
+              <div class="anti-ai-card-body" style="text-align: left;">
+                <p>Los coeficientes $a_0, a_1, \dots, a_n$ dependen <strong>exclusivamente</strong> de la variable independiente $x$. No pueden contener la variable dependiente $y$.</p>
+              </div>
+            </div>
+          </div>
+          <div class="module-formula-card" style="margin-top: 1.5rem;">
+            <div class="formula-title">Forma de una EDO Lineal:</div>
+            $$a_n(x)\frac{d^n y}{dx^n} + a_{n-1}(x)\frac{d^{n-1} y}{dx^{n-1}} + \dots + a_1(x)\frac{dy}{dx} + a_0(x)y = g(x)$$
+          </div>
+          <div class="nav-hint">⬇ Desliza hacia abajo para ver la Naturaleza de las Soluciones</div>
+        </section>
+
+        <!-- Soluciones y Curvas -->
+        <section id="class-solutions">
+          <div class="section-badge badge-emerald">FUNDAMENTOS DE SOLUCIÓN</div>
+          <h2>Naturaleza de las Soluciones</h2>
+          
+          <div class="eval-grid" style="margin-top: 2rem;">
+            <div class="eval-badge eval-work" style="background: var(--bg-card); border-color: var(--border-card);">
+              <div class="eval-title" style="color: var(--text-primary);">¿Qué es una Solución?</div>
+              <div class="eval-desc" style="text-align: left; margin-top: 1rem; color: var(--text-muted); font-size: 0.9em;">
+                Toda función $\phi$ que al sustituirse en una EDO la reduce a una identidad matemática sobre un <strong>intervalo de definición</strong> $I$.<br><br>
+                El intervalo asegura que la función no tenga singularidades ni divisiones entre cero.
+              </div>
+            </div>
+
+            <div class="eval-badge eval-project" style="background: var(--bg-card); border-color: var(--border-card);">
+              <div class="eval-title" style="color: var(--text-primary);">Curva Solución</div>
+              <div class="eval-desc" style="text-align: left; margin-top: 1rem; color: var(--text-muted); font-size: 0.9em;">
+                Es la gráfica de la solución $\phi$. Debe ser un trazo continuo en su dominio $I$.<br><br>
+                Por ejemplo, para $y' = y$, la curva solución es la exponencial $y = e^x$.
+              </div>
+            </div>
+          </div>
+          <div class="nav-hint">⬇ Desliza hacia abajo para ver Tipos de Soluciones</div>
+        </section>
+
+        <!-- Explícita vs Implícita -->
+        <section id="class-explicit-implicit">
+          <div class="section-badge badge-blue">TIPOS DE SOLUCIONES</div>
+          <h2>Soluciones Explícitas e Implícitas</h2>
+          
+          <div class="metaphor-intro-card" style="text-align: left; padding: 1.5rem; margin-top: 2rem;">
+            <p><strong>Solución Explícita:</strong></p>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">La variable dependiente está totalmente despejada: $y = \phi(x)$.<br>Ejemplo: $y = x^2 - 1$</p>
+            
+            <p><strong>Solución Implícita:</strong></p>
+            <p style="color: var(--text-muted);">Es una relación $G(x,y) = 0$ que define a la función implícitamente, sin estar directamente despejada.<br>Ejemplo: $x^2 + y^2 = 25$ (Define las explícitas $y = \pm\sqrt{25 - x^2}$)</p>
+          </div>
+          <div class="nav-hint">⬇ Desliza hacia abajo para ver Familias de Soluciones</div>
+        </section>
+
+        <!-- Familias y Sistemas -->
+        <section id="class-families">
+          <div class="section-badge badge-purple">GENERALIZACIÓN</div>
+          <h2>Familias y Soluciones Singulares</h2>
+          
+          <div class="anti-ai-grid" style="margin-top: 2rem;">
+            <div class="anti-ai-card">
+              <div class="anti-ai-card-header">
+                <h4>Familia de Soluciones</h4>
+              </div>
+              <div class="anti-ai-card-body" style="text-align: left; font-size: 0.9em;">
+                <p>Resolver una EDO produce soluciones con constantes arbitrarias $c$. Representan un conjunto infinito de curvas paralelas o proporcionales formadas a partir del mismo proceso.</p>
+              </div>
+            </div>
+
+            <div class="anti-ai-card">
+              <div class="anti-ai-card-header">
+                <h4>Solución Singular</h4>
+              </div>
+              <div class="anti-ai-card-body" style="text-align: left; font-size: 0.9em;">
+                <p>Una curva que satisface la EDO pero que <strong>no se puede obtener</strong> dándole ningún valor específico a la constante $c$ de la familia general monoparamétrica.</p>
+              </div>
+            </div>
+
+            <div class="anti-ai-card">
+              <div class="anti-ai-card-header">
+                <h4>Sistemas de EDOs</h4>
+              </div>
+              <div class="anti-ai-card-body" style="text-align: left; font-size: 0.9em;">
+                <p>Varias ecuaciones relacionando dos o más variables dependientes con una <strong>única</strong> independiente (ej. modelado de Presas y Depredadores respecto al tiempo $t$).</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SLIDE 8: OFFICIAL BIBLIOGRAPHY -->
+      <!-- ========================================== -->
+      <section id="slide-bibliography">
+        
+        <!-- Textbooks Sub-slide -->
+        <section id="textbooks">
+          <div class="section-badge">BIBLIOGRAFÍA OFICIAL</div>
+          <h2>Libros de Texto Oficiales</h2>
+          <p class="subtitle-text">Referencias bibliográficas del Programa de Estudios</p>
+
+          <div class="biblio-grid">
+            <div class="biblio-card">
+              <div class="biblio-year">2015</div>
+              <h4 class="biblio-author">Zill, Dennis G.</h4>
+              <h3 class="biblio-title">Ecuaciones diferenciales con aplicaciones de modelado</h3>
+              <div class="biblio-edition">10ª Edición • México: Cengage Learning</div>
+              <p class="biblio-role">📖 Texto Base Principal del Curso (Módulos 1, 2, 3 y 4)</p>
+            </div>
+
+            <div class="biblio-card">
+              <div class="biblio-year">2015</div>
+              <h4 class="biblio-author">Muñoz, J. A.</h4>
+              <h3 class="biblio-title">Ecuaciones diferenciales ordinarias</h3>
+              <div class="biblio-edition">México: Universidad Autónoma de Ciudad Juárez</div>
+              <p class="biblio-role">📘 Guía de Ejercicios y Técnicas de Solución</p>
+            </div>
+
+            <div class="biblio-card">
+              <div class="biblio-year">2015</div>
+              <h4 class="biblio-author">García Hernández, A. E., & Reich, D.</h4>
+              <h3 class="biblio-title">Ecuaciones diferenciales: una nueva visión</h3>
+              <div class="biblio-edition">México: Editorial Patria</div>
+              <p class="biblio-role">📗 Métodos Cuantitativos y Enfoque Moderno</p>
+            </div>
+
+            <div class="biblio-card">
+              <div class="biblio-year">2016</div>
+              <h4 class="biblio-author">Buendía, G., Cordero, F., & Mendoza, E. J.</h4>
+              <h3 class="biblio-title">El comportamiento con tendencia, lo estable y las ecuaciones diferenciales lineales</h3>
+              <div class="biblio-edition">México: Editorial Gedisa</div>
+              <p class="biblio-role">📙 Argumentación Gráfica y Teoría Cualitativa</p>
+            </div>
+          </div>
+          <div class="nav-hint">⬇ Desliza hacia abajo para consultar los Fundamentos Pedagógicos</div>
+        </section>
+
+        <!-- Pedagogical References Sub-slide -->
+        <section id="pedagogy-refs">
+          <div class="section-badge badge-purple">FUNDAMENTOS PEDAGÓGICOS</div>
+          <h3>Sustento Teórico de la Metodología</h3>
+          <p class="subtitle-text">Investigación en Educación en Ingeniería y Dinámica de Equipos</p>
+
+          <div class="pedagogy-grid">
+            <div class="pedagogy-card">
+              <div class="pedagogy-author">Belbin, R. Meredith (1981, 2010)</div>
+              <h4>Management Teams: Why They Succeed or Fail & Team Roles at Work</h4>
+              <p class="pedagogy-desc">
+                Sustenta la división de roles en las Firmas Consultoras (Analista, Modelador, Integrador) para asegurar la diversidad cognitiva y la efectividad del trabajo colaborativo en ingeniería.
+              </p>
+            </div>
+
+            <div class="pedagogy-card">
+              <div class="pedagogy-author">Felder, Richard M., & Brent, Rebecca (2005)</div>
+              <h4>Understanding Student Differences: Journal of Engineering Education</h4>
+              <p class="pedagogy-desc">
+                Fundamento de las estrategias de aprendizaje activo, evaluación inductiva y diseño de retos aplicados a la enseñanza de matemáticas avanzadas en escuelas de ingeniería.
+              </p>
+            </div>
+          </div>
+
+          <div class="closure-box">
+            🎓 <strong>¡Bienvenido a Cálculo III!</strong> Prepárate para liderar tu Firma Consultora con rigor, aporte técnico y colaboración.
+          </div>
+        </section>
+
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Reveal.js Core JS (CDN with fallback setup) -->
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+  <script>
+    if (typeof Reveal === 'undefined') {
+      document.write('<script src="vendor/reveal/reveal.js"><\/script>');
+    }
+  </script>
+
+  <!-- Reveal Math Plugin (KaTeX adapter) -->
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/math/math.js"></script>
+  <script>
+    if (typeof RevealMath === 'undefined') {
+      document.write('<script src="vendor/reveal/plugin/math/math.js"><\/script>');
+    }
+  </script>
+
+  <!-- KaTeX Core Library -->
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+
+  <!-- Custom Presentation Application Scripts -->
+  <script src="js/custom.js"></script>
+
+  <!-- Inline Initialization Guard for Reveal.js & KaTeX Plugin -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof Reveal !== 'undefined' && !Reveal.isReady()) {
+        var activePlugins = [];
+        if (typeof RevealMath !== 'undefined' && RevealMath.KaTeX) {
+          activePlugins.push(RevealMath.KaTeX);
+        }
+
+        Reveal.initialize({
+          controls: true,
+          progress: true,
+          center: true,
+          hash: true,
+          mouseWheel: true,
+          transition: 'slide',
+          width: 1280,
+          height: 720,
+          margin: 0.05,
+          minScale: 0.2,
+          maxScale: 1.5,
+          plugins: activePlugins,
+          katex: {
+            version: 'latest',
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false },
+              { left: '\\(', right: '\\)', display: false },
+              { left: '\\[', right: '\\]', display: true }
+            ],
+            ignoredTags: ['sc' + 'ript', 'noscript', 'style', 'textarea', 'pre']
+          }
+        }).catch(function(err) {
+          console.warn('Reveal initialization caught error:', err);
+        });
+      }
+    });
+  </script>
+</body>
+</html>
