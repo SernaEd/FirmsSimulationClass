@@ -51,8 +51,9 @@ jobs:
           chmod 600 deploy_key
           scp -i deploy_key scripts/bootstrap-environment.sh "deploy@$VPS_HOST:/opt/calc3/bootstrap-environment.sh"
           REPO_URL="https://github.com/${{ github.repository }}.git"
-          ssh -i deploy_key "deploy@$VPS_HOST" "bash /opt/calc3/bootstrap-environment.sh staging 3100 8100 $VPS_HOST $REPO_URL"
-          ssh -i deploy_key "deploy@$VPS_HOST" "bash /opt/calc3/bootstrap-environment.sh production 3000 8001 $VPS_HOST $REPO_URL"
+          GIT_REF="${{ github.ref_name }}"
+          ssh -i deploy_key "deploy@$VPS_HOST" "bash /opt/calc3/bootstrap-environment.sh staging 3100 8100 $VPS_HOST $REPO_URL $GIT_REF"
+          ssh -i deploy_key "deploy@$VPS_HOST" "bash /opt/calc3/bootstrap-environment.sh production 3000 8001 $VPS_HOST $REPO_URL $GIT_REF"
 
       - name: Guardar la llave privada como artefacto descargable
         uses: actions/upload-artifact@v4

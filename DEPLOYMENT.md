@@ -180,8 +180,12 @@ izquierda) → **Run workflow** → rama `main` → **Run workflow**.
 3. Se conecta como `deploy` (ya sin necesitar la contraseña root) y corre
    [`scripts/bootstrap-environment.sh`](scripts/bootstrap-environment.sh)
    dos veces: una para `staging`, otra para `production`. Cada corrida
-   clona el repo, genera un `.env` con contraseñas y `JWT_SECRET` al azar
-   (generados **en el propio VPS** — nunca pasan por GitHub), y hace el
+   clona el repo (o, si ya existe el checkout de una corrida anterior, lo
+   actualiza a la última versión de la rama que disparó este workflow —
+   así un fix que acabas de mezclar a esa rama sí se aplica al volver a
+   correr, en vez de quedarse con lo que había el día del primer clon),
+   genera un `.env` con contraseñas y `JWT_SECRET` al azar (generados **en
+   el propio VPS** — nunca pasan por GitHub) si no existe ya, y hace el
    primer `docker compose up --build` + `alembic upgrade head`.
 4. Sube la llave privada generada en el paso 1 como un **artifact**
    descargable de esta ejecución (no la imprime en ningún log).

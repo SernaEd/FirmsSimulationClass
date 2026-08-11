@@ -3,13 +3,16 @@
 # repo, genera su .env con secretos aleatorios si no existe, y hace el
 # primer arranque con Docker Compose + migraciones.
 #
-# Corre UNA vez por ambiente, como el usuario deploy, disparado por el
-# workflow .github/workflows/bootstrap-vps.yml. Es seguro volver a
-# correrlo: si el checkout o el .env ya existen, no los toca (para no
-# perder secretos ya en uso ni el historial de git local).
+# Corre por cada ejecución de bootstrap, como el usuario deploy, disparado
+# por el workflow .github/workflows/bootstrap-vps.yml. Es seguro volver a
+# correrlo: el .env no se toca si ya existe (para no perder secretos ya en
+# uso), pero el CHECKOUT DE CÓDIGO sí se actualiza siempre a la última
+# versión de git_ref — así cualquier fix en scripts/ o en los propios
+# docker-compose*.yml que ya esté en esa rama se aplica de verdad, en vez
+# de quedarse pegado en lo que había el día que se clonó por primera vez.
 #
-# Uso: bash bootstrap-environment.sh <nombre> <frontend_port> <backend_port> <host_publico> <repo_url>
-# Ej:  bash bootstrap-environment.sh staging 3100 8100 203.0.113.10 https://github.com/user/repo.git
+# Uso: bash bootstrap-environment.sh <nombre> <frontend_port> <backend_port> <host_publico> <repo_url> <git_ref>
+# Ej:  bash bootstrap-environment.sh staging 3100 8100 203.0.113.10 https://github.com/user/repo.git main
 
 set -euo pipefail
 
@@ -18,6 +21,7 @@ FRONTEND_PORT="${2:?Falta el puerto del frontend}"
 BACKEND_PORT="${3:?Falta el puerto del backend}"
 PUBLIC_HOST="${4:?Falta el host público (IP o dominio)}"
 REPO_URL="${5:?Falta la URL del repo}"
+GIT_REF="${6:?Falta la rama/ref de git a desplegar}"
 
 DIR="/opt/calc3/$ENV_NAME"
 COMPOSE_PROJECT="calc3-$([ "$ENV_NAME" = "production" ] && echo "prod" || echo "staging")"
@@ -27,14 +31,16 @@ COMPOSE_PROJECT="calc3-$([ "$ENV_NAME" = "production" ] && echo "prod" || echo "
 # puerto del host aunque MySQL sí llegara a publicarse.
 MYSQL_PORT_VAL="$([ "$ENV_NAME" = "production" ] && echo "3307" || echo "3308")"
 
-echo "=== [$ENV_NAME] Checkout del repo ==="
+echo "=== [$ENV_NAME] Checkout del repo (rama: $GIT_REF) ==="
 if [ -d "$DIR/.git" ]; then
-  echo "Ya existe un checkout en $DIR, no se vuelve a clonar."
+  echo "Ya existe un checkout en $DIR — actualizándolo a origin/$GIT_REF."
+  cd "$DIR"
+  git fetch origin "$GIT_REF"
+  git reset --hard "origin/$GIT_REF"
 else
-  git clone "$REPO_URL" "$DIR"
+  git clone --branch "$GIT_REF" "$REPO_URL" "$DIR"
+  cd "$DIR"
 fi
-
-cd "$DIR"
 
 echo "=== [$ENV_NAME] Variables de entorno (.env) ==="
 if [ -f .env ]; then
