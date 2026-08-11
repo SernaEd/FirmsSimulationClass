@@ -52,7 +52,7 @@ jobs:
           scp -i deploy_key scripts/bootstrap-environment.sh "deploy@$VPS_HOST:/opt/calc3/bootstrap-environment.sh"
           REPO_URL="https://github.com/${{ github.repository }}.git"
           ssh -i deploy_key "deploy@$VPS_HOST" "bash /opt/calc3/bootstrap-environment.sh staging 3100 8100 $VPS_HOST $REPO_URL"
-          ssh -i deploy_key "deploy@$VPS_HOST" "bash /opt/calc3/bootstrap-environment.sh production 3000 8000 $VPS_HOST $REPO_URL"
+          ssh -i deploy_key "deploy@$VPS_HOST" "bash /opt/calc3/bootstrap-environment.sh production 3000 8001 $VPS_HOST $REPO_URL"
 
       - name: Guardar la llave privada como artefacto descargable
         uses: actions/upload-artifact@v4
@@ -73,7 +73,7 @@ jobs:
             echo "ambos ambientes ya están corriendo:"
             echo ""
             echo "- Staging: http://$VPS_HOST:3100 (API en :8100)"
-            echo "- Production: http://$VPS_HOST:3000 (API en :8000)"
+            echo "- Production: http://$VPS_HOST:3000 (API en :8001)"
             echo ""
             echo "### Para terminar de conectar todo (esto SÍ hazlo, en GitHub, no en el servidor):"
             echo ""

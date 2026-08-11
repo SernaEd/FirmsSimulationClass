@@ -45,7 +45,10 @@ if command -v nginx >/dev/null 2>&1; then
   echo "--- Sitios habilitados en /etc/nginx/sites-enabled/ ---"
   ls -la /etc/nginx/sites-enabled/ 2>/dev/null || echo "(no existe esa carpeta)"
   echo "--- Directivas server_name / listen ---"
-  grep -rH "server_name\|listen" /etc/nginx/sites-enabled/ 2>/dev/null
+  # -R (no -r): sigue symlinks dentro de sites-enabled/ (los sitios reales
+  # suelen vivir en sites-available/ y solo enlazarse aquí) — con -r a
+  # secas, un sitio enlazado por symlink queda invisible para este grep.
+  grep -RH "server_name\|listen" /etc/nginx/sites-enabled/ 2>/dev/null
 else
   echo "nginx no está instalado."
 fi

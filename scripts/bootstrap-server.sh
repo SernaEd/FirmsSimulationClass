@@ -34,7 +34,7 @@ echo "=== Firewall (ufw) ==="
 apt-get install -y ufw
 ufw allow 22/tcp
 ufw allow 3000/tcp   # frontend producción
-ufw allow 8000/tcp   # backend producción
+ufw allow 8001/tcp   # backend producción (8000 ya lo usa otro proyecto en este VPS)
 ufw allow 3100/tcp   # frontend staging
 ufw allow 8100/tcp   # backend staging
 if ufw status | grep -q "Status: active"; then
