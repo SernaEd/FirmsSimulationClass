@@ -101,7 +101,14 @@ certbot --nginx \
 
 echo "=== Renovación automática ==="
 systemctl enable --now certbot.timer
-certbot renew --dry-run
+# --cert-name limita la simulación al certificado de ESTE proyecto (nombrado
+# por el primer -d de arriba: $FRONTEND_DOMAIN, cubre ambos dominios vía
+# SAN). Sin --cert-name, "certbot renew --dry-run" simula TODOS los
+# certificados del VPS, incluyendo los de otros proyectos que compartan el
+# servidor — si alguno de esos falla (dominio dado de baja, DNS roto, etc.)
+# aborta este script por "set -e" antes de actualizar el .env y recrear los
+# contenedores de calc3, aunque el certificado de calc3 se haya emitido bien.
+certbot renew --dry-run --cert-name "$FRONTEND_DOMAIN"
 
 echo "=== Actualizando .env de producción (como el usuario deploy) ==="
 sudo -u deploy -H bash -c "
