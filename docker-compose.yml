@@ -47,6 +47,7 @@ services:
       JWT_ACCESS_TOKEN_MINUTES: ${JWT_ACCESS_TOKEN_MINUTES:-1440}
       JWT_REFRESH_TOKEN_DAYS: ${JWT_REFRESH_TOKEN_DAYS:-7}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-}
+      ADMIN_BOOTSTRAP_TOKEN: ${ADMIN_BOOTSTRAP_TOKEN:-}
       TZ: ${TZ:-America/Mexico_City}
     ports:
       # FRONTEND_BIND/BACKEND_BIND por default en todas las interfaces
