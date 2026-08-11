@@ -33,7 +33,7 @@ cd "$DIR"
 
 echo "=== [$ENV_NAME] Variables de entorno (.env) ==="
 if [ -f .env ]; then
-  echo ".env ya existe, no se toca (evita perder secretos ya en uso)."
+  echo ".env ya existe, no se regenera (evita perder secretos ya en uso)."
 else
   cp .env.example .env
   sed -i "s#^ENVIRONMENT=.*#ENVIRONMENT=$ENV_NAME#" .env
@@ -46,6 +46,19 @@ else
   sed -i "s#^ALLOWED_ORIGINS=.*#ALLOWED_ORIGINS=http://$PUBLIC_HOST:$FRONTEND_PORT#" .env
   echo ".env generado con secretos aleatorios (no salen de este servidor)."
 fi
+
+# Siempre (.env nuevo o ya existente): reconstruye DATABASE_URL a partir de
+# MYSQL_USER/MYSQL_PASSWORD/MYSQL_DATABASE actuales del archivo. En
+# .env.example, DATABASE_URL trae la contraseña de ejemplo escrita aparte,
+# como texto plano ("change_me_user") — un bug anterior generaba
+# MYSQL_PASSWORD al azar pero nunca actualizaba este campo, así que el
+# backend intentaba conectarse con la contraseña de ejemplo en vez de la
+# real. Reconstruirlo cada corrida (no solo al generar el .env por primera
+# vez) también autocorrige cualquier .env que ya haya quedado así.
+MYSQL_USER_VAL="$(grep '^MYSQL_USER=' .env | head -1 | cut -d= -f2-)"
+MYSQL_PW_VAL="$(grep '^MYSQL_PASSWORD=' .env | head -1 | cut -d= -f2-)"
+MYSQL_DB_VAL="$(grep '^MYSQL_DATABASE=' .env | head -1 | cut -d= -f2-)"
+sed -i "s#^DATABASE_URL=.*#DATABASE_URL=mysql+pymysql://${MYSQL_USER_VAL}:${MYSQL_PW_VAL}@mysql:3306/${MYSQL_DB_VAL}#" .env
 
 echo "=== [$ENV_NAME] Primer arranque (docker compose up --build) ==="
 docker compose -p "$COMPOSE_PROJECT" -f docker-compose.yml -f docker-compose.prod.yml up -d --build
