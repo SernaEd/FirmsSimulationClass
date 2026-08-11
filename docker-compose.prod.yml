@@ -10,7 +10,13 @@
 
 services:
   mysql:
-    ports: []  # No expone puerto al host en prod
+    # "!reset []" (no un simple "ports: []"): Docker Compose combina listas
+    # (como "ports") entre archivos por CONCATENACIÓN por default — un
+    # "ports: []" aquí se fusiona con el puerto del archivo base sin
+    # quitarlo, así que en la práctica mysql SÍ quedaba expuesto al host.
+    # "!reset" es la sintaxis del Compose Specification para de verdad
+    # vaciar un campo heredado en vez de fusionarlo.
+    ports: !reset []  # No expone puerto al host en prod/staging
 
   backend:
     volumes:

@@ -21,6 +21,11 @@ REPO_URL="${5:?Falta la URL del repo}"
 
 DIR="/opt/calc3/$ENV_NAME"
 COMPOSE_PROJECT="calc3-$([ "$ENV_NAME" = "production" ] && echo "prod" || echo "staging")"
+# El overlay de prod (docker-compose.prod.yml) ya evita que MySQL publique
+# puerto al host — este valor solo protege por si algún día ese overlay no
+# se usa o cambia: así staging y producción nunca compiten por el mismo
+# puerto del host aunque MySQL sí llegara a publicarse.
+MYSQL_PORT_VAL="$([ "$ENV_NAME" = "production" ] && echo "3307" || echo "3308")"
 
 echo "=== [$ENV_NAME] Checkout del repo ==="
 if [ -d "$DIR/.git" ]; then
@@ -42,6 +47,7 @@ else
   sed -i "s#^JWT_SECRET=.*#JWT_SECRET=$(openssl rand -hex 32)#" .env
   sed -i "s#^BACKEND_PORT=.*#BACKEND_PORT=$BACKEND_PORT#" .env
   sed -i "s#^FRONTEND_PORT=.*#FRONTEND_PORT=$FRONTEND_PORT#" .env
+  sed -i "s#^MYSQL_PORT=.*#MYSQL_PORT=$MYSQL_PORT_VAL#" .env
   sed -i "s#^NEXT_PUBLIC_API_URL=.*#NEXT_PUBLIC_API_URL=http://$PUBLIC_HOST:$BACKEND_PORT#" .env
   sed -i "s#^ALLOWED_ORIGINS=.*#ALLOWED_ORIGINS=http://$PUBLIC_HOST:$FRONTEND_PORT#" .env
   echo ".env generado con secretos aleatorios (no salen de este servidor)."
