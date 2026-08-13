@@ -16,12 +16,21 @@ type Result =
  * navegación) y redirige a /login si no hay sesión o expiró.
  * Si `requireAdmin` es true, redirige a /inicio si el usuario no es admin.
  *
+ * Cuentas no activas (§2: `pending_profile`, `pending_approval`,
+ * `rejected`) no pueden usar el resto de la plataforma. `pending_profile`
+ * tiene página propia (/test-perfil, §3); las demás no tienen vista
+ * dedicada y caen en /inicio, que ya muestra el banner de "cuenta
+ * pendiente" según el estado. La propia página /test-perfil pasa
+ * `allowPendingProfile: true` para no auto-redirigirse a sí misma.
+ *
  * No redirige a /login si esta misma página ya estuvo autenticada durante
  * su vida (`wasAuthenticated`): ese caso es un logout explícito, que ya
  * navega por su cuenta (típicamente a "/"), y no debe competir por la
  * navegación con este hook.
  */
-export function useAuth(options: { requireAdmin?: boolean } = {}): Result {
+export function useAuth(
+  options: { requireAdmin?: boolean; allowPendingProfile?: boolean } = {},
+): Result {
   const ctx = useAuthContext();
   const router = useRouter();
   const wasAuthenticated = useRef(false);
@@ -39,6 +48,14 @@ export function useAuth(options: { requireAdmin?: boolean } = {}): Result {
     }
     if (ctx.status === "authenticated" && options.requireAdmin && !ctx.user.is_admin) {
       router.replace("/inicio");
+      return;
+    }
+    if (ctx.status === "authenticated" && ctx.user.estado !== "active") {
+      if (ctx.user.estado === "pending_profile") {
+        if (!options.allowPendingProfile) router.replace("/test-perfil");
+      } else {
+        router.replace("/inicio");
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ctx.status]);

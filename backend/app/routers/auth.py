@@ -10,12 +10,10 @@ from sqlalchemy.orm import Session
 from app.config import settings
 from app.database import get_db
 from app.deps import get_current_user
-from app.models.system import InboxItemType, InboxPriority
 from app.models.user import User, UserStatus
 from app.rate_limit import limiter
-from app.schemas.auth import BootstrapAdminIn, LoginIn, RegisterIn, TokenOut, UserOut
+from app.schemas.auth import BootstrapAdminIn, LoginIn, RegisterIn, RegisterOut, TokenOut, UserOut
 from app.security import create_access_token, hash_pin, verify_pin
-from app.services.inbox import create_inbox_item
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -33,8 +31,8 @@ def _raise_if_duplicate(db: Session, numero_cuenta: str, nickname: str) -> None:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=detail)
 
 
-@router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
-def register(payload: RegisterIn, db: Session = Depends(get_db)) -> User:
+@router.post("/register", response_model=RegisterOut, status_code=status.HTTP_201_CREATED)
+def register(payload: RegisterIn, db: Session = Depends(get_db)) -> RegisterOut:
     _raise_if_duplicate(db, payload.numero_cuenta, payload.nickname)
 
     user = User(
@@ -45,31 +43,24 @@ def register(payload: RegisterIn, db: Session = Depends(get_db)) -> User:
         pin_hash=hash_pin(payload.pin),
         correo_institucional=payload.correo_institucional,
         pronombres=payload.pronombres,
-        # TODO(iter-1): cuando exista el test de perfil, cambiar a
-        # UserStatus.pending_profile — la persona pasa por el test antes de
-        # que el profesor apruebe. Ver plan_de_tareas_mvp.md / Iteración 1.
-        estado=UserStatus.pending_approval,
+        # La persona pasa primero por el test de perfil (§3); solo al
+        # completarlo la cuenta entra a pending_approval y aparece en el
+        # Inbox del profesor (ver POST /profile-test/submit).
+        estado=UserStatus.pending_profile,
         terms_accepted_at=datetime.now(timezone.utc),
     )
     db.add(user)
-    db.flush()  # user.id disponible sin cerrar la transacción
-
-    create_inbox_item(
-        db,
-        tipo=InboxItemType.registro,
-        referencia_id=user.id,
-        prioridad=InboxPriority.media,
-        payload={
-            "nombre": user.nombre,
-            "apellidos": user.apellidos,
-            "numero_cuenta": user.numero_cuenta,
-            "nickname": user.nickname,
-        },
-    )
-
     db.commit()
     db.refresh(user)
-    return user
+
+    # Devuelve el token de una vez: la persona pasa directo al test de
+    # perfil sin tener que loguearse aparte con el PIN que acaba de crear.
+    token = create_access_token(subject=user.id, extra_claims={"is_admin": user.is_admin})
+    return RegisterOut(
+        **UserOut.model_validate(user).model_dump(),
+        access_token=token,
+        expires_in_minutes=settings.jwt_access_token_minutes,
+    )
 
 
 @router.post(

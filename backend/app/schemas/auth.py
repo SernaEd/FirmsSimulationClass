@@ -64,3 +64,22 @@ class UserOut(BaseModel):
     is_admin: bool
     terms_accepted_at: datetime
     created_at: datetime
+
+
+class RegisterOut(UserOut):
+    """UserOut + token: el registro deja lista la sesión de una vez (la
+    persona pasa directo al test de perfil, §3, sin loguearse aparte)."""
+
+    access_token: str
+    token_type: str = "bearer"
+    expires_in_minutes: int
+
+
+class ReassignProfileIn(BaseModel):
+    """Corrección manual del perfil de trabajo en equipo (§3.1): el
+    resultado del test no es editable por el alumno, pero el profesor puede
+    reasignarlo en casos justificados — ej. el test converge casi
+    unánimemente en un solo perfil y la formación de equipos (§6) se queda
+    sin material para balancear."""
+
+    perfil: UserProfile

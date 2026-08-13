@@ -40,6 +40,10 @@ export type RegisterPayload = {
   acepta_reglas: boolean;
 };
 
+// UserOut + token: el registro deja lista la sesión de una vez (ver
+// POST /auth/register en el backend).
+export type RegisterOut = UserOut & TokenOut;
+
 // Ajusta un adjetivo o participio pasado al pronombre declarado.
 // Ejemplos: pickByPronoun(user.pronombres, "bienvenida", "bienvenido", "bienvenide")
 // → cuando pronombres = prefiero_no_decir, usa la versión neutra (3er arg).
@@ -137,6 +141,23 @@ async function request<T>(
   if (res.status === 204) return undefined as T;
   return res.json();
 }
+
+// ---- Tipos test de perfil (§3, Iteración 1) ----
+export type ProfileTestOptionOut = {
+  perfil: UserProfile;
+  texto: string;
+};
+
+export type ProfileTestQuestionOut = {
+  id: number;
+  orden: number;
+  enunciado: string;
+  opciones: ProfileTestOptionOut[];
+};
+
+export type ProfileTestSubmitPayload = {
+  respuestas: { question_id: number; perfil_elegido: UserProfile }[];
+};
 
 // ---- Tipos Dominio 2 (Teams) ----
 export type TeamNameStatus = "pendiente" | "aprobado" | "asignado_por_sistema";
@@ -412,7 +433,7 @@ export type SystemFlagOut = {
 export const api = {
   // Dominio 1
   register: (body: RegisterPayload) =>
-    request<UserOut>("/auth/register", {
+    request<RegisterOut>("/auth/register", {
       method: "POST",
       body: JSON.stringify(body),
     }),
@@ -422,6 +443,16 @@ export const api = {
       body: JSON.stringify(body),
     }),
   me: (token: string) => request<UserOut>("/auth/me", {}, token),
+
+  // Test de perfil (§3, Iteración 1)
+  getProfileTest: (token: string) =>
+    request<ProfileTestQuestionOut[]>("/profile-test", {}, token),
+  submitProfileTest: (token: string, body: ProfileTestSubmitPayload) =>
+    request<UserOut>(
+      "/profile-test/submit",
+      { method: "POST", body: JSON.stringify(body) },
+      token,
+    ),
 
   // Dominio 2 — alumno
   myTeam: (token: string) => request<TeamOut | null>("/me/team", {}, token),
@@ -600,6 +631,12 @@ export const api = {
       { method: "POST" },
       token,
     ),
+  adminReassignProfile: (token: string, userId: number, perfil: UserProfile) =>
+    request<UserOut>(
+      `/admin/users/${userId}/reassign-profile`,
+      { method: "POST", body: JSON.stringify({ perfil }) },
+      token,
+    ),
 
   // Dominio 4 — admin: Inbox
   adminGetInbox: (
@@ -654,11 +691,16 @@ const USER_KEY = "calc3_user";
 // Notifica a AuthContext (montado una sola vez en el layout raíz) que la
 // sesión cambió, sin necesidad de que cada página que hace login/logout
 // conozca el contexto — solo llama auth.setToken()/clearToken() como ya hacía.
+// Si ya se tiene el UserOut fresco a la mano (ej. la respuesta de una
+// mutación), se manda en `detail.user` para que AuthContext actualice su
+// estado directo sin otro round-trip a /auth/me.
 export const AUTH_CHANGE_EVENT = "calc3-auth-changed";
 
-function notifyAuthChange(): void {
+export type AuthChangeDetail = { user?: UserOut };
+
+function notifyAuthChange(user?: UserOut): void {
   if (typeof window === "undefined") return;
-  window.dispatchEvent(new Event(AUTH_CHANGE_EVENT));
+  window.dispatchEvent(new CustomEvent<AuthChangeDetail>(AUTH_CHANGE_EVENT, { detail: { user } }));
 }
 
 export const auth = {
@@ -690,5 +732,13 @@ export const auth = {
   setCachedUser(user: UserOut): void {
     if (typeof window === "undefined") return;
     window.localStorage.setItem(USER_KEY, JSON.stringify(user));
+  },
+  // Actualiza el usuario cacheado y notifica a AuthContext con los datos ya
+  // frescos (ej. tras el test de perfil, que devuelve el UserOut
+  // actualizado) — evita el round-trip a /auth/me que haría un evento sin
+  // `user` adjunto.
+  setUser(user: UserOut): void {
+    auth.setCachedUser(user);
+    notifyAuthChange(user);
   },
 };

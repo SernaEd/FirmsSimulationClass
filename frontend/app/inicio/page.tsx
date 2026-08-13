@@ -1,19 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { BalanceWidget } from "@/components/BalanceWidget";
-import { auth, pickByPronoun } from "@/lib/api";
+import { pickByPronoun } from "@/lib/api";
 import { useAuth } from "@/lib/useAuth";
 
 export default function Inicio() {
   const authState = useAuth();
-  const router = useRouter();
-
-  function handleLogout() {
-    auth.clearToken();
-    router.replace("/");
-  }
 
   if (authState.status === "loading") {
     return (
@@ -26,12 +19,7 @@ export default function Inicio() {
   if (authState.status === "error") {
     return (
       <main className="min-h-screen flex items-center justify-center p-8">
-        <div className="max-w-md w-full space-y-4 text-center">
-          <p className="text-red-400">Error: {authState.error}</p>
-          <button onClick={handleLogout} className="underline text-neutral-400">
-            Cerrar sesión
-          </button>
-        </div>
+        <p className="text-red-400">Error: {authState.error}</p>
       </main>
     );
   }
@@ -48,23 +36,15 @@ export default function Inicio() {
 
   return (
     <main className="min-h-screen max-w-3xl mx-auto p-8 space-y-8">
-      <header className="flex items-start justify-between">
-        <div>
-          <p className="text-ibero-red text-xs uppercase tracking-widest">
-            IBERO · Cálculo 3
-          </p>
-          <h1 className="text-3xl font-semibold mt-1">Hola, {user.nombre}</h1>
-          <p className="text-neutral-400 text-sm mt-1">
-            Nickname: <code>{user.nickname}</code> · Cuenta:{" "}
-            <code>{user.numero_cuenta}</code>
-          </p>
-        </div>
-        <button
-          onClick={handleLogout}
-          className="text-sm text-neutral-400 hover:text-white underline"
-        >
-          Cerrar sesión
-        </button>
+      <header>
+        <p className="text-ibero-red text-xs uppercase tracking-widest">
+          IBERO · Cálculo 3
+        </p>
+        <h1 className="text-3xl font-semibold mt-1">Hola, {user.nombre}</h1>
+        <p className="text-neutral-400 text-sm mt-1">
+          Nickname: <code>{user.nickname}</code> · Cuenta:{" "}
+          <code>{user.numero_cuenta}</code>
+        </p>
       </header>
 
       {isPending ? (

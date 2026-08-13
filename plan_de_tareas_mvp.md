@@ -37,7 +37,7 @@
 - [x] Frontend: formularios de registro y login + página de reglas + `/inicio` post-login con `/auth/me`.
 - [x] Frontend: componente `Field` compartido con toggle de visibilidad del PIN.
 - [x] Frontend: fraseo neutro por default + saludo personalizado por pronombres (`pickByPronoun`).
-- [ ] *(diferido a Iteración 1)* Test de perfil accesible inmediatamente tras el registro; el flujo pasará a `pending_profile → (test) → pending_approval → active`. Ver Iteración 1.
+- [x] Test de perfil accesible inmediatamente tras el registro; el flujo pasa a `pending_profile → (test) → pending_approval → active`. Ver Iteración 1.
 
 ### 👥 Dominio 2 — Teams y nombres de firma
 
@@ -132,13 +132,13 @@
   - [ ] Visor embebido de PDF (`<iframe>`) para apuntes del profesor desde GDrive (sección media).
   - [ ] Sección de comentarios estilo YouTube por sesión (sección inferior).
   - [ ] Botón admin "Sincronizar Clase" por sesión.
-- [ ] **Test de perfil de trabajo (Belbin adaptado)** *(mudado desde Dominio 1 diferido)*:
-  - [ ] Modelo `ProfileTestQuestion` + `ProfileTestAnswer` (8-10 preguntas de escenario con 3 opciones cada una).
-  - [ ] Migración Alembic.
-  - [ ] `GET /profile-test` (para persona en `pending_profile`) y `POST /profile-test/submit`.
-  - [ ] Cambiar default de registro a `pending_profile`; al terminar el test → `pending_approval` (auto).
-  - [ ] Frontend: página `/test-perfil` accesible inmediatamente tras el registro (no requiere aprobación previa).
-  - [ ] Redacción de las preguntas + bibliografía visible (Belbin, Felder & Brent).
+- [x] **Test de perfil de trabajo (Belbin adaptado)** *(mudado desde Dominio 1 diferido)*:
+  - [x] Modelo `ProfileTestQuestion` + `ProfileTestAnswer` (8 preguntas de escenario con 3 opciones cada una).
+  - [x] Migración Alembic (`2dad9acd79a5`), con las 8 preguntas sembradas directamente (contenido fijo, no editable desde admin).
+  - [x] `GET /profile-test` (para persona en `pending_profile`, vía dependencia `get_current_pending_profile_user`) y `POST /profile-test/submit`.
+  - [x] Cambiar default de registro a `pending_profile`; al terminar el test → `pending_approval` (auto), con el `InboxItem` de registro creado en ese momento (ya con el perfil sugerido visible para el admin).
+  - [x] Frontend: página `/test-perfil` accesible inmediatamente tras el registro — `/auth/register` ya deja la sesión lista, sin login aparte.
+  - [x] Redacción de las preguntas + bibliografía visible (Belbin, Felder & Brent).
 
 - [ ] **Motor de Racha Diaria** (evidencia WebAssign, APScheduler):
   - [ ] `POST /me/streak/evidence` — sube link al reporte de WebAssign + captura; marca el día `completado` de inmediato (sin cola de revisión, §5.5).

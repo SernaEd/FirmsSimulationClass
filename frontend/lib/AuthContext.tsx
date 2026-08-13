@@ -8,7 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { AUTH_CHANGE_EVENT, ApiError, UserOut, api, auth } from "@/lib/api";
+import { AUTH_CHANGE_EVENT, ApiError, AuthChangeDetail, UserOut, api, auth } from "@/lib/api";
 
 export type AuthState =
   | { status: "loading"; token: null; user: null; error: null }
@@ -52,12 +52,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    function load() {
+    function load(event?: Event) {
       const token = auth.getToken();
       if (!token) {
         setState({ status: "unauthenticated", token: null, user: null, error: null });
         return;
       }
+
+      // auth.setUser() adjunta el UserOut ya fresco al evento (ej. tras el
+      // test de perfil) — evita un round-trip a /auth/me redundante.
+      const detailUser = (event as CustomEvent<AuthChangeDetail> | undefined)?.detail?.user;
+      if (detailUser) {
+        setState({ status: "authenticated", token, user: detailUser, error: null });
+        return;
+      }
+
       // Si ya estábamos autenticados con este mismo token, no volver a
       // mostrar "loading" mientras se revalida en background.
       setState((prev) =>

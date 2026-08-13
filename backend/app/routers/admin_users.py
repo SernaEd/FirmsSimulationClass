@@ -13,7 +13,7 @@ from app.database import get_db
 from app.deps import get_current_admin
 from app.models.system import InboxItemType
 from app.models.user import User, UserStatus
-from app.schemas.auth import UserOut
+from app.schemas.auth import ReassignProfileIn, UserOut
 from app.security import hash_pin
 from app.services.inbox import resolve_inbox_items
 
@@ -47,6 +47,22 @@ def reset_pin(
             "Al iniciar sesión debe cambiarlo (feature de cambio de PIN pendiente en próxima iteración)."
         ),
     }
+
+
+@router.post("/{user_id}/reassign-profile", response_model=UserOut)
+def reassign_profile(
+    user_id: int,
+    payload: ReassignProfileIn,
+    db: Session = Depends(get_db),
+    _admin: User = Depends(get_current_admin),
+) -> User:
+    user = db.get(User, user_id)
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no existe.")
+    user.perfil = payload.perfil
+    db.commit()
+    db.refresh(user)
+    return user
 
 
 @router.post("/{user_id}/approve", response_model=UserOut)

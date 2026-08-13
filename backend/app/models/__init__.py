@@ -8,6 +8,7 @@ Cada dominio agrega sus modelos aquí. Actualmente:
 - Dominio 4 (Sistema): InboxItem, SystemFlag, SystemState
   (Announcement/AnnouncementRead se removieron — anuncios ahora se publican
   en Brightspace, ver plan_de_tareas_mvp.md)
+- Iteración 1 (Test de perfil): ProfileTestQuestion, ProfileTestAnswer
 """
 
 from .economy import (  # noqa: F401
@@ -20,6 +21,7 @@ from .economy import (  # noqa: F401
     TokenLedger,
     TokenSource,
 )
+from .profile_test import ProfileTestAnswer, ProfileTestQuestion  # noqa: F401
 from .system import (  # noqa: F401
     InboxItem,
     InboxItemStatus,

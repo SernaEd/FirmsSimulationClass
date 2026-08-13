@@ -57,3 +57,14 @@ def get_current_admin(user: User = Depends(get_current_active_user)) -> User:
             detail="Requiere permisos de administrador.",
         )
     return user
+
+
+def get_current_pending_profile_user(user: User = Depends(get_current_user)) -> User:
+    """Puerta para el test de perfil (§3): solo accesible mientras la cuenta
+    está en pending_profile (antes de que el profesor la apruebe)."""
+    if user.estado != UserStatus.pending_profile:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="El test de perfil ya no está disponible para tu cuenta.",
+        )
+    return user
