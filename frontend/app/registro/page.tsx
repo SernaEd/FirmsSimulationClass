@@ -1,18 +1,19 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { Field } from "@/components/Field";
-import { ApiError, UserPronouns, api } from "@/lib/api";
+import { ApiError, UserPronouns, api, auth } from "@/lib/api";
 
 type Status =
   | { kind: "idle" }
   | { kind: "submitting" }
-  | { kind: "error"; message: string }
-  | { kind: "success" };
+  | { kind: "error"; message: string };
 
 export default function Registro() {
   const [status, setStatus] = useState<Status>({ kind: "idle" });
+  const router = useRouter();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -29,7 +30,10 @@ export default function Registro() {
     setStatus({ kind: "submitting" });
 
     try {
-      await api.register({
+      // El registro ya deja la sesión lista (RegisterOut trae el token):
+      // la persona pasa directo al test de perfil (§3), sin loguearse
+      // aparte con el PIN que acaba de crear.
+      const result = await api.register({
         nombre: String(form.get("nombre") ?? "").trim(),
         apellidos: String(form.get("apellidos") ?? "").trim(),
         numero_cuenta: String(form.get("numero_cuenta") ?? "").trim(),
@@ -39,31 +43,12 @@ export default function Registro() {
         pronombres: (form.get("pronombres") as UserPronouns) ?? "prefiero_no_decir",
         acepta_reglas: form.get("acepta_reglas") === "on",
       });
-      setStatus({ kind: "success" });
+      auth.setToken(result.access_token);
+      router.push("/test-perfil");
     } catch (err) {
       const message = err instanceof ApiError ? err.detail : String(err);
       setStatus({ kind: "error", message });
     }
-  }
-
-  if (status.kind === "success") {
-    return (
-      <main className="min-h-screen flex items-center justify-center p-8">
-        <div className="max-w-md w-full space-y-6 text-center">
-          <h1 className="text-3xl font-semibold">Cuenta creada</h1>
-          <p className="text-neutral-400">
-            Tu registro fue recibido. El profesor debe aprobar tu cuenta antes de
-            que puedas ingresar al Dashboard.
-          </p>
-          <Link
-            href="/login"
-            className="inline-block rounded-lg bg-ibero-red hover:bg-ibero-red-dark transition-colors px-6 py-3 font-medium"
-          >
-            Ir al login
-          </Link>
-        </div>
-      </main>
-    );
   }
 
   return (
@@ -74,8 +59,8 @@ export default function Registro() {
         </Link>
         <h1 className="text-3xl font-semibold">Registro</h1>
         <p className="text-neutral-400 text-sm">
-          Al terminar quedará pendiente la aprobación del profesor antes de que
-          puedas ingresar.
+          Al terminar tomarás un breve test de perfil de trabajo en equipo.
+          Después, tu cuenta queda pendiente de aprobación del profesor.
         </p>
       </header>
 

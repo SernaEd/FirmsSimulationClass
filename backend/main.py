@@ -14,6 +14,7 @@ from app.routers import (
     auth,
     economy,
     health,
+    profile_test,
     teams,
 )
 
@@ -36,6 +37,7 @@ app.add_middleware(
 
 app.include_router(health.router)
 app.include_router(auth.router)
+app.include_router(profile_test.router)
 app.include_router(admin_users.router)
 app.include_router(admin_teams.router)
 app.include_router(teams.router)

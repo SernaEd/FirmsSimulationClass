@@ -51,7 +51,7 @@ class User(Base):
     estado: Mapped[UserStatus] = mapped_column(
         SQLEnum(UserStatus, native_enum=False, length=20),
         nullable=False,
-        default=UserStatus.pending_approval,
+        default=UserStatus.pending_profile,
         index=True,
     )
     perfil: Mapped[UserProfile | None] = mapped_column(
