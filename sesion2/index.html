@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cálculo III - Sesión 2 | Problemas de Valores Iniciales</title>
+  <link rel="icon" type="image/x-icon" href="../favicon.ico">
+
+  <!-- Reveal.js Core & Theme CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/black.css" id="theme">
+  
+  <!-- KaTeX CSS for mathematical equations -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Custom Applied Engineering Styles -->
+  <link rel="stylesheet" href="css/custom.css">
+</head>
+<body>
+
+  <!-- Main Reveal Presentation Container -->
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- ========================================== -->
+      <!-- SLIDE 1: WELCOME                           -->
+      <!-- ========================================== -->
+      <section id="slide-welcome" class="welcome-slide">
+        <img src="../logo.svg" alt="Logo IBERO" style="position: absolute; top: 0px; left: 0px; width: 150px; border: none; background: transparent; box-shadow: none;">
+        <div class="welcome-header-badge">CÁLCULO III • SESIÓN 2</div>
+        <h1 class="welcome-title" style="font-size: 3.5rem;">Problemas de Valores Iniciales</h1>
+        <h2 class="welcome-subtitle">De la familia infinita a la curva exacta</h2>
+        
+        <div class="welcome-intro-box" style="margin-top: 3rem;">
+          <p class="welcome-description">
+            Aprenderemos cómo pasar de tener la familia infinita de curvas (solución general) a encontrar una curva única que describe el estado exacto de nuestro sistema dadas unas <strong>condiciones iniciales</strong>.
+          </p>
+          <div class="math-teaser">
+            $$\frac{dy}{dx} = f(x, y), \quad y(x_0) = y_0$$
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SLIDE 2: CONCEPTO PVI                      -->
+      <!-- ========================================== -->
+      <section id="slide-concept">
+        <div class="section-badge badge-blue">1.2 TEORÍA DE PVI</div>
+        <h2>¿Qué es un Problema de Valores Iniciales?</h2>
+        <p class="subtitle-text">El anclaje del modelo a la realidad</p>
+        
+        <div class="metaphor-intro-card" style="text-align: left; padding: 1.5rem; margin-top: 2rem;">
+          <p>
+            Una EDO modela el <strong>comportamiento dinámico</strong> de un sistema, pero su solución general contiene constantes arbitrarias ($C$). 
+            Para conocer el estado exacto del sistema en el futuro, necesitamos saber en dónde empezó. A esto le llamamos <strong>Condiciones Iniciales</strong>.
+          </p>
+        </div>
+
+        <div class="anti-ai-grid" style="margin-top: 1.5rem;">
+          <div class="anti-ai-card">
+            <div class="anti-ai-card-header">
+              <h4>PVI de 1er Orden</h4>
+            </div>
+            <div class="anti-ai-card-body" style="text-align: left; font-size: 0.9em;">
+              <p><strong>Resolver:</strong> $\frac{dy}{dx} = f(x,y)$</p>
+              <p><strong>Sujeto a:</strong> $y(x_0) = y_0$</p>
+            </div>
+          </div>
+
+          <div class="anti-ai-card">
+            <div class="anti-ai-card-header">
+              <h4>PVI de Orden n</h4>
+            </div>
+            <div class="anti-ai-card-body" style="text-align: left; font-size: 0.9em;">
+              <p>Resolver la EDO sujeta a $n$ condiciones en el <strong>mismo punto $x_0$</strong>:</p>
+              <p>$y(x_0)=y_0, \dots, y^{(n-1)}(x_0)=y_{n-1}$</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SLIDE 3: INTERPRETACIÓN GEOMÉTRICA           -->
+      <!-- ========================================== -->
+      <section id="slide-geometry">
+        <div class="section-badge badge-emerald">VISUALIZACIÓN</div>
+        <h2>Interpretación Geométrica</h2>
+        
+        <div class="eval-grid" style="margin-top: 2rem;">
+          <div class="eval-badge eval-work" style="background: var(--bg-card); border-color: var(--border-card);">
+            <div class="eval-title" style="color: var(--text-primary);">La Familia de Curvas</div>
+            <div class="eval-desc" style="text-align: left; margin-top: 1rem; color: var(--text-muted); font-size: 0.9em;">
+              La solución general representa <strong>todas</strong> las trayectorias posibles que el sistema podría seguir. Son infinitas curvas en el plano.
+            </div>
+          </div>
+
+          <div class="eval-badge eval-exam" style="background: var(--bg-card); border-color: var(--border-card);">
+            <div class="eval-title" style="color: var(--text-primary);">La Curva Única</div>
+            <div class="eval-desc" style="text-align: left; margin-top: 1rem; color: var(--text-muted); font-size: 0.9em;">
+              La condición $y(x_0)=y_0$ obliga a elegir <strong>la única curva</strong> que cruza exactamente por ese punto $(x_0, y_0)$. Es como colocar un alfiler en una de las hojas.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SLIDE 4: EJEMPLOS                            -->
+      <!-- ========================================== -->
+      <section id="slide-examples">
+        
+        <!-- Ejemplo 1 -->
+        <section id="example-1">
+          <div class="section-badge badge-amber">EJEMPLO 1</div>
+          <h2>Crecimiento Poblacional (1er Orden)</h2>
+          
+          <div class="module-content-grid" style="margin-top: 2rem;">
+            <div class="subtopics-list" style="text-align: left; font-size: 0.95em;">
+              <p>Nuestra firma modela la tasa de crecimiento de conejos:</p>
+              <p>$$\frac{dP}{dt} = kP$$</p>
+              <p>Solución general: $P(t) = C e^{kt}$</p>
+              <p style="margin-top: 1rem;"><strong>El Cliente reporta:</strong> Se liberaron 50 conejos al inicio ($t=0$).</p>
+            </div>
+            <div class="module-formula-card">
+              <div class="formula-title">Evaluando el PVI:</div>
+              $$P(0) = 50$$
+              $$50 = C e^{k(0)}$$
+              $$C = 50$$
+              <hr style="border-color: rgba(255,255,255,0.1); margin: 1rem 0;">
+              <div class="formula-title">Solución Particular:</div>
+              $$P(t) = 50 e^{kt}$$
+            </div>
+          </div>
+          <div class="nav-hint">⬇ Desliza hacia abajo para ver el Sistema de 2do Orden</div>
+        </section>
+
+        <!-- Ejemplo 2 -->
+        <section id="example-2">
+          <div class="section-badge badge-purple">EJEMPLO 2</div>
+          <h2>Sistema Masa-Resorte (2do Orden)</h2>
+          
+          <div class="metaphor-intro-card" style="text-align: left; padding: 1.5rem; margin-top: 1rem; font-size: 0.85em;">
+            <p><strong>EDO:</strong> $x'' + 16x = 0$ &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Solución General:</strong> $x(t) = c_1 \cos(4t) + c_2 \sin(4t)$</p>
+            <p style="color: var(--accent-purple-light); margin-top: 1rem;"><strong>Condiciones (Posición y Velocidad iniciales):</strong> Se estiró 2m hacia abajo y se soltó desde el reposo $\implies x(0)=2, \, x'(0)=0$.</p>
+            
+            <div style="background: rgba(0,0,0,0.3); padding: 1rem; margin-top: 1rem; border-radius: 8px;">
+              <p><strong>1. Posición:</strong> $2 = c_1 \cos(0) + c_2 \sin(0) \implies c_1 = 2$</p>
+              <p><strong>2. Velocidad:</strong> $x'(t) = -4c_1 \sin(4t) + 4c_2 \cos(4t)$</p>
+              <p>Sustituyendo $x'(0)=0$: $0 = -4(2)\sin(0) + 4c_2 \cos(0) \implies 4c_2 = 0 \implies c_2 = 0$</p>
+            </div>
+            
+            <p style="text-align: center; font-size: 1.2em; font-weight: bold; margin-top: 1rem;">Solución del PVI: $x(t) = 2 \cos(4t)$</p>
+          </div>
+        </section>
+
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SLIDE 5: TEOREMA DE EXISTENCIA Y UNICIDAD    -->
+      <!-- ========================================== -->
+      <section id="slide-theorem">
+        <div class="section-badge badge-cyan">FUNDAMENTO MATEMÁTICO</div>
+        <h2>Existencia y Unicidad</h2>
+        <p class="subtitle-text">Teorema de Zill 1.2.1</p>
+        
+        <div class="anti-ai-card" style="margin-top: 2rem; border-color: var(--accent-cyan);">
+          <div class="anti-ai-card-body" style="text-align: left; padding: 1.5rem;">
+            <p>Antes de modelar, debemos saber si el sistema <strong>tiene solución</strong> y si es la <strong>única posible</strong>.</p>
+            <div style="background: rgba(0,255,255,0.05); border-left: 4px solid var(--accent-cyan); padding: 1rem; margin-top: 1rem;">
+              Si la función $f(x,y)$ y su derivada parcial $\frac{\partial f}{\partial y}$ son <strong>continuas</strong> en una región que contiene a $(x_0, y_0)$, entonces existe una <strong>función única</strong> $y(x)$ que soluciona el PVI.
+            </div>
+          </div>
+        </div>
+        
+        <div style="margin-top: 1rem; font-size: 0.9em; color: var(--text-muted); text-align: left; max-width: 800px; margin-left: auto; margin-right: auto;">
+          💡 <strong>Tip para Analistas:</strong> Si alguna de estas funciones presenta singularidades (divisiones entre cero, logaritmos de negativos) cerca del punto inicial, el modelo podría colapsar o tener múltiples trayectorias (bifurcaciones).
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SLIDE 6: PELIGROS Y CONTRA-EJEMPLOS          -->
+      <!-- ========================================== -->
+      <section id="slide-dangers">
+        
+        <!-- Falla de Unicidad -->
+        <section id="danger-1">
+          <div class="section-badge badge-red">ADVERTENCIA: BIFURCACIONES</div>
+          <h2>Cuando falla la unicidad</h2>
+          
+          <div class="metaphor-intro-card" style="text-align: left; padding: 1.5rem; margin-top: 2rem;">
+            <p>Sea el PVI: $\frac{dy}{dx} = y^{1/3}, \quad y(0) = 0$</p>
+            
+            <p style="margin-top: 1rem;">La derivada parcial es $\frac{\partial f}{\partial y} = \frac{1}{3\sqrt[3]{y^2}}$. Esta función <strong>¡explota en $y=0$!</strong></p>
+            
+            <div style="margin-top: 1.5rem;">
+              <p>Como no es continua, no hay unicidad garantizada. De hecho, existen dos soluciones distintas para las mismas condiciones iniciales:</p>
+              <ul style="color: var(--text-muted); margin-top: 0.5rem; padding-left: 2rem;">
+                <li>$y(x) = 0$</li>
+                <li>$y(x) = \left(\frac{2}{3}x\right)^{3/2}$</li>
+              </ul>
+            </div>
+            <p style="margin-top: 1rem; font-weight: bold; color: var(--accent-red-light);">Un desastre en ingeniería si tu reactor puede tomar dos rumbos distintos con las mismas condiciones iniciales.</p>
+          </div>
+          <div class="nav-hint">⬇ Desliza hacia abajo para ver otro peligro</div>
+        </section>
+
+        <!-- Explosión en tiempo finito -->
+        <section id="danger-2">
+          <div class="section-badge badge-red">ADVERTENCIA: DOMINIOS</div>
+          <h2>Explosión en Tiempo Finito</h2>
+          
+          <div class="metaphor-intro-card" style="text-align: left; padding: 1.5rem; margin-top: 2rem;">
+            <p>Considera el PVI inofensivo: $y' = y^2, \quad y(0) = 1$</p>
+            
+            <p style="margin-top: 1rem; color: var(--text-muted);">Su solución particular es:</p>
+            <div class="math-teaser" style="margin: 1rem 0;">
+              $$y(x) = \frac{1}{1-x}$$
+            </div>
+            
+            <p>La curva desarrolla una asíntota vertical en $x=1$. Si $x$ fuera el tiempo en horas, la temperatura o presión llegaría a <strong>infinito</strong> exactamente a la hora 1.</p>
+            <p style="margin-top: 1rem; border-left: 3px solid var(--accent-red); padding-left: 1rem;">
+              El intervalo de definición máximo es $(-\infty, 1)$. El modelo matemático nos avisa del colapso físico inminente.
+            </p>
+          </div>
+        </section>
+
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SLIDE 7: CIERRE                              -->
+      <!-- ========================================== -->
+      <section id="slide-closure">
+        <div class="section-badge badge-purple">CONCLUSIÓN</div>
+        <h2>Resumen de la Sesión</h2>
+        
+        <div class="roles-summary-grid" style="margin-top: 2rem;">
+          <div class="role-card role-summary-card">
+            <div class="role-icon">🎯</div>
+            <h4>El Poder del PVI</h4>
+            <p>Las condiciones iniciales son el cable a tierra que ancla las infinitas posibilidades matemáticas a una sola realidad física.</p>
+          </div>
+          <div class="role-card role-summary-card">
+            <div class="role-icon">⚖️</div>
+            <h4>El Rigor del Analista</h4>
+            <p>Verificar la continuidad de $f(x,y)$ y su derivada es un paso obligatorio antes de intentar predecir el futuro del modelo.</p>
+          </div>
+        </div>
+
+        <div class="closure-box" style="margin-top: 3rem;">
+          💼 <strong>Próximo paso de las Firmas:</strong> Aprenderemos las técnicas algebraicas exactas para encontrar esas familias de soluciones a partir de la EDO.
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Reveal.js Core JS -->
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+  
+  <!-- KaTeX for rendering equations -->
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+  
+  <script>
+    Reveal.initialize({
+      hash: true,
+      center: true,
+      transition: 'fade',
+      backgroundTransition: 'fade',
+      progress: true,
+      controls: true,
+      width: 1024,
+      height: 768,
+      margin: 0.1,
+      minScale: 0.2,
+      maxScale: 2.0
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+            delimiters: [
+                {left: "$$", right: "$$", display: true},
+                {left: "$", right: "$", display: false}
+            ],
+            throwOnError: false
+        });
+    });
+  </script>
+</body>
+</html>
