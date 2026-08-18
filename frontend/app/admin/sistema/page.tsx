@@ -12,6 +12,7 @@ import {
   api,
 } from "@/lib/api";
 import { useAuth } from "@/lib/useAuth";
+import { toggleSet } from "@/lib/toggleSet";
 
 // ---------------------------------------------------------------------------
 // Sección 1: Inbox de Aprobaciones
@@ -271,13 +272,6 @@ function InboxSection({
       (filterTipos.size === 0 || filterTipos.has(i.tipo)) &&
       (filterPrioridades.size === 0 || filterPrioridades.has(i.prioridad)),
   );
-
-  function toggleSet<T>(set: Set<T>, setter: (s: Set<T>) => void, value: T) {
-    const next = new Set(set);
-    if (next.has(value)) next.delete(value);
-    else next.add(value);
-    setter(next);
-  }
 
   return (
     <section className="space-y-4">
