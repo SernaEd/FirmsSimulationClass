@@ -121,11 +121,13 @@
 
 > **Actualización (9 ago 2026):** los anuncios (Brightspace), la asistencia (Brightspace) y los ejercicios de práctica (WebAssign) se descartan del alcance de la plataforma — ver nota de alcance en `implementation_plan_v2.md` §5.5, §8.3, §11.3. Esta iteración se renombró de "Práctica, Contenido y Racha" a "Contenido y Racha": ya no hay motor de ejercicios propio, y la racha se basa en subir evidencia de WebAssign en vez de resolver un reto dentro de la plataforma.
 
-- [ ] **Modelos y migraciones nuevas** (contenido):
-  - [ ] Modelo `Module` (id, numero, nombre, unlocked_at).
-  - [ ] Modelo `CourseSession` (id, module_id, numero_sesion, titulo, `notion_page_id`, `apuntes_pdf_url`, notion_last_sync).
-  - [ ] Modelo `ForumPost` con `session_id` (comentarios anclados a la Vista de Clase, no al módulo).
-  - [ ] Modelo `StreakEvidence` (id, streak_day_id, user_id, webassign_report_url, captura_path, submitted_at) — ver §5.5, §12.6.
+- [x] **Modelos y migraciones nuevas** (contenido):
+  - [x] Modelo `Module` (id, numero, nombre, unlocked_at).
+  - [x] Modelo `CourseSession` (id, module_id, numero_sesion, titulo, `notion_page_id`, `apuntes_pdf_url`, notion_last_sync).
+  - [x] Modelo `ForumPost` con `session_id` (comentarios anclados a la Vista de Clase, no al módulo).
+  - [x] Modelo `StreakEvidence` (id, streak_day_id, user_id, webassign_report_url, captura_path, submitted_at) — ver §5.5, §12.6.
+  - [x] Modelo `StreakDay` (id, user_id, fecha, estado) — no listado explícitamente arriba, pero agregado como soporte mínimo indispensable: `StreakEvidence.streak_day_id` necesita una tabla real para ser un FK válido (§12.6).
+  - [x] Migración Alembic (`de29d7d6d06f`), verificada con upgrade/downgrade/upgrade y sin drift (`alembic check`) contra MySQL 8.0.
 - [ ] **Integración Notion API + PDFs + Comentarios (Vista de Clase)**:
   - [ ] Endpoint `POST /admin/sessions/{id}/sync` — descarga la sub-página de Notion, guarda bloques en BD.
   - [ ] Pipeline: Notion API → BD local → renderizado con `react-notion-x` (sección superior de la Vista de Clase).
