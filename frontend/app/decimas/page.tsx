@@ -179,7 +179,7 @@ export default function DecimasPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full rounded-md bg-white text-black hover:bg-neutral-200 disabled:opacity-50 px-4 py-2 text-sm font-medium transition-colors"
+            className="w-full rounded-md border border-accent-500 text-accent-300 hover:bg-accent-500/10 disabled:opacity-50 px-4 py-2 text-sm font-medium transition-colors"
           >
             {submitting ? "Enviando solicitud…" : "Enviar solicitud"}
           </button>

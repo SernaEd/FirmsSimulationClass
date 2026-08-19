@@ -145,7 +145,7 @@ export default function Registro() {
         <button
           type="submit"
           disabled={status.kind === "submitting"}
-          className="w-full rounded-lg bg-ibero-red hover:bg-ibero-red-dark disabled:opacity-50 disabled:cursor-not-allowed transition-colors px-6 py-3 font-medium"
+          className="w-full rounded-lg border border-accent-500 text-accent-300 hover:bg-accent-500/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors px-6 py-3 font-medium"
         >
           {status.kind === "submitting" ? "Registrando..." : "Crear cuenta"}
         </button>

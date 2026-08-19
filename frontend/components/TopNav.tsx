@@ -49,7 +49,7 @@ function linkClassName(active: boolean, indent: boolean) {
     "block py-2 text-sm transition-colors " +
     (indent ? "pl-8 pr-4 " : "px-4 ") +
     (active
-      ? "text-ibero-red bg-ibero-red/10"
+      ? "text-accent-300 bg-accent-500/10"
       : indent
         ? "text-neutral-300 hover:bg-surface"
         : "text-neutral-200 hover:bg-surface")
@@ -92,7 +92,7 @@ function NavMenuEntry({
         className={
           "flex w-full items-center justify-between px-4 py-2 text-sm transition-colors " +
           (entry.accent
-            ? "text-ibero-red hover:bg-ibero-red/10"
+            ? "text-accent-300 hover:bg-accent-500/10"
             : "text-neutral-200 hover:bg-surface")
         }
       >

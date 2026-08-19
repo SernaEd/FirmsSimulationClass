@@ -263,7 +263,7 @@ function NewCatalogEntryForm({
         <button
           type="submit"
           disabled={busy}
-          className="rounded-md bg-ibero-red hover:bg-ibero-red-dark disabled:opacity-50 px-4 py-1.5 text-xs font-medium text-white transition-colors"
+          className="rounded-md border border-accent-500 text-accent-300 hover:bg-accent-500/10 disabled:opacity-50 px-4 py-1.5 text-xs font-medium transition-colors"
         >
           {busy ? "Creando…" : "Crear privilegio"}
         </button>
@@ -404,7 +404,7 @@ function CatalogRow({
               </span>
             )}
             {entry.es_grupal && (
-              <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-950/50 border border-blue-800/60 text-blue-300">
+              <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-accent2-800 text-accent2-100">
                 Grupal
               </span>
             )}
@@ -681,7 +681,7 @@ function DecimalRow({
               href={req.entrega_ref.startsWith("http") ? req.entrega_ref : `https://${req.entrega_ref}`}
               target="_blank"
               rel="noreferrer"
-              className="text-xs text-blue-400 hover:underline block"
+              className="text-xs text-accent-300 hover:underline block"
             >
               Ver entrega / ref
             </a>

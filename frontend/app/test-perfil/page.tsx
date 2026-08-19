@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
-import { ApiError, ProfileTestQuestionOut, UserProfile, api, auth } from "@/lib/api";
+import { ApiError, ProfileTestQuestionOut, UserOut, UserProfile, api, auth } from "@/lib/api";
+import { PROFILE_DESCRIPTION, profileAvatarClass, profileLabel } from "@/lib/profile";
 import { useAuth } from "@/lib/useAuth";
 
 function CenteredMessage({ children, className }: { children: ReactNode; className?: string }) {
@@ -26,6 +27,7 @@ export default function TestPerfil() {
   const [answers, setAnswers] = useState<Record<number, UserProfile>>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [result, setResult] = useState<UserOut | null>(null);
 
   useEffect(() => {
     if (authState.status !== "authenticated" || authState.user.estado !== "pending_profile") return;
@@ -48,6 +50,14 @@ export default function TestPerfil() {
 
   const { user, token } = authState;
 
+  // Se revisa antes que el guard de abajo: al enviar, `auth.setUser()` ya
+  // movió `user.estado` a "pending_approval" (vía AuthContext), así que sin
+  // este chequeo el guard de "test ya no disponible" se adelantaría y nunca
+  // se vería la pantalla de resultado.
+  if (result) {
+    return <ProfileResultScreen user={result} />;
+  }
+
   if (user.estado !== "pending_profile") {
     return (
       <CenteredMessage>
@@ -55,7 +65,7 @@ export default function TestPerfil() {
           <h1 className="text-2xl font-semibold">El test ya no está disponible</h1>
           <p className="text-neutral-400 text-sm">
             {user.perfil
-              ? `Tu perfil asignado es "${user.perfil}". No es editable; si crees que necesita ajustarse, pídeselo al profesor.`
+              ? `Tu perfil asignado es "${profileLabel(user.perfil)}". No es editable; si crees que necesita ajustarse, pídeselo al profesor.`
               : "Tu cuenta ya no está en la etapa de test de perfil."}
           </p>
           <Link href="/inicio" className="inline-block underline text-neutral-300">
@@ -87,7 +97,7 @@ export default function TestPerfil() {
       }));
       const updatedUser = await api.submitProfileTest(token, { respuestas });
       auth.setUser(updatedUser);
-      router.push("/inicio");
+      setResult(updatedUser);
     } catch (err) {
       setSubmitError(err instanceof ApiError ? err.detail : String(err));
       setSubmitting(false);
@@ -129,7 +139,7 @@ export default function TestPerfil() {
                   className={
                     "flex items-start gap-3 rounded-md border px-4 py-3 text-sm cursor-pointer transition-colors " +
                     (answers[q.id] === opcion.perfil
-                      ? "border-ibero-red bg-ibero-red/10"
+                      ? "border-accent-500 bg-accent-500/10"
                       : "border-surface-border hover:bg-surface")
                   }
                 >
@@ -158,7 +168,7 @@ export default function TestPerfil() {
       <button
         onClick={handleSubmit}
         disabled={!allAnswered || submitting}
-        className="w-full rounded-lg bg-ibero-red hover:bg-ibero-red-dark disabled:opacity-50 disabled:cursor-not-allowed transition-colors px-6 py-3 font-medium"
+        className="w-full rounded-lg border border-accent-500 text-accent-300 hover:bg-accent-500/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors px-6 py-3 font-medium"
       >
         {submitting ? "Enviando..." : "Enviar respuestas"}
       </button>
@@ -176,5 +186,63 @@ export default function TestPerfil() {
         differences.&quot; <em>Journal of Engineering Education</em>, 94(1), 57-72.
       </footer>
     </main>
+  );
+}
+
+// Pantalla de resultado tras enviar el test — no está en el mock de
+// UiDesign/ (cubre solo Bienvenida/Dashboard/Mi equipo); se diseñó siguiendo
+// los mismos tokens (card, kicker, colores por rol de @/lib/profile, botón
+// outline) y se documentó en UiDesign/README.md.
+function ProfileResultScreen({ user }: { user: UserOut }) {
+  const router = useRouter();
+  const perfil = user.perfil;
+
+  return (
+    <CenteredMessage>
+      <div className="max-w-md w-full text-center space-y-5 rounded-md bg-surface-raised shadow-lg p-8 animate-fadeUp">
+        <p className="text-accent-400 text-xs uppercase tracking-[0.12em]">
+          Tu perfil de equipo
+        </p>
+        <div
+          className={
+            "mx-auto flex items-center justify-center w-16 h-16 rounded-full animate-popIn " +
+            profileAvatarClass(perfil)
+          }
+          style={{ animationDelay: ".1s" }}
+        >
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="8" r="5" />
+            <path d="M9 12.5 7 21l5-3 5 3-2-8.5" />
+          </svg>
+        </div>
+        <h1 className="text-2xl font-medium">
+          {perfil ? profileLabel(perfil) : "Perfil pendiente"}
+        </h1>
+        <p className="text-neutral-400 text-sm">
+          {perfil
+            ? PROFILE_DESCRIPTION[perfil]
+            : "El profesor asignará tu perfil manualmente."}
+        </p>
+        <p className="text-xs text-neutral-500">
+          No es editable; si crees que necesita ajustarse, pídeselo al profesor.
+        </p>
+        <button
+          onClick={() => router.push("/inicio")}
+          className="w-full rounded-lg border border-accent-500 text-accent-300 hover:bg-accent-500/10 transition-colors px-6 py-3 font-medium"
+        >
+          Ir a mi dashboard
+        </button>
+      </div>
+    </CenteredMessage>
   );
 }
