@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ApiError,
   BalanceOut,
@@ -10,12 +10,41 @@ import {
   api,
 } from "@/lib/api";
 
-/** Widget del saldo del banco (§14.2, Fila 1). Se pega en cualquier página
- *  autenticada; carga /me/tokens y muestra saldo + últimos 3 movimientos.
+// Cuenta ascendente ease-out-cubic desde 0 hasta `target`, ~1s (UiDesign/README.md
+// §2 "Token count-up"). Corre una sola vez por valor real recibido (guardado en
+// un ref), no en cada re-render — evita reanimar al hacer focus/blur de la
+// pestaña o en updates que no cambian el saldo.
+function useCountUp(target: number | null): number {
+  const [value, setValue] = useState(0);
+  const animatedFor = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (target === null || animatedFor.current === target) return;
+    animatedFor.current = target;
+    const start = performance.now();
+    const duration = 1000;
+    let raf: number;
+    const tick = (now: number) => {
+      const p = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setValue(Math.round(eased * target));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target]);
+
+  return value;
+}
+
+/** Widget del saldo del banco (§14.2, Fila 1; UiDesign/README.md §2 "Token
+ *  balance card"). Se pega en cualquier página autenticada; carga /me/tokens
+ *  y muestra saldo (con count-up) + últimos 3 movimientos.
  */
 export function BalanceWidget({ token }: { token: string }) {
   const [data, setData] = useState<BalanceOut | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const displayBalance = useCountUp(data ? data.balance : null);
 
   useEffect(() => {
     let cancelled = false;
@@ -33,41 +62,38 @@ export function BalanceWidget({ token }: { token: string }) {
   }, [token]);
 
   return (
-    <section className="rounded-lg border border-surface-border bg-surface-raised p-6 space-y-4">
-      <div className="flex items-baseline justify-between">
-        <div>
-          <p className="text-xs uppercase tracking-widest text-neutral-500">Saldo del banco</p>
-          <p className="text-4xl font-semibold mt-1 tabular-nums">
-            {data ? data.balance.toLocaleString("es-MX") : "—"}
-            <span className="text-base font-normal text-neutral-400 ml-1">Tks</span>
-          </p>
-        </div>
-        <Link
-          href="/movimientos"
-          className="text-sm text-neutral-400 hover:text-white underline"
-        >
-          Ver movimientos
-        </Link>
-      </div>
+    <section className="rounded-md bg-surface-raised shadow-md p-6 space-y-3 flex flex-col">
+      <p className="text-[10px] uppercase tracking-[0.1em] text-accent-400">Saldo del banco</p>
+      <p className="flex items-baseline gap-1.5">
+        <span className="text-4xl font-medium tabular-nums">
+          {data ? displayBalance.toLocaleString("es-MX") : "—"}
+        </span>
+        <span className="text-neutral-400 text-sm">Tks</span>
+      </p>
 
       {error && <p className="text-xs text-red-400">Error: {error}</p>}
 
-      {data && (
-        <div className="pt-2 border-t border-surface-border/60">
-          <p className="text-xs text-neutral-500 mb-2">Movimientos recientes</p>
-          {data.recent.length === 0 ? (
-            <p className="text-xs text-neutral-500">
-              Aún no tienes movimientos. Aparecerán cuando ganes o gastes Tokens.
-            </p>
-          ) : (
-            <ul className="divide-y divide-surface-border/40 text-sm">
-              {data.recent.slice(0, 3).map((m) => (
-                <MovementRow key={m.id} entry={m} />
-              ))}
-            </ul>
-          )}
-        </div>
-      )}
+      <div className="flex-1">
+        {data && data.recent.length === 0 && (
+          <p className="text-xs text-neutral-500">
+            Aún no tienes movimientos. Aparecerán cuando ganes o gastes Tokens.
+          </p>
+        )}
+        {data && data.recent.length > 0 && (
+          <ul className="divide-y divide-neutral-900">
+            {data.recent.slice(0, 3).map((m) => (
+              <MovementRow key={m.id} entry={m} />
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <Link
+        href="/movimientos"
+        className="w-full text-center rounded-md text-accent-300 text-sm py-2 transition-colors hover:bg-accent-500/10"
+      >
+        Ver movimientos
+      </Link>
     </section>
   );
 }

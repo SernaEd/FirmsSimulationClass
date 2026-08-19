@@ -116,7 +116,7 @@ export default function Movimientos() {
                 className={
                   "px-2.5 py-1 rounded-md text-xs transition-colors " +
                   (active
-                    ? "bg-ibero-red text-white"
+                    ? "bg-accent-500/10 text-accent-300 ring-1 ring-inset ring-accent-500"
                     : "bg-surface hover:bg-surface-border text-neutral-300")
                 }
               >

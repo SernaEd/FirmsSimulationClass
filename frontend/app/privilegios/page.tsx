@@ -209,7 +209,7 @@ function PrivilegeCard({
             {formatLimits(entry.limites_config)}
           </span>
           {entry.es_grupal && (
-            <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-950/50 border border-blue-800/60 text-blue-300">
+            <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-accent2-800 text-accent2-100">
               De Equipo
             </span>
           )}
@@ -223,7 +223,7 @@ function PrivilegeCard({
         <button
           onClick={onBuy}
           disabled={!!disabledReason}
-          className="text-xs rounded-md bg-ibero-red hover:bg-ibero-red-dark disabled:opacity-40 disabled:cursor-not-allowed transition-colors px-3 py-1.5 text-white font-medium"
+          className="text-xs rounded-md border border-accent-500 text-accent-300 hover:bg-accent-500/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors px-3 py-1.5 font-medium"
           title={disabledReason ?? undefined}
         >
           {entry.es_grupal ? "Iniciar Split Bill" : "Comprar"}
@@ -278,7 +278,7 @@ function ConfirmDialog({
             <p className="text-neutral-400 text-xs">{entry.descripcion}</p>
           )}
           {grupal && (
-            <p className="text-xs text-blue-300 bg-blue-950/30 border border-blue-900/60 rounded-md p-2">
+            <p className="text-xs text-accent2-300 bg-accent2-900/50 border border-accent2-800 rounded-md p-2">
               Este privilegio es <strong>de equipo</strong>. Aportas la cantidad
               que quieras; el resto del equipo puede aportar después. El ticket
               se emite cuando la suma llega a {entry.costo} Tks.
@@ -392,7 +392,7 @@ function ConfirmDialog({
               <button
                 onClick={onConfirm}
                 disabled={confirm.kind === "submitting" || invalidAmount || insufficient}
-                className="rounded-md bg-ibero-red hover:bg-ibero-red-dark disabled:opacity-50 px-4 py-2 text-sm font-medium"
+                className="rounded-md border border-accent-500 text-accent-300 hover:bg-accent-500/10 disabled:opacity-50 px-4 py-2 text-sm font-medium"
               >
                 {confirm.kind === "submitting"
                   ? grupal
