@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/nocturne-172cc265-6033-42f0-8772-f22fcece377d/styles.css">
+  <script src="_ds/nocturne-172cc265-6033-42f0-8772-f22fcece377d/_ds_bundle.js"></script>
+  <script src="./image-slot.js"></script>
+  <style>
+    /* IBERO brand pass: red becomes the primary accent; Nocturne's blurple
+       moves to secondary-accent duty (role tags, info notes). Ramps built
+       on the same OKLCH lightness steps the base theme uses. */
+    :root {
+      --color-accent: #c8102e;
+      --color-accent-100: #fdecee;
+      --color-accent-200: #f7cfd5;
+      --color-accent-300: #ee9fab;
+      --color-accent-400: #e26775;
+      --color-accent-500: #c8102e;
+      --color-accent-600: #a30e26;
+      --color-accent-700: #7c0b1e;
+      --color-accent-800: #571626;
+      --color-accent-900: #34121b;
+    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes popIn { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: scale(1); } }
+    @keyframes pulseRing { 0%,100% { box-shadow: 0 0 0 0 rgba(200,16,46,.45); } 50% { box-shadow: 0 0 0 6px rgba(200,16,46,0); } }
+    .fade-item { animation: fadeUp .5s ease both; }
+    .pop-item { animation: popIn .4s cubic-bezier(.2,1.4,.4,1) both; }
+    body { margin: 0; }
+    .card-kicker { color: var(--color-accent-300) !important; }
+    .btn-primary, .btn-ghost { color: var(--color-accent-300) !important; }
+  </style>
+</helmet>
+
+<div style="background:var(--color-bg); min-height:100vh; color:var(--color-text);">
+
+  <nav class="nav" style="position:sticky; top:0; z-index:10;">
+    <span class="nav-brand">Cálculo 3 · IBERO</span>
+    <a href="#" onClick="{{ goDashboard }}" aria-current="{{ navCurrentDash }}">Inicio</a>
+    <a href="#" onClick="{{ goTeam }}" aria-current="{{ navCurrentTeam }}">Mi equipo</a>
+    <div style="flex:1"></div>
+    <div style="display:flex; gap:var(--space-1); background:var(--color-surface); border:1px solid var(--color-neutral-800); border-radius:var(--radius-md); padding:3px;">
+      <button type="button" class="{{ btnWelcomeClass }}" onClick="{{ goWelcome }}" style="padding:5px 10px; font-size:11px;">Bienvenida</button>
+      <button type="button" class="{{ btnAuditClass }}" onClick="{{ goAudit }}" style="padding:5px 10px; font-size:11px;">Auditoría UX</button>
+    </div>
+  </nav>
+
+  <sc-if value="{{ isWelcome }}" hint-placeholder-val="{{ false }}">
+    <main style="max-width:1080px; margin:0 auto; padding:88px var(--space-4) 100px;">
+      <div style="display:grid; grid-template-columns:1fr 0.85fr; gap:var(--space-8); align-items:center; margin-bottom:110px;">
+        <div>
+          <p style="color:var(--color-accent-300); font-size:12px; text-transform:uppercase; letter-spacing:.16em; margin-bottom:var(--space-4);" class="fade-item">IBERO · Ecuaciones Diferenciales</p>
+          <h1 style="font-size:56px; line-height:1.05; max-width:13ch; margin-bottom:var(--space-6); animation-delay:.05s;" class="fade-item">Tu firma consultora empieza aquí.</h1>
+          <p style="color:var(--color-neutral-400); font-size:18px; max-width:46ch; margin-bottom:0; animation-delay:.1s;" class="fade-item">Resuelve casos reales de modelado matemático en equipo, gana Tokens por tu trabajo y canjéalos por privilegios académicos.</p>
+        </div>
+        <div class="fade-item" style="animation-delay:.15s; border-radius:var(--radius-lg); overflow:hidden; aspect-ratio:4/5; box-shadow:var(--shadow-lg);">
+          <image-slot id="welcome-hero" shape="rect" class="lighten" placeholder="Foto del equipo trabajando en clase" style="width:100%; height:100%;"></image-slot>
+        </div>
+      </div>
+
+      <p style="color:var(--color-neutral-500); font-size:11px; text-transform:uppercase; letter-spacing:.12em; margin-bottom:var(--space-6);">Empieza en menos de un minuto</p>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:56px;">
+        <div class="card fade-item" style="padding:40px var(--space-6); gap:var(--space-3); transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease; border:1px solid transparent; cursor:pointer;" style-hover="transform:translateY(-6px); box-shadow:var(--shadow-lg); border-color:var(--color-accent-700);" onClick="{{ goDashboard }}">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-300)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"></circle><path d="M3 20c0-3.6 2.7-6.5 6-6.5s6 2.9 6 6.5"></path><path d="M17 8v6M14 11h6"></path></svg>
+          <div class="card-title" style="margin-top:var(--space-2);">Crear cuenta</div>
+          <p class="card-body" style="opacity:.7;">Regístrate con tu número de cuenta y contesta el test de perfil de equipo — te toma unos minutos.</p>
+          <span class="btn btn-primary" style="margin-top:var(--space-2); width:fit-content;">Registrarme<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+        </div>
+        <div class="card fade-item" style="padding:40px var(--space-6); gap:var(--space-3); transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease; border:1px solid transparent; cursor:pointer;" style-hover="transform:translateY(-6px); box-shadow:var(--shadow-lg); border-color:var(--color-neutral-700);" onClick="{{ goDashboard }}">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--color-neutral-300)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
+          <div class="card-title" style="margin-top:var(--space-2);">Iniciar sesión</div>
+          <p class="card-body" style="opacity:.7;">Con tu nickname y PIN. Si lo olvidaste, tu profesor puede restablecerlo.</p>
+          <span class="btn btn-secondary" style="margin-top:var(--space-2); width:fit-content;">Entrar</span>
+        </div>
+      </div>
+
+      <p style="color:var(--color-neutral-500); font-size:13px; margin-top:56px;" class="fade-item">Antes de registrarte, consulta las reglas y el aviso de privacidad.</p>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ false }}">
+    <main style="max-width:880px; margin:0 auto; padding:var(--space-8) var(--space-4) 80px;">
+      <header style="margin-bottom:var(--space-6);">
+        <p style="color:var(--color-accent-400); font-size:12px; text-transform:uppercase; letter-spacing:.12em; margin-bottom:var(--space-1);">IBERO · Cálculo 3</p>
+        <h1 style="font-size:30px; margin-bottom:0;">Hola, Renata</h1>
+        <p style="color:var(--color-neutral-500); font-size:13px; margin-top:4px;">Firma Laplace &amp; Asociados · Módulo activo: <strong style="color:var(--color-text); font-weight:500;">2 — Transformada de Laplace</strong></p>
+      </header>
+
+      <div style="display:grid; grid-template-columns:1.1fr .9fr; gap:var(--space-4); margin-bottom:var(--space-4);">
+        <div class="card elev-md" style="padding:var(--space-6);">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--space-4);">
+            <div>
+              <div class="card-kicker">Racha activa</div>
+              <div style="display:flex; align-items:baseline; gap:8px;">
+                <span style="font-size:38px; font-weight:600; font-family:var(--font-heading);">{{ streakDays }}</span>
+                <span style="color:var(--color-neutral-400); font-size:14px;">días seguidos</span>
+              </div>
+            </div>
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-400)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4 0-7-2.7-7-6.5C5 10 8 7 9 3c.5 3 3 4 3 7 0-2 1.5-3 1.5-5C16 7 19 10 19 14.5 19 18.3 16 21 12 21Z"></path></svg>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(8,1fr); gap:6px; margin-bottom:var(--space-4);">
+            <sc-for list="{{ streakCells }}" as="cell" hint-placeholder-count="8">
+              <div class="pop-item" style="{{ cell.cellStyle }}">
+                <span style="font-size:9px; opacity:.6;">{{ cell.label }}</span>
+                <sc-if value="{{ cell.isCheck }}" hint-placeholder-val="{{ false }}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"></path></svg></sc-if>
+                <sc-if value="{{ cell.isShield }}" hint-placeholder-val="{{ false }}"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l7 3v6c0 5-3 8.5-7 11-4-2.5-7-6-7-11V5Z"></path></svg></sc-if>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; font-size:12px; color:var(--color-neutral-500); margin-bottom:6px;">
+            <span>Siguiente hito: 12 días</span>
+            <span>+30 Tks</span>
+          </div>
+          <div style="height:6px; border-radius:99px; background:var(--color-neutral-800); overflow:hidden;">
+            <div style="height:100%; width:{{ streakProgressPct }}; background:linear-gradient(90deg, var(--color-accent-600), var(--color-accent-400)); border-radius:99px; transition:width 1s ease;"></div>
+          </div>
+        </div>
+
+        <div class="card elev-md" style="padding:var(--space-6); display:flex; flex-direction:column;">
+          <div class="card-kicker">Saldo del banco</div>
+          <div style="display:flex; align-items:baseline; gap:6px; margin:var(--space-2) 0 var(--space-3);">
+            <span style="font-size:40px; font-weight:600; font-family:var(--font-heading); font-variant-numeric:tabular-nums;">{{ tokenDisplay }}</span>
+            <span style="color:var(--color-neutral-400); font-size:14px;">Tks</span>
+          </div>
+          <div style="display:grid; gap:6px; flex:1; margin-bottom:var(--space-3);">
+            <sc-for list="{{ movements }}" as="m" hint-placeholder-count="3">
+              <div style="display:flex; justify-content:space-between; font-size:12px; padding:6px 0; border-bottom:1px solid var(--color-neutral-900);">
+                <span style="color:var(--color-neutral-400);">{{ m.fuente }}</span>
+                <span style="color:{{ m.color }}; font-variant-numeric:tabular-nums;">{{ m.deltaLabel }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <button type="button" class="btn btn-ghost btn-block" onClick="{{ goTeam }}">Ver movimientos</button>
+        </div>
+      </div>
+
+      <div class="card-kicker" style="margin:0 0 var(--space-2) 2px;">Accesos rápidos</div>
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:var(--space-3);">
+        <div class="card elev-sm" style="padding:var(--space-4); cursor:pointer;" style-hover="border-color:var(--color-accent-600); transform:translateY(-2px);" onClick="{{ goTeam }}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-400)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:8px;"><circle cx="9" cy="8" r="3"></circle><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"></path><circle cx="17" cy="9" r="2.5"></circle><path d="M15 20c.3-2.5 2-4.5 4-5"></path></svg>
+          <p style="font-size:13px; font-weight:500; margin:0;">Mi equipo</p>
+        </div>
+        <div class="card elev-sm" style="padding:var(--space-4); cursor:pointer;" style-hover="border-color:var(--color-accent-600); transform:translateY(-2px);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-400)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:8px;"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="4.5"></circle></svg>
+          <p style="font-size:13px; font-weight:500; margin:0;">Privilegios</p>
+        </div>
+        <div class="card elev-sm" style="padding:var(--space-4); cursor:pointer;" style-hover="border-color:var(--color-accent-600); transform:translateY(-2px);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-400)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:8px;"><path d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-4 4V5Z"></path></svg>
+          <p style="font-size:13px; font-weight:500; margin:0;">Foro</p>
+        </div>
+        <div class="card elev-sm" style="padding:var(--space-4); cursor:pointer; position:relative;" style-hover="border-color:var(--color-accent-600); transform:translateY(-2px);">
+          <span class="tag tag-outline" style="position:absolute; top:10px; right:10px; font-size:9px; padding:2px 6px;">Nuevo</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-400)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:8px;"><path d="M4 7a2 2 0 0 1 2-2h4l2 2h6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z"></path><path d="M12 11v5M9.5 13.5 12 11l2.5 2.5"></path></svg>
+          <p style="font-size:13px; font-weight:500; margin:0;">Entregas y archivos</p>
+        </div>
+      </div>
+    </main>
+  </sc-if>
+
+<sc-if value="{{ isTeam }}" hint-placeholder-val="{{ false }}">
+    <main style="max-width:1080px; margin:0 auto; padding:64px var(--space-4) 100px;">
+      <header style="display:flex; align-items:center; justify-content:space-between; gap:var(--space-6); flex-wrap:wrap; margin-bottom:56px; padding-bottom:32px; border-bottom:1px solid var(--color-neutral-900);">
+        <div>
+          <p style="color:var(--color-accent-300); font-size:12px; text-transform:uppercase; letter-spacing:.14em; margin-bottom:var(--space-2);">Mi equipo</p>
+          <div style="display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;">
+            <h1 style="font-size:34px; margin-bottom:0;">Firma Laplace &amp; Asociados</h1>
+            <span class="tag tag-accent">4 integrantes</span>
+          </div>
+        </div>
+        <div style="display:flex;">
+          <sc-for list="{{ members }}" as="mem" hint-placeholder-count="4">
+            <div style="{{ mem.avatarStyle }} margin-left:-10px; border:2px solid var(--color-bg);" title="{{ mem.name }}">{{ mem.initials }}</div>
+          </sc-for>
+        </div>
+      </header>
+
+      <div style="display:grid; grid-template-columns:1.1fr 1fr 0.8fr; gap:36px; align-items:start;">
+        <div class="card elev-sm" style="padding:var(--space-6);">
+          <div class="card-kicker" style="margin-bottom:var(--space-4);">Integrantes</div>
+          <div style="display:grid; gap:var(--space-3);">
+            <sc-for list="{{ members }}" as="mem" hint-placeholder-count="4">
+              <div style="display:flex; align-items:center; gap:14px; padding:12px; border-radius:var(--radius-md); transition:background .2s ease;" style-hover="background:var(--color-surface);">
+                <div style="{{ mem.avatarStyle }}">{{ mem.initials }}</div>
+                <div style="flex:1;">
+                  <p style="font-size:14px; font-weight:500; margin:0;">{{ mem.name }}</p>
+                  <p style="font-size:12px; color:var(--color-neutral-500); margin:2px 0 0;">{{ mem.roleHint }}</p>
+                </div>
+                <span class="{{ mem.tagClass }}">{{ mem.role }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div class="card elev-sm" style="padding:var(--space-6); display:flex; flex-direction:column; min-height:340px;">
+          <div class="card-kicker" style="margin-bottom:var(--space-4);">Chat del equipo</div>
+          <div style="display:grid; gap:20px; flex:1; margin-bottom:var(--space-5);">
+            <sc-for list="{{ chat }}" as="msg" hint-placeholder-count="3">
+              <div style="display:flex; gap:12px; align-items:flex-start; padding-bottom:20px; border-bottom:1px solid var(--color-neutral-900);">
+                <div style="{{ msg.avatarStyle }} flex-shrink:0;">{{ msg.initials }}</div>
+                <div style="background:var(--color-surface); border-radius:var(--radius-md); padding:12px 16px; flex:1;">
+                  <p style="font-size:11px; color:var(--color-accent-300); margin:0 0 4px; font-weight:500;">{{ msg.from }}</p>
+                  <p style="font-size:13px; margin:0;">{{ msg.text }}</p>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          <input class="input" placeholder="Escribe un mensaje…">
+        </div>
+
+        <div style="display:grid; gap:28px;">
+          <div class="card elev-sm" style="padding:var(--space-6);">
+            <div class="card-kicker" style="margin-bottom:var(--space-3);">Resumen</div>
+            <div style="display:grid; gap:var(--space-4);">
+              <div>
+                <p style="font-size:22px; font-weight:600; font-family:var(--font-heading); margin:0;">1,240</p>
+                <p style="font-size:12px; color:var(--color-neutral-500); margin:2px 0 0;">Tks acumulados del equipo</p>
+              </div>
+              <div>
+                <p style="font-size:22px; font-weight:600; font-family:var(--font-heading); margin:0;">3°</p>
+                <p style="font-size:12px; color:var(--color-neutral-500); margin:2px 0 0;">Lugar en la última licitación</p>
+              </div>
+            </div>
+          </div>
+          <div class="card elev-sm" style="padding:var(--space-6);">
+            <p style="font-size:14px; font-weight:500; margin:0 0 6px;">Nombre de la firma aprobado</p>
+            <p style="font-size:12px; color:var(--color-neutral-500); margin:0 0 var(--space-4);">Puedes solicitar un cambio una vez más este semestre.</p>
+            <button type="button" class="btn btn-ghost">Solicitar cambio</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ isAudit }}" hint-placeholder-val="{{ false }}">
+    <main style="max-width:760px; margin:0 auto; padding:var(--space-8) var(--space-4) 96px;">
+      <p style="color:var(--color-accent-400); font-size:12px; text-transform:uppercase; letter-spacing:.12em; margin-bottom:var(--space-1);">UX audit</p>
+      <h1 style="font-size:32px; margin-bottom:var(--space-6);">What's holding the current UI back</h1>
+
+      <section style="margin-bottom:var(--space-8);">
+        <h2 style="font-size:18px; color:var(--color-neutral-300);">Overall impression</h2>
+        <p style="color:var(--color-neutral-400);">The app is functionally solid but visually inert — every screen is the same bordered box on the same dark grey, with no hierarchy between a hero number and a footer link. Nothing moves, nothing celebrates a win, and the gamified economy (Tokens, streaks, kudos) that's supposed to make the course feel like a game currently reads like an admin form. For a platform whose stated goal is to keep students opening it daily, that's the core gap.</p>
+      </section>
+
+      <section style="margin-bottom:var(--space-8);">
+        <h2 style="font-size:18px; color:var(--color-neutral-300);">What's already working</h2>
+        <ul style="color:var(--color-neutral-400); padding-left:20px;">
+          <li>Dark, quiet ground with a single red accent — a good fit for a daily-use tool, not distracting during class.</li>
+          <li>Confirmation dialogs (Split Bill, purchases) show real before/after balance math — good trust-building detail worth keeping.</li>
+          <li>Copy is already inclusive and calm, matching the "professional consultancy" framing of the course.</li>
+        </ul>
+      </section>
+
+      <section style="margin-bottom:var(--space-8);">
+        <h2 style="font-size:18px; color:var(--color-neutral-300);">Priority fixes</h2>
+        <div style="display:grid; gap:var(--space-3);">
+          <div class="card elev-sm" style="padding:var(--space-4);">
+            <p style="font-weight:500; margin:0 0 4px;">1. Give the Dashboard a hero, not a link list</p>
+            <p style="font-size:13px; color:var(--color-neutral-400); margin:0;">Today "Inicio" is a stack of identical bordered rows to every page. The streak and token balance are the emotional core of the product — they deserve the top of the page, large numbers, a calendar, and a visible next milestone (mocked here).</p>
+          </div>
+          <div class="card elev-sm" style="padding:var(--space-4);">
+            <p style="font-weight:500; margin:0 0 4px;">2. Add motion to state changes</p>
+            <p style="font-size:13px; color:var(--color-neutral-400); margin:0;">A token balance that jumps from 260 to 284 with no transition wastes the one moment students should enjoy. Count-up numbers, a streak-day checkmark that pops in, a progress bar that fills — small, cheap wins for "addictive" without gimmicks.</p>
+          </div>
+          <div class="card elev-sm" style="padding:var(--space-4);">
+            <p style="font-weight:500; margin:0 0 4px;">3. Fix the button hierarchy</p>
+            <p style="font-size:13px; color:var(--color-neutral-400); margin:0;">Primary actions are currently solid red fills everywhere — purchase, confirm, register, admin links — so nothing stands out as *the* action on a screen. Reserve a filled red button for one primary action per screen; make everything else outlined or ghost.</p>
+          </div>
+          <div class="card elev-sm" style="padding:var(--space-4);">
+            <p style="font-weight:500; margin:0 0 4px;">4. Stop burying Admin inside the student dashboard</p>
+            <p style="font-size:13px; color:var(--color-neutral-400); margin:0;">Admin links currently sit in the same list as student links, just recolored. As the teacher, you need a distinct "switch to admin" affordance — a role toggle in the nav, not three extra red rows at the bottom of your own dashboard.</p>
+          </div>
+          <div class="card elev-sm" style="padding:var(--space-4);">
+            <p style="font-weight:500; margin:0 0 4px;">5. Add icons and real visual grouping</p>
+            <p style="font-size:13px; color:var(--color-neutral-400); margin:0;">Every link today is plain text in a box — Privilegios, Mis tickets, Movimientos, Décimas all look identical. Icons and a quick-access grid (mocked here) let students scan instead of read.</p>
+          </div>
+          <div class="card elev-sm" style="padding:var(--space-4);">
+            <p style="font-weight:500; margin:0 0 4px;">6. Design the file upload &amp; preview flow now</p>
+            <p style="font-size:13px; color:var(--color-neutral-400); margin:0;">This is planned but unbuilt. Since submissions are team-locked (first upload wins), the UI needs to show upload progress, a preview of the uploaded file (PDF/image inline, not just a filename), and a live "someone on your team is uploading" state — otherwise teams will double-submit or panic when a teammate's upload silently blocks theirs.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 style="font-size:18px; color:var(--color-neutral-300);">Screens not mocked here — quick notes</h2>
+        <ul style="color:var(--color-neutral-400); padding-left:20px;">
+          <li><strong style="color:var(--color-text);">Privileges catalog:</strong> good structure (grouped by category); needs cost shown as a visual "afford / can't afford" state at a glance, not just a disabled button after the fact.</li>
+          <li><strong style="color:var(--color-text);">Tickets:</strong> the folio is the whole point (shown to the teacher in person) — it should be huge, high-contrast, and work at arm's length, ideally with a QR fallback.</li>
+          <li><strong style="color:var(--color-text);">Admin inbox:</strong> ten item categories in one flat queue will get overwhelming fast; group by priority visually (color bar, not just a label) and let high-priority items float regardless of age.</li>
+          <li><strong style="color:var(--color-text);">Registration:</strong> currently a plain form; since it's gated by rules acceptance and feeds straight into the profile test, treat it as step 1 of 2 with a visible progress indicator.</li>
+        </ul>
+      </section>
+    </main>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { screen: 'welcome', tokenAnim: 0 };
+
+  componentDidMount() {}
+
+  animateTokens(target) {
+    const start = performance.now();
+    const dur = 1000;
+    const tick = (t) => {
+      const p = Math.min(1, (t - start) / dur);
+      const eased = 1 - Math.pow(1 - p, 3);
+      this.setState({ tokenAnim: Math.round(eased * target) });
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  go(screen) {
+    this.setState({ screen, tokenAnim: screen === 'dashboard' ? 0 : this.state.tokenAnim });
+    if (screen === 'dashboard') this.animateTokens(284);
+  }
+
+  renderVals() {
+    const screen = this.state.screen;
+
+    const streakData = [
+      { d: 'L', s: 'done' }, { d: 'M', s: 'done' }, { d: 'X', s: 'shield' }, { d: 'J', s: 'done' },
+      { d: 'L', s: 'done' }, { d: 'M', s: 'done' }, { d: 'X', s: 'today' }, { d: 'J', s: 'future' },
+    ];
+    const streakCells = streakData.map((c, i) => {
+      let bg = 'var(--color-neutral-900)', border = '1px solid var(--color-neutral-800)', color = 'var(--color-neutral-600)';
+      if (c.s === 'done') { bg = 'color-mix(in srgb, var(--color-accent-800) 55%, transparent)'; border = '1px solid var(--color-accent-700)'; color = 'var(--color-accent-300)'; }
+      if (c.s === 'shield') { bg = 'color-mix(in srgb, var(--color-accent-2-800) 55%, transparent)'; border = '1px solid var(--color-accent-2-700)'; color = 'var(--color-accent-2-300)'; }
+      if (c.s === 'today') { bg = 'var(--color-surface)'; border = '1px solid var(--color-accent-400)'; color = 'var(--color-accent-400)'; }
+      return {
+        label: c.d,
+        isCheck: c.s === 'done',
+        isShield: c.s === 'shield',
+        delay: (i * 0.06) + 's',
+        cellStyle: `display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; height:40px; border-radius:var(--radius-sm); background:${bg}; border:${border}; color:${color}; animation-delay:${i * 0.06}s;`,
+      };
+    });
+
+    const movements = [
+      { fuente: 'Racha diaria', delta: 2, fecha: '18 ago' },
+      { fuente: 'Kudos recibido', delta: 10, fecha: '17 ago' },
+      { fuente: 'Licitación · 2° lugar', delta: 24, fecha: '15 ago' },
+    ].map(m => ({ ...m, deltaLabel: '+' + m.delta + ' Tks', color: 'var(--color-accent-300)' }));
+
+    const avatar = (bg, color) => `display:flex; align-items:center; justify-content:center; width:38px; height:38px; border-radius:50%; background:${bg}; color:${color}; font-size:12px; font-weight:600; font-family:var(--font-heading);`;
+
+    const members = [
+      { name: 'Renata (tú)', initials: 'RE', role: 'Analista', roleHint: 'Rigor y verificación', tagClass: 'tag tag-outline', avatarStyle: avatar('var(--color-neutral-800)', 'var(--color-neutral-200)') },
+      { name: 'Ana Gómez', initials: 'AG', role: 'Integradora', roleHint: 'Organización y síntesis', tagClass: 'tag tag-accent', avatarStyle: avatar('var(--color-accent-800)', 'var(--color-accent-100)') },
+      { name: 'Luis Torres', initials: 'LT', role: 'Modelador', roleHint: 'Planteo del modelo', tagClass: 'tag tag-accent-2', avatarStyle: avatar('var(--color-accent-2-800)', 'var(--color-accent-2-100)') },
+      { name: 'Sofía Reyes', initials: 'SR', role: 'Modeladora', roleHint: 'Planteo del modelo', tagClass: 'tag tag-accent-2', avatarStyle: avatar('var(--color-accent-2-800)', 'var(--color-accent-2-100)') },
+    ];
+
+    const chat = [
+      { from: 'Ana Gómez', initials: 'AG', text: '¿Alguien ya avanzó el modelo del tanque perforado?', avatarStyle: avatar('var(--color-accent-800)', 'var(--color-accent-100)') },
+      { from: 'Luis Torres', initials: 'LT', text: 'Yo tengo el planteo, lo subo hoy en la tarde.', avatarStyle: avatar('var(--color-accent-2-800)', 'var(--color-accent-2-100)') },
+      { from: 'Renata (tú)', initials: 'RE', text: 'Perfecto, reviso en cuanto lo subas.', avatarStyle: avatar('var(--color-neutral-800)', 'var(--color-neutral-200)') },
+    ];
+
+    return {
+      isWelcome: screen === 'welcome',
+      isDashboard: screen === 'dashboard',
+      isTeam: screen === 'team',
+      isAudit: screen === 'audit',
+      navCurrentDash: screen === 'dashboard' ? 'page' : undefined,
+      navCurrentTeam: screen === 'team' ? 'page' : undefined,
+      btnWelcomeClass: 'btn ' + (screen === 'welcome' ? 'btn-secondary' : 'btn-ghost'),
+      btnAuditClass: 'btn ' + (screen === 'audit' ? 'btn-secondary' : 'btn-ghost'),
+      goWelcome: () => this.go('welcome'),
+      goDashboard: () => this.go('dashboard'),
+      goTeam: () => this.go('team'),
+      goAudit: () => this.go('audit'),
+      streakDays: 6,
+      streakProgressPct: Math.round((6 / 12) * 100) + '%',
+      streakCells,
+      tokenDisplay: this.state.tokenAnim,
+      movements,
+      members,
+      chat,
+    };
+  }
+}
+</script>
+</body>
+</html>
