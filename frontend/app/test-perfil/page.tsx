@@ -107,7 +107,7 @@ export default function TestPerfil() {
   return (
     <main className="min-h-screen max-w-2xl mx-auto p-8 space-y-8">
       <header className="space-y-2">
-        <p className="text-ibero-red text-xs uppercase tracking-widest">IBERO · Cálculo 3</p>
+        <p className="text-ibero-red text-xs uppercase tracking-widest">Cálculo 3</p>
         <h1 className="text-3xl font-semibold">Test de perfil de trabajo en equipo</h1>
         <p className="text-neutral-400 text-sm">
           Responde cómo tiendes a actuar en cada escenario. No hay respuestas

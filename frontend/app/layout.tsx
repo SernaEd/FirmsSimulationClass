@@ -5,7 +5,7 @@ import { TopNav } from "@/components/TopNav";
 
 export const metadata: Metadata = {
   title: "Plataforma Cálculo 3",
-  description: "Plataforma de aprendizaje para Cálculo 3 — Ecuaciones Diferenciales, IBERO.",
+  description: "Plataforma de aprendizaje para Cálculo 3 — Ecuaciones Diferenciales.",
 };
 
 // favicon servido por convención de archivo: app/favicon.ico (Next.js App Router).
