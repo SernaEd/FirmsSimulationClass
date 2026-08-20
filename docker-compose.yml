@@ -48,6 +48,7 @@ services:
       JWT_REFRESH_TOKEN_DAYS: ${JWT_REFRESH_TOKEN_DAYS:-7}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-}
       ADMIN_BOOTSTRAP_TOKEN: ${ADMIN_BOOTSTRAP_TOKEN:-}
+      MAX_ATTACHMENT_SIZE_MB: ${MAX_ATTACHMENT_SIZE_MB:-50}
       TZ: ${TZ:-America/Mexico_City}
     ports:
       # FRONTEND_BIND/BACKEND_BIND por default en todas las interfaces

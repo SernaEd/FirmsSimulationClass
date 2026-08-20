@@ -518,6 +518,12 @@ def adjust_tokens(
 # Conversión default 50 pts = 1 décima (§5.4). En Dominio 4 se lee de SystemState.
 DEFAULT_PTS_POR_DECIMA = 50
 
+# Flag que el profesor enciende manualmente en las últimas semanas del
+# semestre (§5.4) — mismo mecanismo de SystemFlag que gatea privilegios del
+# catálogo (`is_privilege_available_for_users`). Ausencia = apagado
+# (safe default): sin fila en system_flags, el canje queda oculto/cerrado.
+DECIMAS_FLAG_KEY = "decimas_enabled"
+
 
 def request_decimal_redemption(
     db: Session,
@@ -527,6 +533,13 @@ def request_decimal_redemption(
     entrega_ref: str | None = None,
 ) -> DecimalRedemptionRequest:
     # TODO(d4): verificar que semester_state == "canje_abierto".
+    from app.services.system_config import get_flag  # import perezoso: evita ciclo
+
+    if not get_flag(db, DECIMAS_FLAG_KEY):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="El canje por décimas no está disponible actualmente.",
+        )
     if decimas_solicitadas <= 0:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

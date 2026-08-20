@@ -287,7 +287,7 @@ export default function AdminEquipos() {
           </label>
           <button
             type="submit"
-            className="rounded-lg bg-ibero-red hover:bg-ibero-red-dark px-5 py-2 text-sm font-medium"
+            className="rounded-lg border border-accent-500 text-accent-300 hover:bg-accent-500/10 px-5 py-2 text-sm font-medium"
           >
             Generar
           </button>

@@ -59,3 +59,21 @@ class SystemFlagOut(BaseModel):
 class SetFlagIn(BaseModel):
     enabled: bool
     description: str | None = Field(default=None, max_length=300)
+
+
+class FlagStatusOut(BaseModel):
+    """Versión mínima de un flag para consumo del alumnado (sin metadatos
+    de auditoría como `updated_by`) — usada para mostrar/ocultar UI."""
+
+    key: str
+    enabled: bool
+
+
+class KnownFlagOut(BaseModel):
+    """Un flag que el código puede consultar pero aún no tiene fila en
+    `system_flags` — con descripción cuando viene del registro estático
+    (ver `list_known_flag_keys`), para que el admin no tenga que adivinar
+    qué hace antes de crearlo."""
+
+    key: str
+    description: str | None

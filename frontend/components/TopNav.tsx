@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { auth } from "@/lib/api";
 import { useAuthContext } from "@/lib/AuthContext";
+import { useFeatureFlag } from "@/lib/useFeatureFlag";
 import { toggleSet } from "@/lib/toggleSet";
 
 type NavLink = { href: string; label: string };
@@ -19,6 +20,7 @@ function isGroup(entry: NavEntry): entry is NavGroup {
 const STUDENT_ENTRIES: NavEntry[] = [
   { href: "/inicio", label: "Inicio" },
   { label: "Sesiones", links: [{ href: "/clase1", label: "Sesión 1" }] },
+  { href: "/clases", label: "Clases" },
   { href: "/mi-equipo", label: "Mi equipo" },
   { href: "/privilegios", label: "Privilegios" },
   { href: "/mis-tickets", label: "Mis tickets" },
@@ -33,6 +35,7 @@ const ADMIN_GROUP: NavGroup = {
     { href: "/admin/equipos", label: "Equipos" },
     { href: "/admin/economia", label: "Economía" },
     { href: "/admin/sistema", label: "Sistema" },
+    { href: "/admin/contenido", label: "Contenido" },
   ],
 };
 
@@ -49,7 +52,7 @@ function linkClassName(active: boolean, indent: boolean) {
     "block py-2 text-sm transition-colors " +
     (indent ? "pl-8 pr-4 " : "px-4 ") +
     (active
-      ? "text-ibero-red bg-ibero-red/10"
+      ? "text-accent-300 bg-accent-500/10"
       : indent
         ? "text-neutral-300 hover:bg-surface"
         : "text-neutral-200 hover:bg-surface")
@@ -92,7 +95,7 @@ function NavMenuEntry({
         className={
           "flex w-full items-center justify-between px-4 py-2 text-sm transition-colors " +
           (entry.accent
-            ? "text-ibero-red hover:bg-ibero-red/10"
+            ? "text-accent-300 hover:bg-accent-500/10"
             : "text-neutral-200 hover:bg-surface")
         }
       >
@@ -151,6 +154,9 @@ export function TopNav() {
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set(groupsContaining(pathname)));
   const home = authState.status === "authenticated" ? "/inicio" : "/";
   const showMenu = authState.status === "authenticated" || authState.status === "error";
+  // Décimas solo está disponible las últimas semanas del semestre (§5.4) —
+  // el profesor lo enciende manualmente vía el flag "decimas_enabled".
+  const decimasEnabled = useFeatureFlag("decimas_enabled");
 
   // Al navegar a una página dentro de un grupo, ese grupo se abre solo (sin
   // cerrar los demás) para no esconder la sección donde la persona está parada.
@@ -170,7 +176,10 @@ export function TopNav() {
 
   const entries: NavEntry[] =
     authState.status === "authenticated" && authState.user.estado === "active"
-      ? [...STUDENT_ENTRIES, ...(authState.user.is_admin ? [ADMIN_GROUP] : [])]
+      ? [
+          ...STUDENT_ENTRIES.filter((e) => decimasEnabled || (isGroup(e) ? true : e.href !== "/decimas")),
+          ...(authState.user.is_admin ? [ADMIN_GROUP] : []),
+        ]
       : [];
 
   return (

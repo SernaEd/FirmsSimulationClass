@@ -9,6 +9,7 @@ import {
   DecimalRequestStatus,
 } from "@/lib/api";
 import { useAuth } from "@/lib/useAuth";
+import { useFeatureFlag } from "@/lib/useFeatureFlag";
 import { BalanceWidget } from "@/components/BalanceWidget";
 
 function StatusBadge({ estado }: { estado: DecimalRequestStatus }) {
@@ -34,6 +35,7 @@ function StatusBadge({ estado }: { estado: DecimalRequestStatus }) {
 export default function DecimasPage() {
   const authState = useAuth();
   const token = authState.status === "authenticated" ? authState.token : null;
+  const decimasEnabled = useFeatureFlag("decimas_enabled");
 
   const [history, setHistory] = useState<DecimalRedemptionOut[]>([]);
   const [loading, setLoading] = useState(true);
@@ -121,6 +123,20 @@ export default function DecimasPage() {
 
       <BalanceWidget token={token!} />
 
+      {decimasEnabled === false && (
+        // === false explícito (no solo falsy): mientras el flag todavía se
+        // está consultando (null), no queremos mostrar "no disponible" y
+        // luego el formulario real — sería un aviso falso momentáneo.
+        <section className="rounded-lg border border-dashed border-surface-border p-6 text-center">
+          <p className="text-sm text-neutral-400">
+            El canje por décimas todavía no está disponible — se abre en las
+            últimas semanas del semestre. Tu historial de solicitudes
+            previas sigue visible abajo.
+          </p>
+        </section>
+      )}
+
+      {decimasEnabled === true && (
       <section className="rounded-lg border border-surface-border bg-surface-raised p-6 space-y-4">
         <h2 className="text-lg font-semibold">Solicitar Décimas</h2>
         <p className="text-xs text-neutral-400">
@@ -179,12 +195,13 @@ export default function DecimasPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full rounded-md bg-white text-black hover:bg-neutral-200 disabled:opacity-50 px-4 py-2 text-sm font-medium transition-colors"
+            className="w-full rounded-md border border-accent-500 text-accent-300 hover:bg-accent-500/10 disabled:opacity-50 px-4 py-2 text-sm font-medium transition-colors"
           >
             {submitting ? "Enviando solicitud…" : "Enviar solicitud"}
           </button>
         </form>
       </section>
+      )}
 
       <section className="space-y-4">
         <h2 className="text-lg font-semibold">Historial de Solicitudes</h2>
