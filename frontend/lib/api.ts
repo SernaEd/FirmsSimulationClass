@@ -107,6 +107,27 @@ function normalizeDetail(data: unknown): string | null {
   return null;
 }
 
+// ---- Response helpers (compartidos por request(), requestUpload() y
+// openAttachment()) ----
+async function throwIfError(res: Response): Promise<void> {
+  if (res.ok) return;
+  let detail = `HTTP ${res.status}`;
+  try {
+    const data = await res.json();
+    detail = normalizeDetail(data) ?? detail;
+  } catch {
+    // body no era JSON
+  }
+  throw new ApiError(res.status, detail);
+}
+
+async function handleResponse<T>(res: Response): Promise<T> {
+  await throwIfError(res);
+  // Puede ser 204 sin cuerpo
+  if (res.status === 204) return undefined as T;
+  return res.json();
+}
+
 // ---- Request helper ----
 async function request<T>(
   path: string,
@@ -126,20 +147,50 @@ async function request<T>(
     throw new ApiError(0, `No se pudo conectar con el servidor (${String(err)}).`);
   }
 
-  if (!res.ok) {
-    let detail = `HTTP ${res.status}`;
-    try {
-      const data = await res.json();
-      detail = normalizeDetail(data) ?? detail;
-    } catch {
-      // body no era JSON
-    }
-    throw new ApiError(res.status, detail);
+  return handleResponse<T>(res);
+}
+
+// Subida de archivos (multipart/form-data) — sin Content-Type manual: el
+// navegador arma el boundary solo. Solo se usa para adjuntos de sesión.
+async function requestUpload<T>(path: string, formData: FormData, token: string): Promise<T> {
+  let res: Response;
+  try {
+    res = await fetch(`${API_URL}${path}`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    });
+  } catch (err) {
+    throw new ApiError(0, `No se pudo conectar con el servidor (${String(err)}).`);
   }
 
-  // Puede ser 204 sin cuerpo
-  if (res.status === 204) return undefined as T;
-  return res.json();
+  return handleResponse<T>(res);
+}
+
+/** Descarga un adjunto autenticado y lo abre en pestaña nueva (un <a href>
+ * plano no puede mandar el header Authorization). */
+export async function openAttachment(
+  sessionId: number,
+  attachmentId: number,
+  filename: string,
+  token: string,
+): Promise<void> {
+  const res = await fetch(
+    `${API_URL}/sessions/${sessionId}/attachments/${attachmentId}/download`,
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  await throwIfError(res);
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const opened = window.open(url, "_blank");
+  if (!opened) {
+    // Popup bloqueado: forzar descarga en vez de dejarlo silencioso.
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    link.click();
+  }
+  setTimeout(() => URL.revokeObjectURL(url), 60_000);
 }
 
 // ---- Tipos test de perfil (§3, Iteración 1) ----
@@ -429,6 +480,48 @@ export type SystemFlagOut = {
   updated_by: number | null;
 };
 
+export type FlagStatusOut = {
+  key: string;
+  enabled: boolean;
+};
+
+export type KnownFlagOut = {
+  key: string;
+  description: string | null;
+};
+
+// ---- Contenido (Módulos, Sesiones, adjuntos) — Iteración 1 ----
+export type SessionAttachmentOut = {
+  id: number;
+  filename: string;
+  content_type: string;
+  size_bytes: number;
+  created_at: string;
+};
+
+export type CourseSessionListOut = {
+  id: number;
+  numero_sesion: number;
+  titulo: string;
+};
+
+export type CourseSessionDetailOut = {
+  id: number;
+  module_id: number;
+  numero_sesion: number;
+  titulo: string;
+  descripcion: string | null;
+  attachments: SessionAttachmentOut[];
+};
+
+export type ModuleOut = {
+  id: number;
+  numero: number;
+  nombre: string;
+  unlocked_at: string | null;
+  sessions: CourseSessionListOut[];
+};
+
 // ---- API pública ----
 export const api = {
   // Dominio 1
@@ -675,13 +768,70 @@ export const api = {
   adminListFlags: (token: string) =>
     request<SystemFlagOut[]>("/admin/system/flags", {}, token),
   adminListKnownFlagKeys: (token: string) =>
-    request<string[]>("/admin/system/flags/known-keys", {}, token),
-  adminSetFlag: (token: string, key: string, enabled: boolean, description?: string) =>
+    request<KnownFlagOut[]>("/admin/system/flags/known-keys", {}, token),
+  adminSetFlag: (token: string, key: string, enabled: boolean, description?: string | null) =>
     request<SystemFlagOut>(
       `/admin/system/flags/${key}`,
       { method: "PUT", body: JSON.stringify({ enabled, description }) },
       token,
     ),
+
+  // Dominio 4 — alumno: lectura de feature flags (mostrar/ocultar UI)
+  getFeatureFlag: (token: string, key: string) =>
+    request<FlagStatusOut>(`/system/flags/${key}`, {}, token),
+
+  // Contenido — alumno
+  listModules: (token: string) => request<ModuleOut[]>("/modules", {}, token),
+  getSession: (token: string, sessionId: number) =>
+    request<CourseSessionDetailOut>(`/sessions/${sessionId}`, {}, token),
+
+  // Contenido — admin
+  adminCreateModule: (token: string, body: { numero: number; nombre: string }) =>
+    request<ModuleOut>("/admin/modules", { method: "POST", body: JSON.stringify(body) }, token),
+  adminListModules: (token: string) => request<ModuleOut[]>("/admin/modules", {}, token),
+  adminUpdateModule: (token: string, moduleId: number, body: { numero?: number; nombre?: string }) =>
+    request<ModuleOut>(
+      `/admin/modules/${moduleId}`,
+      { method: "PATCH", body: JSON.stringify(body) },
+      token,
+    ),
+  adminUnlockModule: (token: string, moduleId: number) =>
+    request<ModuleOut>(`/admin/modules/${moduleId}/unlock`, { method: "POST" }, token),
+  adminLockModule: (token: string, moduleId: number) =>
+    request<ModuleOut>(`/admin/modules/${moduleId}/lock`, { method: "POST" }, token),
+  adminCreateSession: (
+    token: string,
+    moduleId: number,
+    body: { numero_sesion: number; titulo: string; descripcion?: string | null },
+  ) =>
+    request<CourseSessionDetailOut>(
+      `/admin/modules/${moduleId}/sessions`,
+      { method: "POST", body: JSON.stringify(body) },
+      token,
+    ),
+  adminUpdateSession: (
+    token: string,
+    sessionId: number,
+    body: { numero_sesion?: number; titulo?: string; descripcion?: string | null },
+  ) =>
+    request<CourseSessionDetailOut>(
+      `/admin/sessions/${sessionId}`,
+      { method: "PATCH", body: JSON.stringify(body) },
+      token,
+    ),
+  adminDeleteSession: (token: string, sessionId: number) =>
+    request<void>(`/admin/sessions/${sessionId}`, { method: "DELETE" }, token),
+  adminUploadAttachment: (token: string, sessionId: number, file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return requestUpload<SessionAttachmentOut>(
+      `/admin/sessions/${sessionId}/attachments`,
+      formData,
+      token,
+    );
+  },
+  adminDeleteAttachment: (token: string, attachmentId: number) =>
+    request<void>(`/admin/attachments/${attachmentId}`, { method: "DELETE" }, token),
 };
 
 // ---- Sesión en localStorage (token + usuario cacheado) ----

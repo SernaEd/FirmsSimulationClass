@@ -35,11 +35,24 @@ def list_flags(db: Session) -> list[SystemFlag]:
     return list(db.scalars(select(SystemFlag).order_by(SystemFlag.key)).all())
 
 
-def list_known_flag_keys(db: Session) -> list[str]:
-    """Claves `feature_flag_key` referenciadas por el catálogo de privilegios
-    que aún no tienen una fila en `system_flags` (para que el admin las vea
-    sin tener que adivinar el nombre exacto antes de activarlas)."""
+def list_known_flag_keys(db: Session) -> list[dict]:
+    """Todas las claves de flag que el código hoy puede consultar y aún no
+    tienen fila en `system_flags`: las `feature_flag_key` referenciadas por
+    el catálogo de privilegios (§5.2, autodescubiertas — sin descripción
+    propia aquí, el catálogo ya las explica) + un registro estático de
+    flags que gatean secciones completas de la app fuera del catálogo (ej.
+    `decimas_enabled`, §5.4), con su descripción. Así el admin ve todo lo
+    disponible en vez de tener que memorizar el nombre exacto de un flag
+    para crearlo."""
     from app.models.economy import PrivilegeCatalog
+    from app.services.tokens import DECIMAS_FLAG_KEY  # import perezoso: evita ciclo
+
+    static_flags: dict[str, str] = {
+        DECIMAS_FLAG_KEY: (
+            "Habilita el menú de Canje de Décimas para el alumnado — se "
+            "enciende manualmente en las últimas semanas del semestre (§5.4)."
+        ),
+    }
 
     referenced = set(
         db.scalars(
@@ -48,8 +61,15 @@ def list_known_flag_keys(db: Session) -> list[str]:
             )
         ).all()
     )
+    candidates: dict[str, str | None] = {k: None for k in referenced}
+    candidates.update(static_flags)
+
     existing = set(db.scalars(select(SystemFlag.key)).all())
-    return sorted(referenced - existing)
+    return [
+        {"key": key, "description": description}
+        for key, description in sorted(candidates.items())
+        if key not in existing
+    ]
 
 
 def set_flag(
@@ -64,9 +84,12 @@ def set_flag(
         flag = SystemFlag(key=key, value={"enabled": enabled}, description=description)
         db.add(flag)
     else:
+        # Se sobreescribe siempre (incluido None) — el único caller (PUT
+        # /admin/system/flags/{key}) siempre manda la intención completa del
+        # admin, nunca "deja lo que había"; un `None` explícito es "limpiar
+        # la descripción", no "no me importa".
         flag.value = {"enabled": enabled}
-        if description is not None:
-            flag.description = description
+        flag.description = description
     flag.updated_by = admin.id
     flag.updated_at = datetime.now(timezone.utc)
     db.commit()

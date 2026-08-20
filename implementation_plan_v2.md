@@ -385,20 +385,17 @@ Ambos mecanismos (sustentación aleatoria y datos empíricos con video) hacen qu
 
 ## 8. Contenido y módulos
 
-### 8.1 Fuente: Notion
+### 8.1 Fuente: edición directa en la plataforma
 
-- El temario reside en Notion, organizado por Sesiones (Clases). Cada clase tiene su propia sub-página en Notion.
-- **Sincronización manual** desde el panel admin mediante un botón "Sincronizar Clase".
-- **Pipeline de contenido**: Notion API → descarga de bloques en formato compatible con `react-notion-x` → persistencia en la BD local → renderizado en la página específica de la "Vista de Clase". La vista de clase muestra: NotionRenderer (arriba) + Visor de PDF embebido (medio) + Sección de Comentarios estilo YouTube (abajo).
-- **Limitador de Tasa (Rate Limiting):** El proceso de sincronización incluirá retrasos artificiales (ej. 0.35s entre peticiones) para respetar el límite de 3 peticiones por segundo de la API de Notion y evitar errores 429.
-- **Retry con backoff exponencial**: si aun así aparece un 429, el cliente reintenta con backoff (1s, 2s, 4s, 8s, hasta 3 reintentos) y solo aborta la sincronización si todos los reintentos fallan, dejando la BD en el último estado consistente.
-- **Sin peticiones automáticas a Notion API** durante uso normal.
-- El admin puede ver diff entre la versión sincronizada y la última descarga.
+- El temario se captura directo en la plataforma — el profesor nunca usó Notion para dar la clase, construye sus sesiones como PowerPoint/PDF propios. No hay fuente externa ni sincronización.
+- El admin edita cada Sesión desde `/admin/contenido`: título, número dentro del módulo y una descripción libre (texto plano, sin markdown).
+- **Adjuntos**: el admin sube sus propios archivos de clase por sesión — PDF, PPT/PPTX, DOC/DOCX, PNG/JPG — con un tope configurable por archivo (`MAX_ATTACHMENT_SIZE_MB`, default 50 MB). Se guardan en disco (volumen `./uploads`, ya montado en docker-compose) y se sirven solo vía un endpoint de descarga autenticado — nunca como estático público — para que un módulo bloqueado no filtre su contenido ni por URL directa.
+- La "Vista de Clase" (`/clases/[id]`) muestra: descripción (arriba) + lista de adjuntos para ver/descargar (medio) + Sección de Comentarios estilo YouTube (abajo, pendiente de construir — ver Iteración 1 "Comentarios por Clase").
 
 ### 8.2 Estructura y desbloqueo de módulos
 
 - Los módulos están ocultos por defecto. El admin los desbloquea manualmente uno a uno para evitar que los alumnos se adelanten.
-- Cada módulo es un contenedor de Sesiones (Clases). Cada clase tiene su propia página de teoría (Notion + PDF) y su propio hilo de comentarios. Las entregas siguen agrupadas a nivel Módulo.
+- Cada módulo es un contenedor de Sesiones (Clases). Cada clase tiene su propia descripción + adjuntos (editados directo en la plataforma) y su propio hilo de comentarios. Las entregas siguen agrupadas a nivel Módulo.
 - **Módulos simultáneos**: los módulos previamente desbloqueados **permanecen accesibles** al desbloquear uno nuevo (los alumnos pueden seguir consultando notas de módulos pasados).
 - **Módulo activo** (para efectos del widget "Módulo activo" del Dashboard §14.2): es el **último módulo desbloqueado**. Los ejercicios del módulo se resuelven en WebAssign (fuera de nuestra plataforma); ver nota de alcance en §8.3.
 
@@ -499,7 +496,7 @@ Centro unificado de atención para el profesor. Todas las acciones de los alumno
 | Sustentaciones destacadas pendientes de asignar | Recordatorio 24-48h tras una sustentación no marcada (§7.2) | Baja |
 | Posts destacados pendientes de asignar | Recordatorio periódico si el profesor no ha destacado posts en X días | Baja |
 | Alertas de sistema — inactividad | Job `detect_inactivity` los lunes (§16.3) | Media |
-| Alertas de sistema — otras | Errores de sincronización de Notion, saturación de disco, jobs fallidos | Variable |
+| Alertas de sistema — otras | Saturación de disco, jobs fallidos | Variable |
 
 **Acciones disponibles por item:**
 
@@ -523,7 +520,7 @@ Centro unificado de atención para el profesor. Todas las acciones de los alumno
 
 ### 11.2 Contenido y evaluación
 
-- **Sincronización de Notion**: botón manual + vista de diff.
+- **Editor de sesiones**: crear/editar módulos y sesiones directo en la plataforma (título, descripción, adjuntos PDF/PPTX/Word/imágenes), sin fuente externa.
 - **Desbloqueo de módulos** uno a uno.
 - **Gestor de calificaciones**: tabla editable tipo hoja de cálculo con exportación CSV.
 - **Configuración por-tarea** del reparto entrega escrita / sustentación oral (default 70/30).
@@ -568,11 +565,10 @@ Zona de acciones destructivas o irreversibles, aislada del resto del panel con c
 
 ### 12.1 Stack
 
-- **Frontend**: Next.js (React). UI **minimalista oscura**, acento rojo IBERO, tipografía profesional. Sin efectos neón, sin estética cyberpunk ni de videojuego. **react-notion-x** para importar y renderizar los bloques de Notion de forma nativa y estéticamente impecable en la web. **Chart.js** o **Recharts** para gráficas del Dashboard y reportes.
+- **Frontend**: Next.js (React). UI **minimalista oscura**, acento rojo IBERO, tipografía profesional. Sin efectos neón, sin estética cyberpunk ni de videojuego. **Chart.js** o **Recharts** para gráficas del Dashboard y reportes.
 - **Backend**: FastAPI (Python 3.11+). WebSockets nativos para chat y licitaciones. **APScheduler** para tareas programadas (§12.4). **Jinja2** + **WeasyPrint** o similar para renderizar reportes (§17). *(SymPy/MathLive removidos del stack — ver nota de alcance en §8.3.)*
 - **Base de datos**: MySQL 8.
-- **Almacenamiento de archivos**: filesystem del VPS en `uploads/`, rutas guardadas en MySQL.
-- **Sincronización Notion**: cliente oficial de Notion API, ejecutado solo bajo demanda del admin.
+- **Almacenamiento de archivos**: filesystem del VPS en `uploads/`, rutas guardadas en MySQL — incluye los adjuntos de sesión (§8.1) servidos vía endpoint autenticado, no como estático público.
 - **Email**: SMTP institucional o servicio transaccional (Postmark/Resend), usado solo si el alumno activa notificaciones (§12.5).
 - **Zona horaria del sistema**: `America/Mexico_City` para todos los cálculos temporales (rachas, timestamps, cron jobs).
 
@@ -633,7 +629,8 @@ Entidades principales y relaciones clave. No es el schema definitivo (se detalla
 **Contenido y módulos:**
 
 - `Module` — id, numero (1-4), nombre, unlocked_at (nullable).
-- `CourseSession` — id, module_id, numero_sesion, titulo, notion_page_id, apuntes_pdf_url (nullable), notion_last_sync.
+- `CourseSession` — id, module_id, numero_sesion, titulo, descripcion (nullable).
+- `SessionAttachment` — id, session_id, filename, storage_path, content_type, size_bytes, created_at.
 
 > `PracticeExercise`/`ExerciseAttempt` (motor SymPy/MathLive) y `Announcement`/`AnnouncementRead` (publicador de anuncios) se removieron del esbozo — ver notas de alcance en §8.3 y §11.3 respectivamente.
 
@@ -726,7 +723,6 @@ Relaciones críticas:
 | Publicación en foro | 5 por alumno / hora / foro | §9 |
 | Envío de mensajes en chat de equipo | 30 por alumno / min | §12 |
 | Envío de kudos | Auto-regulado por costo de 10 Tks | §4.2 |
-| Peticiones a Notion API durante sync | 0.35s entre peticiones + retry con backoff | §8.1 |
 
 ---
 
@@ -768,7 +764,7 @@ Tutoriales previstos: registro, test de perfil, Dashboard, catálogo de privileg
 
 **Fila 2 — Curso y trabajo:**
 
-4. **Módulo activo**: título del módulo y link al índice de Clases de ese módulo. Al entrar a una Clase, se abre la "Vista de Clase" (Notion + PDF + Comentarios).
+4. **Módulo activo**: título del módulo y link al índice de Clases de ese módulo. Al entrar a una Clase, se abre la "Vista de Clase" (descripción + adjuntos + Comentarios).
 5. **Próximas entregas**: lista de 3-5 con countdown ("faltan 2 días", "vence hoy"), color por urgencia.
 6. **Mi equipo**: nombre de firma, mini-cards de integrantes (nickname + perfil), botón para abrir chat, contador "N kudos esta semana".
 
@@ -798,7 +794,7 @@ Cada fase incluye pruebas antes de pasar a la siguiente.
 
 Trabajo del profesor (no requiere código):
 
-- Estructurar el contenido de los 4 módulos en Notion con la misma jerarquía prevista para la sincronización.
+- Preparar el material (PPTX/PDF) de los 4 módulos con la misma jerarquía prevista para cargarlo en el editor de sesiones.
 - Redactar **3-5 casos** para licitaciones iniciales.
 - Redactar las **8-10 preguntas del test de perfil** con sus 3 opciones cada una.
 - Redactar borrador de la página de reglas y políticas (§18) para revisión legal antes de la Fase 8.
@@ -818,8 +814,7 @@ Trabajo del profesor (no requiere código):
 - Chat de equipo vía WebSocket.
 
 ### Fase 3 — Contenido y práctica (semana 4-5)
-- Integración con Notion API.
-- Sincronización manual con vista de diff.
+- Editor de sesiones (módulos, títulos, descripciones, adjuntos PDF/PPTX/Word/imágenes).
 - Desbloqueo de módulos.
 - Foros por módulo con opción anónimo/nickname y marcado de post destacado.
 
@@ -1005,7 +1000,7 @@ Página pública accesible desde el pie de página de la plataforma y **obligato
 - Datos que se recolectan: nombre, apellidos, número de cuenta, nickname, PIN hasheado, correo institucional (si activa notificaciones).
 - Finalidad: administración del curso.
 - Retención: hasta 60 días después del cierre administrativo del semestre.
-- Terceros: solo Notion (contenido del temario) y proveedor de correo (si activa notificaciones).
+- Terceros: ninguno, salvo el proveedor de correo (si activa notificaciones).
 - Derechos: acceso, rectificación, cancelación mediante solicitud al profesor.
 
 ### 18.2 Reglas del curso en la plataforma
@@ -1060,8 +1055,7 @@ El proceso completo vive como ítem tipo `sancion` en el **Inbox de Aprobaciones
 | Colusión en retroalimentación de pares | Detección de patrones + justificación obligatoria + factor de moderación admin. |
 | Abuso del sistema de privilegios en evaluaciones importantes | Blacklist explícita (examen final, proyecto final). |
 | Alumnos ingeniándoselas para usar IA a pesar de sustentación | Sustentación aleatoria + datos empíricos con video. |
-| Notion cambia estructura y rompe sync | Sync manual con diff visible antes de aplicar; rollback a versión previa. |
-| Pérdida de datos por falla del VPS | Backups diarios rotados + snapshot mensual del filesystem. |
+| Pérdida de datos por falla del VPS | Backups diarios rotados + snapshot mensual del filesystem (incluye `uploads/`). |
 | Reset accidental por parte del profesor | Danger zone con confirmación en dos pasos, PIN, log separado y notificación por email. |
 | Alumnos no reciben recordatorios y pierden racha | Notificaciones opcionales por correo con recordatorio a las 20:00 lunes-jueves. |
 | Privilegio de IA autorizado prematuramente | Feature flag `ai_in_exam_enabled` desactivado por defecto hasta autorización de coordinación. |

@@ -1,17 +1,16 @@
 """Modelos de contenido — módulos, sesiones de clase y comentarios (Iteración 1).
 
-Cubren la Vista de Clase: apuntes sincronizados desde Notion (sección
-superior), PDF de apuntes del profesor desde GDrive (sección media) y
-comentarios estilo YouTube (sección inferior). Ver plan_de_tareas_mvp.md
-> Iteración 1 y implementation_plan_v2.md §12.6.
+Cubren la Vista de Clase: descripción editada por el admin (sección
+superior), adjuntos subidos por el admin — PDF/PPTX/Word/imágenes de la
+clase (sección media) y comentarios estilo YouTube (sección inferior, aún
+sin construir). Ver plan_de_tareas_mvp.md > Iteración 1.
 
 Convenciones:
 - `Module` agrupa sesiones y controla el desbloqueo progresivo del curso
   (`unlocked_at` nulo = aún bloqueado).
-- `CourseSession` es la unidad sincronizable con Notion; `notion_page_id`
-  se captura al crear la sesión (el admin la vincula a su sub-página en
-  Notion desde el inicio) y `notion_last_sync` queda nulo hasta la primera
-  sincronización.
+- `CourseSession` se edita directo en la plataforma (título + descripción
+  libre); `SessionAttachment` guarda los archivos que el admin sube para
+  esa sesión.
 - `ForumPost` cuelga de la sesión, no del módulo, y admite hilos simples
   vía `parent_post_id` (comentario / respuesta, sin anidamiento profundo).
 """
@@ -42,7 +41,7 @@ class Module(Base):
     unlocked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     sessions: Mapped[list["CourseSession"]] = relationship(
-        back_populates="module", cascade="all, delete-orphan"
+        back_populates="module", cascade="all, delete-orphan", order_by="CourseSession.numero_sesion"
     )
 
     def __repr__(self) -> str:
@@ -58,14 +57,14 @@ class CourseSession(Base):
     )
     numero_sesion: Mapped[int] = mapped_column(Integer, nullable=False)
     titulo: Mapped[str] = mapped_column(String(200), nullable=False)
-
-    notion_page_id: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
-    apuntes_pdf_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
-    notion_last_sync: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    descripcion: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     module: Mapped[Module] = relationship(back_populates="sessions")
     posts: Mapped[list["ForumPost"]] = relationship(
         back_populates="session", cascade="all, delete-orphan"
+    )
+    attachments: Mapped[list["SessionAttachment"]] = relationship(
+        back_populates="session", cascade="all, delete-orphan", order_by="SessionAttachment.created_at"
     )
 
     __table_args__ = (
@@ -74,6 +73,29 @@ class CourseSession(Base):
 
     def __repr__(self) -> str:
         return f"<CourseSession {self.titulo}>"
+
+
+class SessionAttachment(Base):
+    __tablename__ = "session_attachments"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    session_id: Mapped[int] = mapped_column(
+        ForeignKey("course_sessions.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+
+    filename: Mapped[str] = mapped_column(String(255), nullable=False)
+    storage_path: Mapped[str] = mapped_column(String(500), nullable=False)
+    content_type: Mapped[str] = mapped_column(String(100), nullable=False)
+    size_bytes: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+
+    session: Mapped[CourseSession] = relationship(back_populates="attachments")
+
+    def __repr__(self) -> str:
+        return f"<SessionAttachment {self.filename} (session {self.session_id})>"
 
 
 class ForumPost(Base):

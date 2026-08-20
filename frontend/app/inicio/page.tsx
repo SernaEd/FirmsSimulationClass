@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { BalanceWidget } from "@/components/BalanceWidget";
 import { TeamOut, UserStatus, api, pickByPronoun } from "@/lib/api";
 import { useAuth } from "@/lib/useAuth";
+import { useFeatureFlag } from "@/lib/useFeatureFlag";
 
 // Rediseño "Dashboard" — ver UiDesign/README.md §2. Los enlaces de Admin ya
 // no se duplican aquí (ver TopNav): el propio audit del prototipo (hallazgo
@@ -17,6 +18,7 @@ export default function Inicio() {
   // /me/team (403) y de cualquier forma useAuth() ya las redirige fuera de
   // /inicio — evita el fetch de equipo mientras eso ocurre.
   const isActive = authState.status === "authenticated" && authState.user.estado === "active";
+  const decimasEnabled = useFeatureFlag("decimas_enabled");
   const [team, setTeam] = useState<TeamOut | null | undefined>(undefined);
 
   useEffect(() => {
@@ -98,8 +100,11 @@ export default function Inicio() {
             <QuickTile href="/privilegios" label="Privilegios" icon={<IconRings />} />
             <QuickTile href="/mis-tickets" label="Mis tickets" icon={<IconTicket />} />
             <QuickTile href="/movimientos" label="Movimientos" icon={<IconMovements />} />
-            <QuickTile href="/decimas" label="Décimas" icon={<IconDecimas />} />
+            {decimasEnabled && (
+              <QuickTile href="/decimas" label="Décimas" icon={<IconDecimas />} />
+            )}
             <QuickTile href="/clase1" label="Sesión 1" icon={<IconSession />} />
+            <QuickTile href="/clases" label="Clases" icon={<IconLibrary />} />
           </div>
         </>
       )}
@@ -248,6 +253,15 @@ function IconSession() {
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <rect x="4" y="4" width="16" height="16" rx="2" />
       <path d="M10 9.5v5l4-2.5-4-2.5Z" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+function IconLibrary() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M4 19V6a2 2 0 0 1 2-2h5v16H6a2 2 0 0 1-2-2Z" />
+      <path d="M13 4h5a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-5V4Z" />
     </svg>
   );
 }

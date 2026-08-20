@@ -37,8 +37,8 @@ export default function Reglas() {
             del cierre administrativo del semestre.
           </li>
           <li>
-            <strong className="text-white">Terceros:</strong> solo Notion (para
-            temario) y proveedor de correo (solo si activas notificaciones).
+            <strong className="text-white">Terceros:</strong> ninguno, salvo el
+            proveedor de correo (solo si activas notificaciones).
           </li>
           <li>
             <strong className="text-white">Derechos:</strong> acceso, rectificación

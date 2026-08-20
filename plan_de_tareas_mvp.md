@@ -128,12 +128,14 @@
   - [x] Modelo `StreakEvidence` (id, streak_day_id, user_id, webassign_report_url, captura_path, submitted_at) — ver §5.5, §12.6.
   - [x] Modelo `StreakDay` (id, user_id, fecha, estado) — no listado explícitamente arriba, pero agregado como soporte mínimo indispensable: `StreakEvidence.streak_day_id` necesita una tabla real para ser un FK válido (§12.6).
   - [x] Migración Alembic (`de29d7d6d06f`), verificada con upgrade/downgrade/upgrade y sin drift (`alembic check`) contra MySQL 8.0.
-- [ ] **Integración Notion API + PDFs + Comentarios (Vista de Clase)**:
-  - [ ] Endpoint `POST /admin/sessions/{id}/sync` — descarga la sub-página de Notion, guarda bloques en BD.
-  - [ ] Pipeline: Notion API → BD local → renderizado con `react-notion-x` (sección superior de la Vista de Clase).
-  - [ ] Visor embebido de PDF (`<iframe>`) para apuntes del profesor desde GDrive (sección media).
-  - [ ] Sección de comentarios estilo YouTube por sesión (sección inferior).
-  - [ ] Botón admin "Sincronizar Clase" por sesión.
+- [x] **Edición directa de Sesiones (reemplaza la integración con Notion — el profesor nunca usó Notion, da la clase con PPTX/PDF propios)**:
+  - [x] Modelo `SessionAttachment` + migración (`6c5beff19155`): `CourseSession` gana `descripcion` libre, pierde los campos `notion_*`.
+  - [x] CRUD admin de Módulos (`POST/GET/PATCH /admin/modules`, `POST /admin/modules/{id}/[lock|unlock]`) y Sesiones (`POST /admin/modules/{id}/sessions`, `PATCH/DELETE /admin/sessions/{id}`) — no existía ningún admin de contenido antes de esto.
+  - [x] Adjuntos: `POST /admin/sessions/{id}/attachments` (multipart; PDF/PPT/PPTX/DOC/DOCX/PNG/JPG, tope `MAX_ATTACHMENT_SIZE_MB`), `DELETE /admin/attachments/{id}`. Se guardan en el volumen `./uploads` ya montado en docker-compose.
+  - [x] Endpoints alumno: `GET /modules` (solo módulos desbloqueados), `GET /sessions/{id}`, `GET /sessions/{id}/attachments/{id}/download` — descarga autenticada, un módulo bloqueado no es accesible ni por URL directa del adjunto.
+  - [x] Frontend admin: `/admin/contenido` (crear/bloquear-desbloquear módulos, crear/editar/eliminar sesiones inline, subir/eliminar adjuntos).
+  - [x] Frontend alumno: `/clases` (índice por módulo) y `/clases/[id]` (descripción + adjuntos descargables + placeholder de comentarios, hasta que se construya "Comentarios por Clase" más abajo).
+  - [x] `/clase1` (Sesión 1 actual, HTML exportado a mano) se deja sin tocar en paralelo — el nuevo sistema aplica a sesiones nuevas; migrar la Sesión 1 al nuevo sistema queda pendiente como decisión del profesor.
 - [x] **Test de perfil de trabajo (Belbin adaptado)** *(mudado desde Dominio 1 diferido)*:
   - [x] Modelo `ProfileTestQuestion` + `ProfileTestAnswer` (8 preguntas de escenario con 3 opciones cada una).
   - [x] Migración Alembic (`2dad9acd79a5`), con las 8 preguntas sembradas directamente (contenido fijo, no editable desde admin).
