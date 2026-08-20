@@ -9,11 +9,11 @@ Cada dominio agrega sus modelos aquí. Actualmente:
   (Announcement/AnnouncementRead se removieron — anuncios ahora se publican
   en Brightspace, ver plan_de_tareas_mvp.md)
 - Iteración 1 (Test de perfil): ProfileTestQuestion, ProfileTestAnswer
-- Iteración 1 (Contenido): Module, CourseSession, ForumPost
+- Iteración 1 (Contenido): Module, CourseSession, ForumPost, SessionAttachment
 - Iteración 1 (Racha): StreakDay, StreakEvidence
 """
 
-from .content import CourseSession, ForumPost, Module  # noqa: F401
+from .content import CourseSession, ForumPost, Module, SessionAttachment  # noqa: F401
 from .economy import (  # noqa: F401
     DecimalRedemptionRequest,
     DecimalRequestStatus,

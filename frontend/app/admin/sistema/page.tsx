@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import {
   ApiError,
   INBOX_TYPE_LABEL,
   InboxItemOut,
   InboxItemType,
   InboxPriority,
+  KnownFlagOut,
   SystemFlagOut,
   api,
 } from "@/lib/api";
@@ -332,29 +333,46 @@ function InboxSection({
 function FlagRow({
   flagKey,
   flag,
+  knownDescription,
   onSet,
 }: {
   flagKey: string;
   flag: SystemFlagOut | null;
-  onSet: (key: string, enabled: boolean, description?: string) => Promise<void>;
+  knownDescription?: string | null;
+  onSet: (key: string, enabled: boolean, description?: string | null) => Promise<void>;
 }) {
-  const [description, setDescription] = useState(flag?.description ?? "");
-  const [busy, setBusy] = useState(false);
+  const baselineDescription = flag?.description ?? knownDescription ?? "";
+  const [description, setDescription] = useState(baselineDescription);
+  const [busy, setBusy] = useState<null | "toggle" | "save">(null);
   const [error, setError] = useState<string | null>(null);
 
-  async function toggle() {
-    setBusy(true);
+  const enabled = flag?.enabled ?? false;
+
+  async function submit(action: "toggle" | "save", nextEnabled: boolean, nextDescription: string) {
+    setBusy(action);
     setError(null);
     try {
-      await onSet(flagKey, !(flag?.enabled ?? false), description || undefined);
+      // null explícito (no undefined) cuando se limpia el campo: undefined
+      // hace que JSON.stringify omita la clave por completo, y el backend
+      // trata "ausente" como "no tocar" — nunca limpiaría una descripción
+      // ya guardada.
+      await onSet(flagKey, nextEnabled, nextDescription.trim() || null);
     } catch (err) {
       setError(err instanceof ApiError ? err.detail : String(err));
     } finally {
-      setBusy(false);
+      setBusy(null);
     }
   }
 
-  const enabled = flag?.enabled ?? false;
+  // Prender/apagar nunca debe guardar un borrador de descripción a medio
+  // escribir — manda la última guardada (baseline), no el estado en vivo
+  // del input. Para guardar la descripción se usa el botón "Guardar".
+  const toggle = () => submit("toggle", !enabled, baselineDescription);
+
+  // Guarda solo la descripción, sin tocar encendido/apagado — si no
+  // existiera fila todavía (flag === null), la crea apagada con esta
+  // descripción (mismo default seguro que "+ Nuevo flag").
+  const saveDescription = () => submit("save", enabled, description);
 
   return (
     <div className="rounded-md border border-surface-border bg-surface p-4 space-y-2">
@@ -368,13 +386,15 @@ function FlagRow({
           )}
           {!flag && (
             <p className="text-[11px] text-amber-400">
-              No configurado aún — referenciado por el catálogo, apagado por default.
+              {knownDescription
+                ? `No configurado aún — ${knownDescription} Apagado por default.`
+                : "No configurado aún — referenciado por el catálogo, apagado por default."}
             </p>
           )}
         </div>
         <button
           onClick={toggle}
-          disabled={busy}
+          disabled={busy !== null}
           className={
             "rounded-full px-4 py-1.5 text-xs font-medium transition-colors disabled:opacity-50 " +
             (enabled
@@ -382,31 +402,142 @@ function FlagRow({
               : "bg-neutral-800 hover:bg-neutral-700 text-neutral-300")
           }
         >
-          {busy ? "…" : enabled ? "Encendido" : "Apagado"}
+          {busy === "toggle" ? "…" : enabled ? "Encendido" : "Apagado"}
         </button>
       </div>
-      <input
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="Descripción / motivo (opcional)…"
-        className="w-full rounded-md border border-surface-border bg-neutral-900 px-3 py-1.5 text-xs text-white focus:border-ibero-red focus:outline-none"
-      />
+      <div className="flex gap-2">
+        <input
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Descripción / motivo (opcional)…"
+          className="flex-1 rounded-md border border-surface-border bg-neutral-900 px-3 py-1.5 text-xs text-white focus:border-ibero-red focus:outline-none"
+        />
+        <button
+          type="button"
+          onClick={saveDescription}
+          disabled={busy !== null || description === baselineDescription}
+          className="shrink-0 rounded-md border border-surface-border hover:bg-neutral-800 disabled:opacity-50 px-3 py-1.5 text-xs text-neutral-300"
+        >
+          {busy === "save" ? "Guardando…" : "Guardar"}
+        </button>
+      </div>
       {error && <p className="text-xs text-red-400">{error}</p>}
     </div>
   );
 }
 
+function NewFlagForm({
+  onSet,
+}: {
+  onSet: (key: string, enabled: boolean, description?: string | null) => Promise<void>;
+}) {
+  const [open, setOpen] = useState(false);
+  const [key, setKey] = useState("");
+  const [description, setDescription] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    setBusy(true);
+    try {
+      // Se crea encendido: el admin lo está dando de alta a propósito para
+      // usarlo ya (ej. abrir décimas). Si quiere dejarlo apagado, lo
+      // apaga con un click después de crearlo, igual que cualquier otro flag.
+      await onSet(key.trim(), true, description.trim() || undefined);
+      setKey("");
+      setDescription("");
+      setOpen(false);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.detail : String(err));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (!open) {
+    return (
+      <button
+        onClick={() => setOpen(true)}
+        className="rounded-md border border-dashed border-surface-border hover:border-ibero-red hover:text-ibero-red px-4 py-2 text-sm text-neutral-400 transition-colors w-full text-center"
+      >
+        + Nuevo flag
+      </button>
+    );
+  }
+
+  return (
+    <form
+      onSubmit={submit}
+      className="rounded-md border border-ibero-red/50 bg-surface p-4 space-y-3"
+    >
+      <label className="block space-y-1">
+        <span className="text-xs font-medium text-neutral-300">Clave</span>
+        <input
+          value={key}
+          onChange={(e) => setKey(e.target.value)}
+          required
+          minLength={1}
+          maxLength={80}
+          pattern="[a-z][a-z0-9_]*"
+          title="Minúsculas, números y guión bajo, empezando con una letra (ej. decimas_enabled)."
+          placeholder="ej. decimas_enabled"
+          className="w-full rounded-md border border-surface-border bg-neutral-900 px-3 py-1.5 text-sm text-white font-mono focus:border-ibero-red focus:outline-none"
+        />
+        <span className="block text-[11px] text-neutral-500">
+          Minúsculas, números y guión bajo — sin espacios ni &ldquo;/&rdquo; (rompería la URL del flag).
+        </span>
+      </label>
+      <label className="block space-y-1">
+        <span className="text-xs font-medium text-neutral-300">Descripción (opcional)</span>
+        <input
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          maxLength={300}
+          className="w-full rounded-md border border-surface-border bg-neutral-900 px-3 py-1.5 text-sm text-white focus:border-ibero-red focus:outline-none"
+        />
+      </label>
+      {error && (
+        <p className="text-xs text-red-300 border border-red-800 bg-red-950/40 rounded-md p-2">
+          {error}
+        </p>
+      )}
+      <div className="flex gap-2">
+        <button
+          type="submit"
+          disabled={busy || key.trim().length === 0}
+          className="rounded-md border border-accent-500 text-accent-300 hover:bg-accent-500/10 disabled:opacity-50 px-4 py-1.5 text-xs font-medium transition-colors"
+        >
+          {busy ? "Creando…" : "Crear flag (encendido)"}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setOpen(false);
+            setError(null);
+          }}
+          disabled={busy}
+          className="rounded-md border border-surface-border hover:bg-neutral-800 px-4 py-1.5 text-xs text-neutral-300"
+        >
+          Cancelar
+        </button>
+      </div>
+    </form>
+  );
+}
+
 function FlagsSection({
   flags,
-  knownKeys,
+  knownFlags,
   onSet,
 }: {
   flags: SystemFlagOut[];
-  knownKeys: string[];
-  onSet: (key: string, enabled: boolean, description?: string) => Promise<void>;
+  knownFlags: KnownFlagOut[];
+  onSet: (key: string, enabled: boolean, description?: string | null) => Promise<void>;
 }) {
   const configuredKeys = new Set(flags.map((f) => f.key));
-  const unconfigured = knownKeys.filter((k) => !configuredKeys.has(k));
+  const unconfigured = knownFlags.filter((k) => !configuredKeys.has(k.key));
 
   return (
     <section className="space-y-4">
@@ -415,19 +546,29 @@ function FlagsSection({
       </h2>
       <p className="text-xs text-neutral-500">
         Controlan privilegios sensibles del catálogo (§5.2), como &ldquo;Usar IA
-        durante un examen parcial&rdquo;. Ausencia de flag = desactivado por
-        default (safe default).
+        durante un examen parcial&rdquo;, y también secciones enteras de la
+        plataforma — ej. &ldquo;decimas_enabled&rdquo; oculta Décimas hasta las
+        últimas semanas del semestre. Se listan todos los flags que el
+        código conoce (configurados o no) para no tener que memorizar
+        nombres. Ausencia de flag = desactivado por default (safe default).
       </p>
+      <NewFlagForm onSet={onSet} />
       <div className="grid gap-2">
         {flags.map((f) => (
           <FlagRow key={f.key} flagKey={f.key} flag={f} onSet={onSet} />
         ))}
         {unconfigured.map((k) => (
-          <FlagRow key={k} flagKey={k} flag={null} onSet={onSet} />
+          <FlagRow
+            key={k.key}
+            flagKey={k.key}
+            flag={null}
+            knownDescription={k.description}
+            onSet={onSet}
+          />
         ))}
         {flags.length === 0 && unconfigured.length === 0 && (
           <p className="text-sm text-neutral-500 bg-surface rounded-md p-4 text-center border border-surface-border">
-            No hay privilegios con feature flag en el catálogo actualmente.
+            No hay flags configurados todavía. Crea uno arriba.
           </p>
         )}
       </div>
@@ -445,7 +586,7 @@ export default function AdminSistemaPage() {
 
   const [inboxItems, setInboxItems] = useState<InboxItemOut[]>([]);
   const [flags, setFlags] = useState<SystemFlagOut[]>([]);
-  const [knownKeys, setKnownKeys] = useState<string[]>([]);
+  const [knownFlags, setKnownFlags] = useState<KnownFlagOut[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -461,7 +602,7 @@ export default function AdminSistemaPage() {
       ]);
       setInboxItems(inbox);
       setFlags(flagsList);
-      setKnownKeys(known);
+      setKnownFlags(known);
     } catch (err) {
       setError(err instanceof ApiError ? err.detail : String(err));
     } finally {
@@ -541,7 +682,7 @@ export default function AdminSistemaPage() {
 
           <FlagsSection
             flags={flags}
-            knownKeys={knownKeys}
+            knownFlags={knownFlags}
             onSet={async (key, enabled, description) => {
               await api.adminSetFlag(token!, key, enabled, description);
               const [flagsList, known] = await Promise.all([
@@ -549,7 +690,7 @@ export default function AdminSistemaPage() {
                 api.adminListKnownFlagKeys(token!),
               ]);
               setFlags(flagsList);
-              setKnownKeys(known);
+              setKnownFlags(known);
             }}
           />
         </div>

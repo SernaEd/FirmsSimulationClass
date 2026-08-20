@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     # ambiente sin depender de que ya exista otro admin que lo apruebe).
     # Vacío = endpoint deshabilitado (responde 404). Ver .env.example.
     admin_bootstrap_token: str = ""
+    # Tope por archivo para adjuntos de sesión (PDF/PPTX/Word/imágenes).
+    # El volumen ./uploads:/app/uploads ya está montado en docker-compose.
+    max_attachment_size_mb: int = 50
 
     @property
     def cors_origins(self) -> List[str]:

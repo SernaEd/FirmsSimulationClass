@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.deps import get_current_admin
 from app.models.user import User
-from app.schemas.system import SetFlagIn, SystemFlagOut
+from app.schemas.system import KnownFlagOut, SetFlagIn, SystemFlagOut
 from app.services.system_config import list_flags, list_known_flag_keys, set_flag
 
 router = APIRouter(prefix="/admin/system", tags=["admin:system"])
@@ -31,14 +31,15 @@ def get_flags(
     return [_to_out(f) for f in list_flags(db)]
 
 
-@router.get("/flags/known-keys", response_model=list[str])
+@router.get("/flags/known-keys", response_model=list[KnownFlagOut])
 def get_known_flag_keys(
     db: Session = Depends(get_db),
     _admin: User = Depends(get_current_admin),
 ):
-    """Claves referenciadas por el catálogo (ej. `ai_in_exam_enabled`) que
-    todavía no tienen fila en `system_flags` -- aparecen como 'apagadas' por
-    default hasta que el admin las active por primera vez."""
+    """Claves referenciadas por el catálogo (ej. `ai_in_exam_enabled`) o por
+    el registro estático de flags fuera del catálogo (ej. `decimas_enabled`)
+    que todavía no tienen fila en `system_flags` -- aparecen como 'apagadas'
+    por default hasta que el admin las active por primera vez."""
     return list_known_flag_keys(db)
 
 

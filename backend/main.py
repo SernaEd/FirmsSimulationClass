@@ -6,15 +6,18 @@ from slowapi.errors import RateLimitExceeded
 from app.config import settings
 from app.rate_limit import limiter
 from app.routers import (
+    admin_content,
     admin_economy,
     admin_inbox,
     admin_system,
     admin_teams,
     admin_users,
     auth,
+    content,
     economy,
     health,
     profile_test,
+    system,
     teams,
 )
 
@@ -45,6 +48,9 @@ app.include_router(economy.router)
 app.include_router(admin_economy.router)
 app.include_router(admin_inbox.router)
 app.include_router(admin_system.router)
+app.include_router(system.router)
+app.include_router(content.router)
+app.include_router(admin_content.router)
 
 
 @app.get("/")
