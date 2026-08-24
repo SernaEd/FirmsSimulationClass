@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { ActionBanner } from "@/components/ActionBanner";
 import { BalanceWidget } from "@/components/BalanceWidget";
+import { IconRings } from "@/components/icons";
 import { TeamOut, UserStatus, api, pickByPronoun } from "@/lib/api";
 import { useAuth } from "@/lib/useAuth";
-import { useFeatureFlag } from "@/lib/useFeatureFlag";
 
 // Rediseño "Dashboard" — ver UiDesign/README.md §2. Los enlaces de Admin ya
 // no se duplican aquí (ver TopNav): el propio audit del prototipo (hallazgo
@@ -18,7 +19,6 @@ export default function Inicio() {
   // /me/team (403) y de cualquier forma useAuth() ya las redirige fuera de
   // /inicio — evita el fetch de equipo mientras eso ocurre.
   const isActive = authState.status === "authenticated" && authState.user.estado === "active";
-  const decimasEnabled = useFeatureFlag("decimas_enabled");
   const [team, setTeam] = useState<TeamOut | null | undefined>(undefined);
 
   useEffect(() => {
@@ -64,8 +64,8 @@ export default function Inicio() {
   );
 
   return (
-    <main className="max-w-[880px] mx-auto px-4 sm:px-[11.2px] pt-[22.4px] pb-20">
-      <header className="mb-6">
+    <main className="max-w-[960px] mx-auto px-4 sm:px-8 pt-[22.4px] pb-20">
+      <header className="mb-8">
         <p className="text-accent-400 text-xs uppercase tracking-[0.12em] mb-1">
           IBERO · Cálculo 3
         </p>
@@ -87,25 +87,18 @@ export default function Inicio() {
         <PendingAccountCard estado={user.estado} />
       ) : (
         <>
-          <div className="grid md:grid-cols-[1.1fr_.9fr] gap-4 mb-4">
+          <div className="grid md:grid-cols-[1.1fr_.9fr] gap-5 mb-5">
             <StreakCard />
             <BalanceWidget token={authState.token} />
           </div>
 
-          <p className="text-[10px] uppercase tracking-[0.1em] text-accent-400 mb-2 ml-0.5">
-            Accesos rápidos
-          </p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            <QuickTile href="/mi-equipo" label="Mi equipo" icon={<IconTeam />} />
-            <QuickTile href="/privilegios" label="Privilegios" icon={<IconRings />} />
-            <QuickTile href="/mis-tickets" label="Mis tickets" icon={<IconTicket />} />
-            <QuickTile href="/movimientos" label="Movimientos" icon={<IconMovements />} />
-            {decimasEnabled && (
-              <QuickTile href="/decimas" label="Décimas" icon={<IconDecimas />} />
-            )}
-            <QuickTile href="/clase1" label="Sesión 1" icon={<IconSession />} />
-            <QuickTile href="/clases" label="Clases" icon={<IconLibrary />} />
-          </div>
+          <ActionBanner
+            href="/privilegios"
+            icon={<IconRings />}
+            title="Canjea tus Tokens"
+            description="Explora el catálogo de privilegios académicos y usa tu saldo acumulado."
+            cta="Ver catálogo"
+          />
         </>
       )}
 
@@ -177,92 +170,6 @@ function StreakCard() {
         WebAssign).
       </p>
     </section>
-  );
-}
-
-function QuickTile({
-  href,
-  label,
-  icon,
-}: {
-  href: string;
-  label: string;
-  icon: React.ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      className="rounded-md bg-surface-raised shadow-sm p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-accent-600 border border-transparent"
-    >
-      <div className="mb-2 text-accent-400">{icon}</div>
-      <p className="text-[13px] font-medium">{label}</p>
-    </Link>
-  );
-}
-
-function IconTeam() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="9" cy="8" r="3" />
-      <path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" />
-      <circle cx="17" cy="9" r="2.5" />
-      <path d="M15 20c.3-2.5 2-4.5 4-5" />
-    </svg>
-  );
-}
-
-function IconRings() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="9" />
-      <circle cx="12" cy="12" r="4.5" />
-    </svg>
-  );
-}
-
-function IconTicket() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v1.5a1.5 1.5 0 0 0 0 3V15a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1.5a1.5 1.5 0 0 0 0-3V9Z" />
-      <path d="M10 7v10" strokeDasharray="2 2" />
-    </svg>
-  );
-}
-
-function IconMovements() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M4 7h13M13 3l4 4-4 4" />
-      <path d="M20 17H7M11 21l-4-4 4-4" />
-    </svg>
-  );
-}
-
-function IconDecimas() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="7" cy="7" r="2.5" />
-      <circle cx="17" cy="17" r="2.5" />
-      <path d="M17 7 7 17" />
-    </svg>
-  );
-}
-
-function IconSession() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="4" y="4" width="16" height="16" rx="2" />
-      <path d="M10 9.5v5l4-2.5-4-2.5Z" fill="currentColor" stroke="none" />
-    </svg>
-  );
-}
-
-function IconLibrary() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M4 19V6a2 2 0 0 1 2-2h5v16H6a2 2 0 0 1-2-2Z" />
-      <path d="M13 4h5a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-5V4Z" />
-    </svg>
   );
 }
 

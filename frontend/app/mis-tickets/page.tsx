@@ -10,6 +10,7 @@ import {
   TicketStatus,
   api,
 } from "@/lib/api";
+import { CARD_SM } from "@/lib/ui";
 import { useAuth } from "@/lib/useAuth";
 
 const ACTIVE_STATES: TicketStatus[] = ["funding", "emitted"];
@@ -91,19 +92,27 @@ export default function MisTickets() {
   }
 
   return (
-    <main className="min-h-screen max-w-3xl mx-auto p-8 space-y-6">
-      <header className="space-y-1">
+    <main className="min-h-screen max-w-5xl mx-auto px-4 sm:px-8 py-8 space-y-6">
+      <header className="flex items-start justify-between gap-4 flex-wrap">
+        <div className="space-y-1">
+          <Link
+            href="/inicio"
+            className="text-sm text-neutral-500 hover:text-neutral-300"
+          >
+            ← Regresar al inicio
+          </Link>
+          <h1 className="text-3xl font-semibold">Mis tickets</h1>
+          <p className="text-neutral-400 text-sm max-w-xl">
+            Tickets de privilegios comprados. Muestra el folio al profesor al
+            momento de usar el privilegio.
+          </p>
+        </div>
         <Link
-          href="/inicio"
-          className="text-sm text-neutral-500 hover:text-neutral-300"
+          href="/privilegios"
+          className="shrink-0 inline-flex items-center gap-1.5 rounded-md border border-accent-500 text-accent-300 hover:bg-accent-500/10 transition-colors px-4 py-2 text-sm font-medium"
         >
-          ← Regresar al inicio
+          + Comprar privilegio
         </Link>
-        <h1 className="text-3xl font-semibold">Mis tickets</h1>
-        <p className="text-neutral-400 text-sm">
-          Tickets de privilegios comprados. Muestra el folio al profesor al
-          momento de usar el privilegio.
-        </p>
       </header>
 
       {error && (
@@ -115,7 +124,7 @@ export default function MisTickets() {
       {loading && <p className="text-neutral-500 text-sm">Cargando tickets…</p>}
 
       {!loading && tickets.length === 0 && (
-        <section className="rounded-lg border border-surface-border bg-surface-raised p-6 text-center space-y-2">
+        <section className={`${CARD_SM} p-8 text-center space-y-2`}>
           <p className="text-neutral-300">Aún no tienes tickets.</p>
           <Link
             href="/privilegios"
@@ -126,51 +135,53 @@ export default function MisTickets() {
         </section>
       )}
 
-      {active.length > 0 && (
-        <section className="space-y-2">
-          <h2 className="text-lg font-semibold">Activos</h2>
-          <div className="grid gap-2">
-            {active.map((t) => (
-              <TicketCard
-                key={t.id}
-                ticket={t}
-                catalog={catalog.get(t.catalog_id) ?? null}
-                expanded={expandedId === t.id}
-                currentUserId={currentUserId}
-                balance={balance}
-                onToggle={() =>
-                  setExpandedId((prev) => (prev === t.id ? null : t.id))
-                }
-                onContribute={handleContribute}
-                onCancel={handleCancel}
-              />
-            ))}
-          </div>
-        </section>
-      )}
+      <div className={"grid gap-6 items-start " + (active.length > 0 && history.length > 0 ? "lg:grid-cols-2" : "")}>
+        {active.length > 0 && (
+          <section className="space-y-2">
+            <h2 className="text-lg font-semibold">Activos</h2>
+            <div className="grid gap-2">
+              {active.map((t) => (
+                <TicketCard
+                  key={t.id}
+                  ticket={t}
+                  catalog={catalog.get(t.catalog_id) ?? null}
+                  expanded={expandedId === t.id}
+                  currentUserId={currentUserId}
+                  balance={balance}
+                  onToggle={() =>
+                    setExpandedId((prev) => (prev === t.id ? null : t.id))
+                  }
+                  onContribute={handleContribute}
+                  onCancel={handleCancel}
+                />
+              ))}
+            </div>
+          </section>
+        )}
 
-      {history.length > 0 && (
-        <section className="space-y-2">
-          <h2 className="text-lg font-semibold text-neutral-400">Historial</h2>
-          <div className="grid gap-2">
-            {history.map((t) => (
-              <TicketCard
-                key={t.id}
-                ticket={t}
-                catalog={catalog.get(t.catalog_id) ?? null}
-                expanded={expandedId === t.id}
-                currentUserId={currentUserId}
-                balance={balance}
-                onToggle={() =>
-                  setExpandedId((prev) => (prev === t.id ? null : t.id))
-                }
-                onContribute={handleContribute}
-                onCancel={handleCancel}
-              />
-            ))}
-          </div>
-        </section>
-      )}
+        {history.length > 0 && (
+          <section className="space-y-2">
+            <h2 className="text-lg font-semibold text-neutral-400">Historial</h2>
+            <div className="grid gap-2">
+              {history.map((t) => (
+                <TicketCard
+                  key={t.id}
+                  ticket={t}
+                  catalog={catalog.get(t.catalog_id) ?? null}
+                  expanded={expandedId === t.id}
+                  currentUserId={currentUserId}
+                  balance={balance}
+                  onToggle={() =>
+                    setExpandedId((prev) => (prev === t.id ? null : t.id))
+                  }
+                  onContribute={handleContribute}
+                  onCancel={handleCancel}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
     </main>
   );
 }
@@ -204,12 +215,12 @@ function TicketCard({
   return (
     <div
       className={
-        "rounded-lg border transition-colors " +
+        "rounded-md border transition-colors " +
         (ticket.estado === "emitted"
           ? "border-emerald-800/60 bg-emerald-950/20"
           : ticket.estado === "funding"
             ? "border-amber-800/60 bg-amber-950/20"
-            : "border-surface-border bg-surface-raised")
+            : "border-transparent bg-surface-raised shadow-sm")
       }
     >
       <button

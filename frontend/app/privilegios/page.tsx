@@ -11,6 +11,7 @@ import {
   api,
 } from "@/lib/api";
 import { useAuth } from "@/lib/useAuth";
+import { CARD_MD, CARD_SM } from "@/lib/ui";
 
 type Confirm =
   | { kind: "closed" }
@@ -102,26 +103,25 @@ export default function Privilegios() {
   }
 
   return (
-    <main className="min-h-screen max-w-3xl mx-auto p-8 space-y-6">
+    <main className="min-h-screen max-w-5xl mx-auto px-4 sm:px-8 py-8 space-y-6">
       <header className="space-y-1">
         <Link href="/inicio" className="text-sm text-neutral-500 hover:text-neutral-300">
           ← Regresar al inicio
         </Link>
-        <div className="flex items-baseline justify-between gap-3 flex-wrap">
-          <h1 className="text-3xl font-semibold">Catálogo de privilegios</h1>
-          <p className="text-sm text-neutral-400">
-            Saldo:{" "}
-            <span className="tabular-nums font-semibold text-white">
-              {balance ?? "—"}
-            </span>{" "}
-            Tks
-          </p>
-        </div>
-        <p className="text-neutral-400 text-sm">
+        <h1 className="text-3xl font-semibold">Catálogo de privilegios</h1>
+        <p className="text-neutral-400 text-sm max-w-2xl">
           Canjea tus Tokens por privilegios académicos. Las compras generan un
           ticket con folio único que debes mostrar al profesor al usarlo.
         </p>
       </header>
+
+      <div className={`${CARD_MD} p-6 flex items-center justify-between gap-4 flex-wrap`}>
+        <p className="text-[10px] uppercase tracking-[0.1em] text-accent-400">Saldo disponible</p>
+        <p className="flex items-baseline gap-1.5">
+          <span className="text-3xl font-medium tabular-nums">{balance ?? "—"}</span>
+          <span className="text-neutral-400 text-sm">Tks</span>
+        </p>
+      </div>
 
       {error && (
         <p className="rounded-md border border-red-800 bg-red-950/40 p-3 text-sm text-red-300">
@@ -139,11 +139,11 @@ export default function Privilegios() {
       )}
 
       {grouped.map((group) => (
-        <section key={group.key} className="space-y-2">
+        <section key={group.key} className="space-y-3">
           <h2 className="text-lg font-semibold text-neutral-300">
             {CATEGORY_LABEL[group.key] ?? group.key}
           </h2>
-          <div className="grid gap-2">
+          <div className="grid sm:grid-cols-2 gap-3">
             {group.items.map((e) => (
               <PrivilegeCard
                 key={e.id}
@@ -198,7 +198,7 @@ function PrivilegeCard({
       : null;
 
   return (
-    <div className="rounded-lg border border-surface-border bg-surface-raised p-4 flex items-start justify-between gap-4">
+    <div className={`${CARD_SM} p-4 flex items-start justify-between gap-4`}>
       <div className="min-w-0 flex-1 space-y-1">
         <p className="text-white text-sm font-medium">{entry.nombre}</p>
         {entry.descripcion && (

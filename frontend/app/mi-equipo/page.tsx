@@ -243,10 +243,18 @@ function ProposeSection({
       </p>
 
       {bloqueado ? (
-        <p className="text-xs text-neutral-500">
-          El equipo ya tiene un nombre aprobado. Si quieren cambiarlo,
-          escríbanle al profesor.
-        </p>
+        <div className="space-y-3">
+          <p className="text-xs text-neutral-500">
+            El equipo ya tiene un nombre aprobado. Si quieren cambiarlo,
+            escríbanle al profesor.
+          </p>
+          <Link
+            href="/privilegios"
+            className="inline-flex items-center gap-1.5 text-xs text-accent-300 hover:text-accent-200 transition-colors"
+          >
+            Ver catálogo de privilegios →
+          </Link>
+        </div>
       ) : (
         <div className="space-y-4 mt-3">
           {propuestaActiva && (

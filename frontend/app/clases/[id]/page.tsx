@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ApiError, CourseSessionDetailOut, api, openAttachment } from "@/lib/api";
 import { formatBytes } from "@/lib/format";
 import { useAuth } from "@/lib/useAuth";
+import { CARD_SM } from "@/lib/ui";
 
 export default function SesionDetallePage() {
   const params = useParams<{ id: string }>();
@@ -63,7 +64,7 @@ export default function SesionDetallePage() {
   }
 
   return (
-    <main className="min-h-screen max-w-3xl mx-auto p-8 space-y-6">
+    <main className="min-h-screen max-w-4xl mx-auto px-4 sm:px-8 py-8 space-y-6">
       <Link href="/clases" className="text-sm text-neutral-500 hover:text-neutral-300">
         ← Regresar a Clases
       </Link>
@@ -83,7 +84,7 @@ export default function SesionDetallePage() {
             <h1 className="text-3xl font-semibold">{session.titulo}</h1>
           </header>
 
-          <section className="rounded-lg border border-surface-border bg-surface-raised p-6">
+          <section className={`${CARD_SM} p-6`}>
             {session.descripcion ? (
               <p className="text-sm text-neutral-300 whitespace-pre-wrap">
                 {session.descripcion}
@@ -93,14 +94,17 @@ export default function SesionDetallePage() {
             )}
           </section>
 
-          <section className="rounded-lg border border-surface-border bg-surface-raised p-6 space-y-3">
+          <section className={`${CARD_SM} p-6 space-y-3`}>
             <h2 className="text-sm font-semibold text-neutral-300">Material de la clase</h2>
             {session.attachments.length === 0 ? (
               <p className="text-sm text-neutral-500">Todavía no hay archivos adjuntos.</p>
             ) : (
-              <ul className="divide-y divide-surface-border/60">
+              <ul className="grid sm:grid-cols-2 gap-3">
                 {session.attachments.map((a) => (
-                  <li key={a.id} className="flex items-center justify-between gap-3 py-3">
+                  <li
+                    key={a.id}
+                    className="flex items-center justify-between gap-3 rounded-md bg-surface p-3"
+                  >
                     <div className="min-w-0">
                       <p className="text-sm text-white truncate">{a.filename}</p>
                       <p className="text-xs text-neutral-500">{formatBytes(a.size_bytes)}</p>
@@ -118,7 +122,7 @@ export default function SesionDetallePage() {
             )}
           </section>
 
-          <section className="rounded-lg border border-dashed border-surface-border p-6 text-center">
+          <section className="rounded-md border border-dashed border-surface-border p-6 text-center">
             <p className="text-sm text-neutral-500">Comentarios — próximamente.</p>
           </section>
         </>
