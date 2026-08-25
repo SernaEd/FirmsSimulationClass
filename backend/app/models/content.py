@@ -16,6 +16,7 @@ Convenciones:
 """
 
 from datetime import datetime
+from typing import Optional
 
 from sqlalchemy import (
     Boolean,
@@ -74,7 +75,7 @@ class CourseSession(Base):
     # contenido servido aparte (típicamente un asset estático). Nace de
     # consolidar /clase1 (página standalone, hardcoded) dentro de este
     # sistema — ver UiDesign/README.md.
-    embed_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    embed_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
 
     module: Mapped[Module] = relationship(back_populates="sessions")
     posts: Mapped[list["ForumPost"]] = relationship(
@@ -107,7 +108,7 @@ class SessionAttachment(Base):
     # Ruta al PDF generado por LibreOffice para un PPT/PPTX (ver
     # save_attachment). Nulo si el adjunto ya es PDF (se previsualiza a sí
     # mismo, no necesita esta columna) o si la conversión falló/no aplica.
-    preview_path: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    preview_path: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
