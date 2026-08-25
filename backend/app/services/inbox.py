@@ -134,7 +134,7 @@ def resolve_item(db: Session, item_id: int, admin: User, nota: str | None = None
     return item
 
 
-def snooze_item(db: Session, item_id: int, admin: User, until: datetime) -> InboxItem:
+def snooze_item(db: Session, item_id: int, _admin: User, until: datetime) -> InboxItem:
     if until <= datetime.now(timezone.utc):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
