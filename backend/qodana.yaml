@@ -1,0 +1,9 @@
+version: "1.0"
+
+# Community — gratuito, no requiere QODANA_TOKEN ni licencia. (El linter de
+# Qodana para JS/TS es de pago, por eso el frontend no se analiza aquí.)
+linter: jetbrains/qodana-python-community:latest
+
+# Instala las dependencias antes de analizar para que el linter resuelva
+# los imports de FastAPI/SQLAlchemy/Pydantic en vez de marcarlos como error.
+bootstrap: pip install -r requirements.txt
