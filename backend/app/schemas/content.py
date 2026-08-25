@@ -35,21 +35,25 @@ class CourseSessionDetailOut(BaseModel):
     titulo: str
     descripcion: str | None
     embed_url: str | None
-    attachments: list[AttachmentOut]
+    # `X | None`/`list[X]` es sintaxis válida en Python 3.11 (ver
+    # backend/Dockerfile); "noinspection" de abajo evita el falso positivo
+    # confirmado de Qodana en esta línea — detalle completo en
+    # backend/qodana.yaml.
+    attachments: list[AttachmentOut]  # noinspection PyTypeHints
 
 
 class CourseSessionIn(BaseModel):
     numero_sesion: int = Field(ge=1)
     titulo: str = Field(min_length=1, max_length=200)
     descripcion: str | None = Field(default=None, max_length=10_000)
-    embed_url: str | None = Field(default=None, max_length=500)
+    embed_url: str | None = Field(default=None, max_length=500)  # noinspection PyTypeHints
 
 
 class CourseSessionUpdate(BaseModel):
     numero_sesion: int | None = Field(default=None, ge=1)
     titulo: str | None = Field(default=None, min_length=1, max_length=200)
     descripcion: str | None = Field(default=None, max_length=10_000)
-    embed_url: str | None = Field(default=None, max_length=500)
+    embed_url: str | None = Field(default=None, max_length=500)  # noinspection PyTypeHints
 
 
 # ---- Módulos ----
