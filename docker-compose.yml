@@ -39,7 +39,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     restart: unless-stopped
-    environment:
+    environment: &backend-env
       ENVIRONMENT: ${ENVIRONMENT:-development}
       DATABASE_URL: ${DATABASE_URL}
       JWT_SECRET: ${JWT_SECRET}
@@ -64,6 +64,31 @@ services:
       mysql:
         condition: service_healthy
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Sirve solo para desarrollo local: aplica las migraciones pendientes y
+  # crea (si no existen) una cuenta admin (1234/1234) y una cuenta alumno
+  # (9876/9876) para poder loguearse sin pasar por /auth/register +
+  # aprobación manual en cada stack nuevo. Corre una vez y termina
+  # (restart: "no") — no es un servidor de larga duración como backend/mysql.
+  #
+  # docker-compose.prod.yml es un overlay que solo AGREGA/sobreescribe
+  # campos de servicios que ya existen aquí — no puede quitar un servicio
+  # del archivo base, así que este contenedor igual se construiría (aunque
+  # sea brevemente) bajo `-f docker-compose.yml -f docker-compose.prod.yml`.
+  # La salvaguarda real vive en el propio script (ENVIRONMENT != "development"
+  # => no hace nada), no aquí — ver scripts/seed_dev_data.py.
+  seed:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment: *backend-env
+    volumes:
+      - ./backend:/app
+    depends_on:
+      mysql:
+        condition: service_healthy
+    command: python -m scripts.seed_dev_data
+    restart: "no"
 
   frontend:
     build:
