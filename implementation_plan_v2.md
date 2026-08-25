@@ -440,6 +440,8 @@ El curso está estructurado en **4 módulos**. Los ciclos de retroalimentación 
 
 Sesiones síncronas en el aula donde las firmas consultoras (equipos) compiten por un encargo técnico. El profesor actúa como cliente que abre la **licitación**: proyecta el caso, las firmas presentan su propuesta desde sus dispositivos vía WebSocket, y gana la firma que resuelve con mayor precisión y agilidad.
 
+**Banco de casos**: ver [`casos_licitaciones.md`](casos_licitaciones.md) — 3 casos completos (con fuente documentada de un incidente real de una empresa real) que cubren mezcla en tanques (Módulo 1), resonancia en sistemas masa-resorte-amortiguador (Módulo 1/2) y estabilidad de sistemas mediante valores propios y plano fase (Módulo 3). Ese documento también registra, como candidato de alcance futuro y no como trabajo comprometido, la idea de un visualizador numérico en vivo (RK4 + gráfica animada) para cada caso.
+
 ### Formato
 
 - **Duración**: 30-45 minutos por licitación.
@@ -795,7 +797,7 @@ Cada fase incluye pruebas antes de pasar a la siguiente.
 Trabajo del profesor (no requiere código):
 
 - Preparar el material (PPTX/PDF) de los 4 módulos con la misma jerarquía prevista para cargarlo en el editor de sesiones.
-- Redactar **3-5 casos** para licitaciones iniciales.
+- Redactar **3-5 casos** para licitaciones iniciales — 3 de 5 redactados, ver [`casos_licitaciones.md`](casos_licitaciones.md); quedan 2 casos pendientes (Módulo 2 y Módulo 4).
 - Redactar las **8-10 preguntas del test de perfil** con sus 3 opciones cada una.
 - Redactar borrador de la página de reglas y políticas (§18) para revisión legal antes de la Fase 8.
 - Solicitar formalmente a coordinación académica la autorización del privilegio de IA en parcial.
