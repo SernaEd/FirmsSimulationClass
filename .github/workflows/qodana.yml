@@ -36,7 +36,10 @@ jobs:
       - name: Qodana Scan (backend)
         uses: JetBrains/qodana-action@v2026.2.0
         with:
-          args: --only-directory,backend
+          # --config es obligatorio: sin él, Qodana busca qodana.yaml solo
+          # en la raíz del repo (no dentro de --only-directory), no lo
+          # encuentra, y termina auto-detectando y usando un linter de pago.
+          args: --only-directory backend --config backend/qodana.yaml
           # --changes (usado por pr-mode) no funciona al analizar un
           # subdirectorio del monorepo, así que se escanea todo backend/.
           pr-mode: false
