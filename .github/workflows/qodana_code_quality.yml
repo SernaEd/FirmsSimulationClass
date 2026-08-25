@@ -33,7 +33,3 @@ jobs:
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_680296292 }}
           QODANA_ENDPOINT: 'https://qodana.cloud'
-          # Ver el comentario correspondiente en .github/workflows/qodana.yml:
-          # sin esto, Qodana no reconoce el intérprete del bootstrap como el
-          # SDK del proyecto y marca `str | None` como sintaxis inválida.
-          QODANA_PYTHON_PATH: /opt/miniconda3/bin/python3

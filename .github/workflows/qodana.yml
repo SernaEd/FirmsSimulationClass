@@ -44,14 +44,6 @@ jobs:
           # subdirectorio del monorepo, así que se escanea todo backend/.
           pr-mode: false
           upload-result: true
-        env:
-          # Sin esto, Qodana no reconoce el intérprete donde corrió el
-          # `bootstrap` (pip install) como el SDK del proyecto y asume un
-          # nivel de sintaxis Python más viejo — de ahí que marque `str |
-          # None` (PEP 604, válido desde 3.10) como "Invalid type annotation"
-          # pese a que el contenedor ya trae Python 3.12. Ruta confirmada
-          # vía diagnóstico en bootstrap (QODANA-DIAG) en este mismo run.
-          QODANA_PYTHON_PATH: /opt/miniconda3/bin/python3
 
       - name: Publicar resultados en el tab de Code scanning
         if: always()
