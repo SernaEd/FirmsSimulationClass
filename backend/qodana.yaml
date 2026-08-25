@@ -1,0 +1,25 @@
+version: "1.0"
+
+# Community — gratuito, no requiere QODANA_TOKEN ni licencia. (El linter de
+# Qodana para JS/TS es de pago, por eso el frontend no se analiza aquí.)
+linter: jetbrains/qodana-python-community:latest
+
+# Instala las dependencias antes de analizar para que el linter resuelva
+# los imports de FastAPI/SQLAlchemy/Pydantic en vez de marcarlos como error.
+# Ruta relativa a la raíz del repo: --only-directory no cambia el cwd.
+bootstrap: pip install -r backend/requirements.txt
+
+# Los archivos de migración de Alembic son autogenerados y no se editan a
+# mano: su encabezado estándar (`Union[str, Sequence[str], None]`, con
+# Sequence de typing) dispara "Invalid type argument" en el linter — falso
+# positivo confirmado en el SARIF, no un error real de tipos.
+exclude:
+  - name: All
+    paths:
+      - backend/alembic/versions
+
+# Preservado del qodana.yaml que generó la config web de Qodana Cloud
+# (ahora consolidado en este archivo): no está en el perfil "recommended"
+# por defecto, hay que habilitarlo explícitamente.
+include:
+  - name: CheckDependencyLicenses

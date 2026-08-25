@@ -17,11 +17,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
+          # github.event.pull_request is unset on the push triggers below,
+          # so fall back to github.sha (matches .github/workflows/qodana.yml).
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0  # a full history is required for pull request analysis
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@v2026.1
         with:
+          # Mismo alcance que .github/workflows/qodana.yml: solo backend/,
+          # usando su qodana.yaml (linter Community, bootstrap, exclude de
+          # las migraciones autogeneradas de Alembic). El qodana.yaml en la
+          # raíz del repo queda obsoleto y se elimina en este mismo cambio.
+          args: --only-directory backend --config backend/qodana.yaml
           pr-mode: false
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_680296292 }}

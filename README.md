@@ -42,6 +42,16 @@ de GitHub Actions), ver [`DEPLOYMENT.md`](DEPLOYMENT.md) — incluye la guía
 paso a paso completa. El workflow vive en
 [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml).
 
+## Análisis estático (Qodana)
+
+En cada PR y push a `main` que toque `backend/` corre
+[`.github/workflows/qodana.yml`](.github/workflows/qodana.yml), que analiza
+el backend con el linter Community (gratuito) de
+[Qodana](https://www.jetbrains.com/qodana/) para Python — no requiere
+token ni licencia. El frontend no se analiza porque el linter de Qodana
+para JS/TS es de pago. Configuración del linter en
+[`backend/qodana.yaml`](backend/qodana.yaml).
+
 ## Estructura
 
 ```

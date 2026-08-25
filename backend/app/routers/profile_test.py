@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.deps import get_current_pending_profile_user
 from app.models.profile_test import ProfileTestQuestion
-from app.models.user import User
+from app.models.user import User, UserProfile
 from app.schemas.auth import UserOut
 from app.schemas.profile_test import ProfileTestOptionOut, ProfileTestQuestionOut, ProfileTestSubmitIn
 from app.services.profile_test import list_questions, submit_test
@@ -21,9 +21,9 @@ def _question_to_out(question: ProfileTestQuestion) -> ProfileTestQuestionOut:
     # opción delate el perfil (ej. "siempre la de en medio es modelador") y
     # dificulta que alumnos comparen respuestas por posición.
     opciones = [
-        ProfileTestOptionOut(perfil="analista", texto=question.opcion_analista),
-        ProfileTestOptionOut(perfil="modelador", texto=question.opcion_modelador),
-        ProfileTestOptionOut(perfil="integrador", texto=question.opcion_integrador),
+        ProfileTestOptionOut(perfil=UserProfile.analista, texto=question.opcion_analista),
+        ProfileTestOptionOut(perfil=UserProfile.modelador, texto=question.opcion_modelador),
+        ProfileTestOptionOut(perfil=UserProfile.integrador, texto=question.opcion_integrador),
     ]
     random.shuffle(opciones)
     return ProfileTestQuestionOut(
