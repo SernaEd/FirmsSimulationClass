@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { ActionBanner } from "@/components/ActionBanner";
 import { MovementRow } from "@/components/BalanceWidget";
+import { IconRings } from "@/components/icons";
 import {
   ApiError,
   LedgerEntryOut,
@@ -10,6 +12,7 @@ import {
   TokenSource,
   api,
 } from "@/lib/api";
+import { CARD_SM } from "@/lib/ui";
 import { useAuth } from "@/lib/useAuth";
 
 const PAGE_SIZE = 25;
@@ -77,7 +80,7 @@ export default function Movimientos() {
   const totalDelta = entries.reduce((acc, e) => acc + e.delta, 0);
 
   return (
-    <main className="min-h-screen max-w-3xl mx-auto p-8 space-y-6">
+    <main className="min-h-screen max-w-5xl mx-auto px-4 sm:px-8 py-8 space-y-6">
       <header className="space-y-1">
         <Link
           href="/inicio"
@@ -86,105 +89,115 @@ export default function Movimientos() {
           ← Regresar al inicio
         </Link>
         <h1 className="text-3xl font-semibold">Movimientos del banco</h1>
-        <p className="text-neutral-400 text-sm">
+        <p className="text-neutral-400 text-sm max-w-2xl">
           Historial de Tokens ganados y gastados. Es un registro append-only:
           nada se edita ni borra; los ajustes se hacen creando un movimiento
           compensatorio.
         </p>
       </header>
 
-      {/* Filtros por fuente */}
-      <section className="rounded-lg border border-surface-border bg-surface-raised p-4 space-y-2">
-        <div className="flex items-center justify-between">
-          <p className="text-xs uppercase tracking-widest text-neutral-500">Filtrar por fuente</p>
-          {selectedSources.length > 0 && (
-            <button
-              onClick={() => setSelectedSources([])}
-              className="text-xs text-neutral-400 hover:text-white underline"
-            >
-              Limpiar
-            </button>
-          )}
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {ALL_SOURCES.map((s) => {
-            const active = selectedSources.includes(s);
-            return (
-              <button
-                key={s}
-                onClick={() => toggleSource(s)}
-                className={
-                  "px-2.5 py-1 rounded-md text-xs transition-colors " +
-                  (active
-                    ? "bg-accent-500/10 text-accent-300 ring-1 ring-inset ring-accent-500"
-                    : "bg-surface hover:bg-surface-border text-neutral-300")
-                }
-              >
-                {TOKEN_SOURCE_LABEL[s]}
-              </button>
-            );
-          })}
-        </div>
-      </section>
+      <ActionBanner
+        href="/privilegios"
+        icon={<IconRings />}
+        title="Tu saldo tiene para qué"
+        description="Revisa el catálogo de privilegios académicos y canjea lo que has ganado."
+        cta="Ver catálogo"
+      />
 
-      {/* Resumen y lista */}
-      <section className="rounded-lg border border-surface-border bg-surface-raised p-6 space-y-3">
-        <div className="flex items-baseline justify-between">
-          <p className="text-sm text-neutral-400">
-            Mostrando {entries.length}{" "}
-            {selectedSources.length > 0 && "(filtrados)"}
-          </p>
-          {entries.length > 0 && (
-            <p className="text-xs text-neutral-500 tabular-nums">
-              Suma visible:{" "}
-              <span
-                className={
-                  totalDelta > 0
-                    ? "text-emerald-400"
-                    : totalDelta < 0
-                      ? "text-red-400"
-                      : "text-neutral-300"
-                }
+      <div className="grid lg:grid-cols-[240px_1fr] gap-6 items-start">
+        {/* Filtros por fuente */}
+        <section className={`${CARD_SM} p-5 space-y-3 lg:sticky lg:top-20`}>
+          <div className="flex items-center justify-between">
+            <p className="text-xs uppercase tracking-widest text-neutral-500">Filtrar por fuente</p>
+            {selectedSources.length > 0 && (
+              <button
+                onClick={() => setSelectedSources([])}
+                className="text-xs text-neutral-400 hover:text-white underline"
               >
-                {totalDelta > 0 ? "+" : ""}
-                {totalDelta} Tks
-              </span>
+                Limpiar
+              </button>
+            )}
+          </div>
+          <div className="flex flex-wrap lg:flex-col gap-2">
+            {ALL_SOURCES.map((s) => {
+              const active = selectedSources.includes(s);
+              return (
+                <button
+                  key={s}
+                  onClick={() => toggleSource(s)}
+                  className={
+                    "px-2.5 py-1.5 rounded-md text-xs text-left transition-colors " +
+                    (active
+                      ? "bg-accent-500/10 text-accent-300 ring-1 ring-inset ring-accent-500"
+                      : "bg-surface hover:bg-surface-border text-neutral-300")
+                  }
+                >
+                  {TOKEN_SOURCE_LABEL[s]}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Resumen y lista */}
+        <section className={`${CARD_SM} p-6 space-y-3`}>
+          <div className="flex items-baseline justify-between">
+            <p className="text-sm text-neutral-400">
+              Mostrando {entries.length}{" "}
+              {selectedSources.length > 0 && "(filtrados)"}
+            </p>
+            {entries.length > 0 && (
+              <p className="text-xs text-neutral-500 tabular-nums">
+                Suma visible:{" "}
+                <span
+                  className={
+                    totalDelta > 0
+                      ? "text-emerald-400"
+                      : totalDelta < 0
+                        ? "text-red-400"
+                        : "text-neutral-300"
+                  }
+                >
+                  {totalDelta > 0 ? "+" : ""}
+                  {totalDelta} Tks
+                </span>
+              </p>
+            )}
+          </div>
+
+          {error && (
+            <p className="rounded-md border border-red-800 bg-red-950/40 p-3 text-sm text-red-300">
+              {error}
             </p>
           )}
-        </div>
 
-        {error && (
-          <p className="rounded-md border border-red-800 bg-red-950/40 p-3 text-sm text-red-300">
-            {error}
-          </p>
-        )}
+          {loading && entries.length === 0 ? (
+            <p className="text-sm text-neutral-500">Cargando…</p>
+          ) : entries.length === 0 ? (
+            <p className="text-sm text-neutral-500">
+              No hay movimientos con los filtros actuales.
+            </p>
+          ) : (
+            <ul className="divide-y divide-surface-border/60">
+              {entries.map((e) => (
+                <MovementRow key={e.id} entry={e} />
+              ))}
+            </ul>
+          )}
 
-        {loading && entries.length === 0 ? (
-          <p className="text-sm text-neutral-500">Cargando…</p>
-        ) : entries.length === 0 ? (
-          <p className="text-sm text-neutral-500">
-            No hay movimientos con los filtros actuales.
-          </p>
-        ) : (
-          <ul className="divide-y divide-surface-border/60">
-            {entries.map((e) => (
-              <MovementRow key={e.id} entry={e} />
-            ))}
-          </ul>
-        )}
-
-        {hasMore && (
-          <div className="pt-2 flex justify-center">
-            <button
-              onClick={loadMore}
-              disabled={loading}
-              className="rounded-md border border-surface-border hover:bg-surface disabled:opacity-50 px-4 py-2 text-sm"
-            >
-              {loading ? "Cargando…" : "Cargar más"}
-            </button>
-          </div>
-        )}
-      </section>
+          {hasMore && (
+            <div className="pt-2 flex justify-center">
+              <button
+                onClick={loadMore}
+                disabled={loading}
+                className="rounded-md border border-surface-border hover:bg-surface disabled:opacity-50 px-4 py-2 text-sm"
+              >
+                {loading ? "Cargando…" : "Cargar más"}
+              </button>
+            </div>
+          )}
+        </section>
+      </div>
     </main>
   );
 }

@@ -29,6 +29,20 @@ licitaciones (§10).
    - Health check: <http://localhost:8000/health>
    - Health check con DB: <http://localhost:8000/health/db>
 
+El servicio `seed` (solo corre con `ENVIRONMENT=development`, ver
+`docker-compose.yml` y `backend/scripts/seed_dev_data.py`) aplica las
+migraciones pendientes y deja listas dos cuentas para loguearte en
+<http://localhost:3000/login> sin pasar por el registro:
+
+| Rol    | Cuenta | PIN  |
+| ------ | ------ | ---- |
+| Admin  | 1234   | 1234 |
+| Alumno | 9876   | 9876 |
+
+Es idempotente — puedes volver a correr `docker compose up` sin que falle
+por cuentas duplicadas. Para volver a correrlo a mano (por ejemplo si
+borraste la BD): `docker compose run --rm seed`.
+
 Para detener: `docker compose down`. Para limpiar la BD también: `docker compose down -v` (o borra `./data/mysql/`).
 
 ## Arranque en producción / staging

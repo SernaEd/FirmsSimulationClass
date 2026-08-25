@@ -306,7 +306,7 @@ function InboxSection({
           No hay items pendientes en el Inbox. 🎉
         </p>
       ) : (
-        <div className="grid gap-3">
+        <div className="grid lg:grid-cols-2 gap-3 items-start">
           {filtered.map((item) => (
             <InboxRow
               key={item.id}
@@ -628,7 +628,7 @@ export default function AdminSistemaPage() {
   }
 
   return (
-    <main className="mx-auto max-w-3xl p-4 pb-24 space-y-8">
+    <main className="mx-auto max-w-5xl px-4 sm:px-8 py-4 pb-24 space-y-8">
       <header className="space-y-1 mt-4">
         <Link href="/inicio" className="text-sm text-neutral-400 hover:text-white">
           ← Volver al inicio

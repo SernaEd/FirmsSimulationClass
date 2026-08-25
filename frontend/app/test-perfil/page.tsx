@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
 import { ApiError, ProfileTestQuestionOut, UserOut, UserProfile, api, auth } from "@/lib/api";
 import { PROFILE_DESCRIPTION, profileAvatarClass, profileLabel } from "@/lib/profile";
+import { CARD_SM } from "@/lib/ui";
 import { useAuth } from "@/lib/useAuth";
 
 function CenteredMessage({ children, className }: { children: ReactNode; className?: string }) {
@@ -85,7 +86,8 @@ export default function TestPerfil() {
   }
 
   const { questions } = load;
-  const allAnswered = questions.every((q) => answers[q.id] !== undefined);
+  const answeredCount = questions.filter((q) => answers[q.id] !== undefined).length;
+  const allAnswered = answeredCount === questions.length;
 
   async function handleSubmit() {
     setSubmitting(true);
@@ -105,19 +107,30 @@ export default function TestPerfil() {
   }
 
   return (
-    <main className="min-h-screen max-w-2xl mx-auto p-8 space-y-8">
+    <main className="min-h-screen max-w-4xl mx-auto px-4 sm:px-8 py-8 space-y-8">
       <header className="space-y-2">
         <p className="text-ibero-red text-xs uppercase tracking-widest">Cálculo 3</p>
         <h1 className="text-3xl font-semibold">Test de perfil de trabajo en equipo</h1>
-        <p className="text-neutral-400 text-sm">
+        <p className="text-neutral-400 text-sm max-w-2xl">
           Responde cómo tiendes a actuar en cada escenario. No hay respuestas
           correctas o incorrectas: el resultado ayuda a formar equipos
           balanceados y no es editable una vez enviado (el profesor puede
           reasignarlo manualmente en casos justificados).
         </p>
+        <div className="flex items-center gap-3 pt-2 max-w-md">
+          <div className="flex-1 h-1.5 rounded-full bg-neutral-900 overflow-hidden">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-accent-600 to-accent-400 transition-all duration-500"
+              style={{ width: `${questions.length > 0 ? (answeredCount / questions.length) * 100 : 0}%` }}
+            />
+          </div>
+          <span className="text-xs text-neutral-500 tabular-nums shrink-0">
+            {answeredCount}/{questions.length}
+          </span>
+        </div>
       </header>
 
-      <div className="space-y-6">
+      <div className="grid md:grid-cols-2 gap-6">
         {questions.map((q, idx) => (
           // Nota: se usa un <div> con role="radiogroup" en vez de
           // <fieldset>/<legend> — el <legend> nativo se posiciona sobre el
@@ -131,7 +144,7 @@ export default function TestPerfil() {
             <div
               role="radiogroup"
               aria-labelledby={`q-${q.id}-label`}
-              className="rounded-lg border border-surface-border bg-surface-raised p-5 space-y-2"
+              className={`${CARD_SM} p-5 space-y-2`}
             >
               {q.opciones.map((opcion) => (
                 <label
@@ -159,24 +172,26 @@ export default function TestPerfil() {
         ))}
       </div>
 
-      {submitError && (
-        <p className="rounded-md border border-red-800 bg-red-950/40 p-3 text-sm text-red-300">
-          {submitError}
-        </p>
-      )}
+      <div className="max-w-lg mx-auto space-y-4">
+        {submitError && (
+          <p className="rounded-md border border-red-800 bg-red-950/40 p-3 text-sm text-red-300">
+            {submitError}
+          </p>
+        )}
 
-      <button
-        onClick={handleSubmit}
-        disabled={!allAnswered || submitting}
-        className="w-full rounded-lg border border-accent-500 text-accent-300 hover:bg-accent-500/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors px-6 py-3 font-medium"
-      >
-        {submitting ? "Enviando..." : "Enviar respuestas"}
-      </button>
-      {!allAnswered && (
-        <p className="text-center text-xs text-neutral-500">
-          Responde las {questions.length} preguntas para poder enviar.
-        </p>
-      )}
+        <button
+          onClick={handleSubmit}
+          disabled={!allAnswered || submitting}
+          className="w-full rounded-lg border border-accent-500 text-accent-300 hover:bg-accent-500/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors px-6 py-3 font-medium"
+        >
+          {submitting ? "Enviando..." : "Enviar respuestas"}
+        </button>
+        {!allAnswered && (
+          <p className="text-center text-xs text-neutral-500">
+            Responde las {questions.length} preguntas para poder enviar.
+          </p>
+        )}
+      </div>
 
       <footer className="text-xs text-neutral-500 pt-4 border-t border-surface-border">
         Basado en una adaptación reducida de Belbin, R. M. (2010).{" "}

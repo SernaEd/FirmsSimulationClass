@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { IconArrowRight } from "@/components/icons";
 
 // Rediseño "Bienvenida" — ver UiDesign/README.md §1 (fuente de verdad de
 // layout, tipografía y animación de esta pantalla).
@@ -121,19 +122,7 @@ export default function Home() {
           </p>
           <span className="inline-flex items-center gap-1.5 mt-2 rounded-md border border-accent-500 text-accent-300 px-3 py-2 text-sm font-medium transition-colors group-hover:bg-accent-500/10">
             Registrarme
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.75"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M5 12h14M13 6l6 6-6 6" />
-            </svg>
+            <IconArrowRight />
           </span>
         </Link>
 

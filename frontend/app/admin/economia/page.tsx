@@ -785,7 +785,7 @@ export default function AdminEconomiaPage() {
   }
 
   return (
-    <main className="mx-auto max-w-2xl p-4 pb-24 space-y-8">
+    <main className="mx-auto max-w-5xl px-4 sm:px-8 py-4 pb-24 space-y-8">
       <header className="space-y-1 mt-4">
         <Link href="/inicio" className="text-sm text-neutral-400 hover:text-white">
           ← Volver al inicio
@@ -837,7 +837,7 @@ export default function AdminEconomiaPage() {
                 No hay tickets pendientes de uso en este momento.
               </p>
             ) : (
-              <div className="grid gap-3">
+              <div className="grid sm:grid-cols-2 gap-3 items-start">
                 {tickets.map((t) => (
                   <TicketRow
                     key={t.id}
@@ -866,7 +866,7 @@ export default function AdminEconomiaPage() {
                 No hay solicitudes pendientes.
               </p>
             ) : (
-              <div className="grid gap-3">
+              <div className="grid sm:grid-cols-2 gap-3 items-start">
                 {decimals.map((req) => (
                   <DecimalRow
                     key={req.id}

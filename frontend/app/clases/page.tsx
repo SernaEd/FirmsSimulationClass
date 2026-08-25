@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { ApiError, ModuleOut, api } from "@/lib/api";
 import { useAuth } from "@/lib/useAuth";
+import { CARD_SM } from "@/lib/ui";
 
 export default function ClasesPage() {
   const authState = useAuth();
@@ -39,13 +40,13 @@ export default function ClasesPage() {
   }
 
   return (
-    <main className="min-h-screen max-w-3xl mx-auto p-8 space-y-8">
+    <main className="min-h-screen max-w-5xl mx-auto px-4 sm:px-8 py-8 space-y-6">
       <header className="space-y-1">
         <Link href="/inicio" className="text-sm text-neutral-500 hover:text-neutral-300">
           ← Regresar al inicio
         </Link>
         <h1 className="text-3xl font-semibold">Clases</h1>
-        <p className="text-neutral-400 text-sm">
+        <p className="text-neutral-400 text-sm max-w-xl">
           Apuntes y material de cada sesión, agrupados por módulo.
         </p>
       </header>
@@ -59,15 +60,15 @@ export default function ClasesPage() {
       {loading ? (
         <p className="text-sm text-neutral-500">Cargando…</p>
       ) : modules.length === 0 ? (
-        <p className="text-sm text-neutral-500 bg-surface rounded-md p-4 text-center border border-surface-border">
+        <p className={`text-sm text-neutral-500 ${CARD_SM} p-4 text-center`}>
           Todavía no hay módulos desbloqueados.
         </p>
       ) : (
-        <div className="space-y-6">
+        <div className="grid sm:grid-cols-2 gap-4 items-start">
           {modules.map((m) => (
             <section
               key={m.id}
-              className="rounded-lg border border-surface-border bg-surface-raised p-6 space-y-3"
+              className={`${CARD_SM} p-6 space-y-3`}
             >
               <h2 className="text-lg font-semibold text-white">
                 Módulo {m.numero} · {m.nombre}

@@ -19,7 +19,6 @@ function isGroup(entry: NavEntry): entry is NavGroup {
 
 const STUDENT_ENTRIES: NavEntry[] = [
   { href: "/inicio", label: "Inicio" },
-  { label: "Sesiones", links: [{ href: "/clase1", label: "Sesión 1" }] },
   { href: "/clases", label: "Clases" },
   { href: "/mi-equipo", label: "Mi equipo" },
   { href: "/privilegios", label: "Privilegios" },

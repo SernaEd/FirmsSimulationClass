@@ -244,7 +244,7 @@ export default function AdminEquipos() {
   }
 
   return (
-    <main className="min-h-screen max-w-4xl mx-auto p-8 space-y-8">
+    <main className="min-h-screen max-w-6xl mx-auto px-4 sm:px-8 py-8 space-y-8">
       <header className="space-y-1">
         <Link href="/inicio" className="text-sm text-neutral-500 hover:text-neutral-300">
           ← Regresar al inicio

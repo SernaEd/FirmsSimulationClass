@@ -145,6 +145,7 @@ def create_session(
         numero_sesion=payload.numero_sesion,
         titulo=payload.titulo,
         descripcion=payload.descripcion,
+        embed_url=payload.embed_url,
     )
     db.add(session)
     db.commit()
@@ -196,10 +197,15 @@ def delete_session(
     # CourseSession.attachments al borrar la sesión, sin necesidad de un
     # DELETE + commit por adjunto.
     attachment_paths = [attachment.storage_path for attachment in session.attachments]
+    preview_paths = [
+        attachment.preview_path for attachment in session.attachments if attachment.preview_path
+    ]
     db.delete(session)
     db.commit()
     for storage_path in attachment_paths:
         Path(storage_path).unlink(missing_ok=True)
+    for preview_path in preview_paths:
+        Path(preview_path).unlink(missing_ok=True)
 
 
 # ---- Adjuntos ----

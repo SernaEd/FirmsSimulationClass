@@ -16,6 +16,7 @@ Convenciones:
 """
 
 from datetime import datetime
+from typing import Optional
 
 from sqlalchemy import (
     Boolean,
@@ -30,6 +31,16 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
+
+# Content-types que LibreOffice puede convertir a PDF para vista previa (ver
+# app.services.content.get_preview_source). PDF nativo no necesita
+# conversión; Word/imágenes no la piden.
+PREVIEWABLE_VIA_CONVERSION_CONTENT_TYPES = frozenset(
+    {
+        "application/vnd.ms-powerpoint",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    }
+)
 
 
 class Module(Base):
@@ -58,6 +69,13 @@ class CourseSession(Base):
     numero_sesion: Mapped[int] = mapped_column(Integer, nullable=False)
     titulo: Mapped[str] = mapped_column(String(200), nullable=False)
     descripcion: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # URL (relativa, p. ej. "/clase1-content/index.html", o absoluta) de una
+    # presentación/deck interactivo para embeber en un iframe — a diferencia
+    # de SessionAttachment (un archivo subido y descargable), esto apunta a
+    # contenido servido aparte (típicamente un asset estático). Nace de
+    # consolidar /clase1 (página standalone, hardcoded) dentro de este
+    # sistema — ver UiDesign/README.md.
+    embed_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
 
     module: Mapped[Module] = relationship(back_populates="sessions")
     posts: Mapped[list["ForumPost"]] = relationship(
@@ -87,12 +105,30 @@ class SessionAttachment(Base):
     storage_path: Mapped[str] = mapped_column(String(500), nullable=False)
     content_type: Mapped[str] = mapped_column(String(100), nullable=False)
     size_bytes: Mapped[int] = mapped_column(Integer, nullable=False)
+    # Ruta al PDF generado por LibreOffice para un PPT/PPTX (ver
+    # save_attachment). Nulo si el adjunto ya es PDF (se previsualiza a sí
+    # mismo, no necesita esta columna) o si la conversión falló/no aplica.
+    preview_path: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
 
     session: Mapped[CourseSession] = relationship(back_populates="attachments")
+
+    @property
+    def preview_available(self) -> bool:
+        """True si /attachments/{id}/preview puede servir algo: el propio
+        PDF, un PDF ya convertido, o un PPT/PPTX aún sin convertir (la
+        conversión se genera bajo demanda la primera vez que se pide, ver
+        services.content.get_preview_source — cubre adjuntos subidos antes
+        de que existiera esa función). Pydantic (from_attributes) lee esto
+        como cualquier otro atributo, sin duplicar la regla en el schema."""
+        return (
+            self.content_type == "application/pdf"
+            or self.preview_path is not None
+            or self.content_type in PREVIEWABLE_VIA_CONVERSION_CONTENT_TYPES
+        )
 
     def __repr__(self) -> str:
         return f"<SessionAttachment {self.filename} (session {self.session_id})>"

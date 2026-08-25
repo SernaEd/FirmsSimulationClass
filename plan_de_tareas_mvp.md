@@ -135,7 +135,7 @@
   - [x] Endpoints alumno: `GET /modules` (solo módulos desbloqueados), `GET /sessions/{id}`, `GET /sessions/{id}/attachments/{id}/download` — descarga autenticada, un módulo bloqueado no es accesible ni por URL directa del adjunto.
   - [x] Frontend admin: `/admin/contenido` (crear/bloquear-desbloquear módulos, crear/editar/eliminar sesiones inline, subir/eliminar adjuntos).
   - [x] Frontend alumno: `/clases` (índice por módulo) y `/clases/[id]` (descripción + adjuntos descargables + placeholder de comentarios, hasta que se construya "Comentarios por Clase" más abajo).
-  - [x] `/clase1` (Sesión 1 actual, HTML exportado a mano) se deja sin tocar en paralelo — el nuevo sistema aplica a sesiones nuevas; migrar la Sesión 1 al nuevo sistema queda pendiente como decisión del profesor.
+  - [x] `/clase1` (Sesión 1, HTML exportado a mano) inicialmente se dejó sin tocar en paralelo; consolidada dentro de `/clases` el 2026-08-25 por decisión del profesor — ver `CourseSession.embed_url` (migración `a1c3f6e29b7d`) y `UiDesign/README.md` ("Third implementation pass"). `/clase1` ahora es un redirect a `/clases`.
 - [x] **Test de perfil de trabajo (Belbin adaptado)** *(mudado desde Dominio 1 diferido)*:
   - [x] Modelo `ProfileTestQuestion` + `ProfileTestAnswer` (8 preguntas de escenario con 3 opciones cada una).
   - [x] Migración Alembic (`2dad9acd79a5`), con las 8 preguntas sembradas directamente (contenido fijo, no editable desde admin).

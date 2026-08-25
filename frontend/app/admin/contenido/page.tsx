@@ -76,6 +76,34 @@ function DescriptionField({
   );
 }
 
+function EmbedUrlField({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <label className="block space-y-1">
+      <span className="text-xs font-medium text-neutral-300">
+        Enlace embebido (opcional)
+      </span>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="/clase1-content/index.html"
+        className="w-full rounded-md border border-surface-border bg-neutral-900 px-3 py-1.5 text-sm text-white focus:border-ibero-red focus:outline-none"
+      />
+      <span className="block text-xs text-neutral-500">
+        Para presentaciones/decks interactivos que se muestran en un iframe
+        dentro de la sesión, en vez de un archivo descargable. Ruta relativa
+        (ej. &quot;/clase1-content/index.html&quot;) o URL completa.
+      </span>
+    </label>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Adjuntos
 // ---------------------------------------------------------------------------
@@ -185,6 +213,7 @@ function SessionRow({
   const [titulo, setTitulo] = useState(sessionSummary.titulo);
   const [numeroSesion, setNumeroSesion] = useState(String(sessionSummary.numero_sesion));
   const [descripcion, setDescripcion] = useState("");
+  const [embedUrl, setEmbedUrl] = useState("");
   const [busy, setBusy] = useState<null | "load" | "save" | "delete">(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -197,6 +226,7 @@ function SessionRow({
       setTitulo(d.titulo);
       setNumeroSesion(String(d.numero_sesion));
       setDescripcion(d.descripcion ?? "");
+      setEmbedUrl(d.embed_url ?? "");
     } catch (err) {
       setError(err instanceof ApiError ? err.detail : String(err));
     } finally {
@@ -219,6 +249,7 @@ function SessionRow({
         numero_sesion: Number(numeroSesion),
         titulo: titulo.trim(),
         descripcion: descripcion.trim() || null,
+        embed_url: embedUrl.trim() || null,
       });
       await loadDetail();
       await onChanged();
@@ -285,6 +316,7 @@ function SessionRow({
                   onTituloChange={setTitulo}
                 />
                 <DescriptionField value={descripcion} onChange={setDescripcion} />
+                <EmbedUrlField value={embedUrl} onChange={setEmbedUrl} />
                 <div className="flex gap-2">
                   <button
                     type="submit"
@@ -308,6 +340,11 @@ function SessionRow({
                 <p className="text-sm text-neutral-300 whitespace-pre-wrap">
                   {detail.descripcion || <span className="text-neutral-500">Sin descripción.</span>}
                 </p>
+                {detail.embed_url && (
+                  <p className="text-xs text-neutral-500 truncate">
+                    Embed: <code className="text-neutral-400">{detail.embed_url}</code>
+                  </p>
+                )}
                 <button
                   onClick={() => setEditing(true)}
                   className="rounded-md border border-surface-border hover:bg-neutral-800 px-3 py-1.5 text-xs text-neutral-300"
@@ -341,6 +378,7 @@ function NewSessionForm({
   const [numeroSesion, setNumeroSesion] = useState("");
   const [titulo, setTitulo] = useState("");
   const [descripcion, setDescripcion] = useState("");
+  const [embedUrl, setEmbedUrl] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -353,10 +391,12 @@ function NewSessionForm({
         numero_sesion: Number(numeroSesion),
         titulo: titulo.trim(),
         descripcion: descripcion.trim() || null,
+        embed_url: embedUrl.trim() || null,
       });
       setNumeroSesion("");
       setTitulo("");
       setDescripcion("");
+      setEmbedUrl("");
       setOpen(false);
       await onCreated();
     } catch (err) {
@@ -391,6 +431,7 @@ function NewSessionForm({
         onTituloChange={setTitulo}
       />
       <DescriptionField value={descripcion} onChange={setDescripcion} />
+      <EmbedUrlField value={embedUrl} onChange={setEmbedUrl} />
       {error && (
         <p className="text-xs text-red-300 border border-red-800 bg-red-950/40 rounded-md p-2">
           {error}
@@ -682,7 +723,7 @@ export default function AdminContenidoPage() {
   }
 
   return (
-    <main className="min-h-screen max-w-3xl mx-auto p-8 space-y-8">
+    <main className="min-h-screen max-w-6xl mx-auto px-4 sm:px-8 py-8 space-y-8">
       <header className="space-y-1">
         <Link href="/inicio" className="text-sm text-neutral-500 hover:text-neutral-300">
           ← Regresar al inicio
