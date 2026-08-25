@@ -15,6 +15,7 @@ Convenciones:
 
 from datetime import datetime
 from enum import Enum
+from typing import TYPE_CHECKING
 
 from sqlalchemy import (
     BigInteger,
@@ -32,6 +33,9 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
+
+if TYPE_CHECKING:
+    from app.models.user import User
 
 
 # ---------------------------------------------------------------------------

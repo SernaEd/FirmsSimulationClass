@@ -106,8 +106,10 @@ def list_team_proposals(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="No autorizado a ver propuestas de este equipo.",
         )
-    return db.scalars(
-        select(TeamNameProposal)
-        .where(TeamNameProposal.team_id == team_id)
-        .order_by(TeamNameProposal.created_at.desc())
-    ).all()
+    return list(
+        db.scalars(
+            select(TeamNameProposal)
+            .where(TeamNameProposal.team_id == team_id)
+            .order_by(TeamNameProposal.created_at.desc())
+        ).all()
+    )

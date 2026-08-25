@@ -12,7 +12,6 @@ from app.models.system import InboxItemType
 from app.models.team import (
     ProposalStatus,
     Team,
-    TeamMember,
     TeamNameProposal,
     TeamNameStatus,
 )
@@ -43,18 +42,21 @@ def _team_to_out(db: Session, team: Team) -> TeamOut:
     if user_ids:
         for u in db.scalars(select(User).where(User.id.in_(user_ids))).all():
             users_map[u.id] = u
-    members_out = [
-        TeamMemberOut(
-            user_id=m.user_id,
-            nombre=users_map[m.user_id].nombre,
-            apellidos=users_map[m.user_id].apellidos,
-            nickname=users_map[m.user_id].nickname,
-            perfil=(users_map[m.user_id].perfil.value if users_map[m.user_id].perfil else None),
-            joined_at=m.joined_at,
+    members_out = []
+    for m in team.members:
+        if m.left_at is not None or m.user_id not in users_map:
+            continue
+        u = users_map[m.user_id]
+        members_out.append(
+            TeamMemberOut(
+                user_id=m.user_id,
+                nombre=u.nombre,
+                apellidos=u.apellidos,
+                nickname=u.nickname,
+                perfil=(u.perfil.value if u.perfil else None),
+                joined_at=m.joined_at,
+            )
         )
-        for m in team.members
-        if m.left_at is None and m.user_id in users_map
-    ]
     return TeamOut(
         id=team.id,
         nombre_firma=team.nombre_firma,
@@ -185,11 +187,13 @@ def list_pending_proposals(
     db: Session = Depends(get_db),
     _admin: User = Depends(get_current_admin),
 ) -> list[TeamNameProposal]:
-    return db.scalars(
-        select(TeamNameProposal)
-        .where(TeamNameProposal.estado == ProposalStatus.pendiente_mod)
-        .order_by(TeamNameProposal.created_at.asc())
-    ).all()
+    return list(
+        db.scalars(
+            select(TeamNameProposal)
+            .where(TeamNameProposal.estado == ProposalStatus.pendiente_mod)
+            .order_by(TeamNameProposal.created_at.asc())
+        ).all()
+    )
 
 
 @router.post("/team-name-proposals/{proposal_id}/approve", response_model=TeamOut)

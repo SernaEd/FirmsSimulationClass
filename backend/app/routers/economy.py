@@ -74,7 +74,7 @@ def my_movements(
 
 @router.get("/privileges", response_model=list[PrivilegeCatalogOut])
 def list_visible_privileges(
-    user: User = Depends(get_current_active_user),
+    _user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ) -> list[PrivilegeCatalog]:
     all_entries = db.scalars(
