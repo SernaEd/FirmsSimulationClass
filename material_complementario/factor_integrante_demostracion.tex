@@ -1,0 +1,329 @@
+\documentclass[12pt,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\geometry{letterpaper, margin=1in}
+
+\definecolor{JustifColor}{HTML}{3B4A66}
+\definecolor{ResultColor}{HTML}{0E7490}
+
+\newcommand{\justif}[1]{%
+  \par\noindent
+  {\small\color{JustifColor}%
+  \begin{quote}
+  \textit{Justificación.} #1
+  \end{quote}}%
+}
+
+\newenvironment{resultado}
+  {\begin{quote}\color{ResultColor}\bfseries}
+  {\end{quote}}
+
+\newcommand{\paso}[1]{\subsubsection*{#1}}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=ResultColor,
+  citecolor=ResultColor,
+  urlcolor=ResultColor,
+  pdftitle={El Factor Integrante: Demostración Paso a Paso},
+}
+
+\title{\textbf{El Factor Integrante}\\[4pt]
+\large Demostración paso a paso, con justificaciones, para ecuaciones lineales\\ y para forzar la exactitud de una ecuación diferencial}
+\author{Cálculo III}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\noindent
+Este documento reúne, con todo detalle, la construcción del factor integrante
+en sus dos apariciones del curso: primero como la herramienta que resuelve
+\emph{toda} ecuación lineal de primer orden (Sesión 4), y después como el
+recurso que rescata una ecuación \emph{no exacta} (Sesión 5). Al final se
+muestra que la primera es, de hecho, un caso particular de la segunda.
+
+\tableofcontents
+
+\bigskip
+\hrule
+\bigskip
+
+\section{Factor integrante para ecuaciones lineales}
+
+\subsection*{Planteamiento}
+
+Toda ecuación diferencial lineal de primer orden se puede escribir en su
+\textbf{forma estándar}:
+\begin{equation}
+\frac{dy}{dx} + P(x)\,y = f(x), \tag{1}
+\end{equation}
+con $P$ y $f$ continuas en un intervalo $I$. El lado izquierdo de (1) no es,
+en general, la derivada de ningún producto simple. La idea del factor
+integrante es \emph{multiplicar toda la ecuación por una función bien
+elegida} para que, después de multiplicar, sí lo sea.
+
+\paso{Paso 1 --- El ansatz}
+
+Buscamos una función $\mu(x)$, distinta de cero en $I$, tal que
+\begin{equation}
+\mu(x)\left[\frac{dy}{dx} + P(x)\,y\right] \;=\; \frac{d}{dx}\Big[\mu(x)\,y\Big]. \tag{2}
+\end{equation}
+
+\justif{Si logramos construir tal $\mu$, el problema se reduce a una
+integración directa: el lado derecho de (2) se integra sin esfuerzo respecto
+de $x$, y de ahí despejamos $y$. Todo el método depende de que este $\mu$
+exista y se pueda calcular explícitamente.}
+
+\paso{Paso 2 --- Expandir el lado derecho}
+
+Por la regla del producto,
+\begin{equation}
+\frac{d}{dx}\big[\mu(x)\,y\big] = \mu(x)\,\frac{dy}{dx} + \mu'(x)\,y. \tag{3}
+\end{equation}
+
+\paso{Paso 3 --- Igualar y comparar coeficientes}
+
+Sustituyendo (3) en (2):
+\[
+\mu\,\frac{dy}{dx} + \mu P\, y \;=\; \mu\,\frac{dy}{dx} + \mu'\, y.
+\]
+El término $\mu\, dy/dx$ aparece idéntico en ambos lados y se cancela, dejando
+\begin{equation}
+\mu(x)\,P(x)\,y \;=\; \mu'(x)\,y. \tag{4}
+\end{equation}
+
+\justif{La igualdad (4) debe cumplirse para la solución $y(x)$ que
+\emph{todavía no conocemos}: $\mu$ se construye \emph{antes} de resolver la
+ecuación, sin usar ninguna información sobre $y$. Para que la identidad sea
+válida sin importar cuál resulte ser $y$, los coeficientes que multiplican a
+$y$ en ambos lados deben coincidir exactamente. Esto elimina a $y$ del
+problema por completo y deja una ecuación solo para $\mu$:
+\[
+\mu'(x) = P(x)\,\mu(x).
+\]}
+
+\paso{Paso 4 --- Resolver la ecuación para $\mu$}
+
+La ecuación $\mu' = P\mu$ es, ella misma, \textbf{separable}:
+\[
+\frac{d\mu}{\mu} = P(x)\,dx.
+\]
+Integrando ambos lados,
+\[
+\ln|\mu| = \int P(x)\,dx + C_1.
+\]
+
+\justif{Aquí se usa que $\mu \neq 0$ en $I$ (lo exigimos desde el Paso 1),
+así que $1/\mu$ está bien definida y la separación de variables es válida.}
+
+\paso{Paso 5 --- Despejar $\mu$ y elegir la constante}
+
+Exponenciando,
+\[
+\mu(x) = e^{C_1}\, e^{\int P(x)\,dx}.
+\]
+
+\justif{Cualquier múltiplo constante de un factor integrante es también un
+factor integrante: si $\mu$ satisface (2), entonces $k\mu$ lo satisface
+igual para cualquier constante $k \neq 0$, porque $k$ se cancela en la
+ecuación (4) del Paso 3. Por lo tanto la constante $C_1$ es enteramente una
+cuestión de conveniencia, no de necesidad matemática. Elegimos la opción más
+simple, $C_1 = 0$ (equivalentemente $e^{C_1}=1$):}
+
+\begin{resultado}
+\[
+\mu(x) = e^{\int P(x)\,dx}
+\]
+\end{resultado}
+
+\subsection*{Comprobación de que el método funciona}
+
+Con este $\mu$, la ecuación (2) se cumple por construcción, así que
+multiplicar (1) por $\mu(x)$ da directamente
+\[
+\frac{d}{dx}\Big[\mu(x)\,y\Big] = \mu(x)\,f(x).
+\]
+Integrando respecto de $x$:
+\[
+\mu(x)\,y = \int \mu(x)\,f(x)\,dx + C,
+\]
+\begin{equation}
+y = \frac{1}{\mu(x)}\left[\int \mu(x)\,f(x)\,dx + C\right]. \tag{5}
+\end{equation}
+
+\justif{La división por $\mu(x)$ en (5) siempre es válida: como
+$\mu(x)=e^{\int P\,dx}$ es una función exponencial, se tiene $\mu(x)>0$ para
+\emph{todo} $x \in I$ --- nunca se anula. Este es precisamente el papel que
+le pedimos a $\mu$ desde el Paso 1, y ahora queda garantizado
+automáticamente por la fórmula que obtuvimos.}
+
+\bigskip
+\hrule
+\bigskip
+
+\section{Factor integrante para volver exacta una ecuación}
+
+\subsection*{Planteamiento}
+
+Sea la ecuación diferencial en forma diferencial
+\[
+M(x,y)\,dx + N(x,y)\,dy = 0,
+\]
+que \textbf{no} es exacta, es decir, $\dfrac{\partial M}{\partial y} \neq
+\dfrac{\partial N}{\partial x}$. Buscamos una función $\mu$ tal que
+\begin{equation}
+\mu(x,y)\,M(x,y)\,dx + \mu(x,y)\,N(x,y)\,dy = 0 \tag{6}
+\end{equation}
+sí sea exacta.
+
+\paso{Paso 1 --- La condición general de exactitud para la nueva ecuación}
+
+Por el criterio de exactitud aplicado a (6), necesitamos
+\[
+\frac{\partial}{\partial y}\big[\mu M\big] = \frac{\partial}{\partial x}\big[\mu N\big].
+\]
+Expandiendo ambos lados con la regla del producto --- ahora $\mu = \mu(x,y)$
+depende, en principio, de ambas variables ---:
+\[
+\mu_y M + \mu M_y = \mu_x N + \mu N_x.
+\]
+Reacomodando:
+\begin{equation}
+M\,\mu_y - N\,\mu_x = \mu\,(N_x - M_y). \tag{$\ast$}
+\end{equation}
+
+\justif{La ecuación $(\ast)$ es una \textbf{ecuación diferencial parcial}
+para $\mu(x,y)$, de primer orden y, en general, tan difícil de resolver como
+la ecuación original (o más). Por eso no la atacamos en su forma más
+general: buscamos soluciones particulares bajo un supuesto simplificador
+--- un \emph{ansatz} --- que la reduzca a una ecuación diferencial
+\textbf{ordinaria}, mucho más manejable. Los dos ansatz más útiles son
+suponer que $\mu$ depende de una sola variable.}
+
+\paso{Caso A --- $\mu = \mu(x)$ (depende solo de $x$)}
+
+Si $\mu$ no depende de $y$, entonces $\mu_y = 0$, y $(\ast)$ se simplifica a
+\[
+-N\,\mu_x = \mu\,(N_x - M_y)
+\quad\Longrightarrow\quad
+\frac{\mu_x}{\mu} = \frac{M_y - N_x}{N}.
+\]
+
+\justif{El lado izquierdo, $\mu_x/\mu = \mu'(x)/\mu(x)$, depende solo de
+$x$ por construcción --- es la derivada logarítmica de una función de una
+sola variable. Para que la igualdad tenga sentido, el lado derecho,
+$(M_y-N_x)/N$, debe depender \emph{también} solo de $x$, aunque $M$, $N$,
+$M_y$ y $N_x$ por separado dependan de $x$ y de $y$. \textbf{Esta es
+precisamente la condición práctica que se verifica antes de usar la
+fórmula}: si al calcular $(M_y-N_x)/N$ toda la $y$ se cancela, el Caso A
+aplica.}
+
+Cuando esa condición se cumple, queda una ecuación separable ordinaria para
+$\mu$ --- idéntica en forma a la del Paso 4 de la Sección 1 ---:
+\[
+\frac{d\mu}{\mu} = \frac{M_y-N_x}{N}\,dx.
+\]
+
+\begin{resultado}
+\[
+\mu(x) = e^{\int \frac{M_y-N_x}{N}\,dx}
+\]
+\end{resultado}
+
+\paso{Caso B --- $\mu = \mu(y)$ (depende solo de $y$)}
+
+Simétricamente, si $\mu_x = 0$, la ecuación $(\ast)$ se simplifica a
+\[
+M\,\mu_y = \mu\,(N_x - M_y)
+\quad\Longrightarrow\quad
+\frac{\mu_y}{\mu} = \frac{N_x - M_y}{M}.
+\]
+
+\justif{Mismo argumento que en el Caso A, intercambiando los papeles de $x$
+y $y$: la igualdad solo es consistente si $(N_x-M_y)/M$ depende únicamente
+de $y$.}
+
+\begin{resultado}
+\[
+\mu(y) = e^{\int \frac{N_x-M_y}{M}\,dy}
+\]
+\end{resultado}
+
+\subsection*{Comprobación de que el método funciona}
+
+\textbf{Caso A.} Sea $\mu=\mu(x)$ construido como arriba, y definamos
+$M^{*} = \mu M$, $N^{*} = \mu N$. Queremos ver que $M^{*}_y = N^{*}_x$:
+\[
+M^{*}_y = \mu\, M_y,
+\qquad
+N^{*}_x = \mu'\,N + \mu\, N_x.
+\]
+Usando $\mu' = \mu \cdot \dfrac{M_y-N_x}{N}$ en la segunda expresión:
+\[
+N^{*}_x
+= \mu\cdot\frac{M_y-N_x}{N}\cdot N + \mu\,N_x
+= \mu\,(M_y-N_x) + \mu\,N_x
+= \mu\,M_y
+= M^{*}_y. \checkmark
+\]
+
+\textbf{Caso B.} De manera simétrica, con $M^{*}_y = \mu' M + \mu M_y$ y
+$N^{*}_x = \mu N_x$, y usando $\mu' = \mu\cdot\dfrac{N_x-M_y}{M}$:
+\[
+M^{*}_y
+= \mu\cdot\frac{N_x-M_y}{M}\cdot M + \mu\,M_y
+= \mu\,(N_x-M_y) + \mu\,M_y
+= \mu\,N_x
+= N^{*}_x. \checkmark
+\]
+
+\justif{En ambos casos, multiplicar por el $\mu$ construido garantiza
+exactitud \emph{por construcción}, no por coincidencia: la cancelación
+algebraica funciona exactamente porque $\mu$ fue diseñado en el Paso 1 de
+cada caso para lograrlo.}
+
+\bigskip
+\hrule
+\bigskip
+
+\section{Observación final: el factor lineal es un caso particular}
+
+Las Secciones 1 y 2 no son dos técnicas independientes. La ecuación lineal
+\[
+\frac{dy}{dx} + P(x)\,y = f(x)
+\]
+se puede reescribir en forma diferencial como
+\[
+\big[P(x)\,y - f(x)\big]\,dx + dy = 0,
+\]
+es decir, con $M(x,y) = P(x)\,y - f(x)$ y $N(x,y) = 1$. Entonces
+\[
+M_y = P(x), \qquad N_x = 0,
+\]
+\[
+\frac{M_y - N_x}{N} = \frac{P(x) - 0}{1} = P(x),
+\]
+que depende solo de $x$ \textbf{automáticamente}, para cualquier ecuación
+lineal, sin excepción. Aplicando la fórmula del Caso A de la Sección 2:
+\[
+\mu(x) = e^{\int P(x)\,dx},
+\]
+exactamente el factor integrante de la Sección 1.
+
+\begin{resultado}
+El método de la Sección 1 no es una técnica aparte: es el Caso A del factor
+integrante para ecuaciones exactas, aplicado a una ecuación que --- por su
+propia estructura lineal --- siempre cae en ese caso.
+\end{resultado}
+
+\end{document}
