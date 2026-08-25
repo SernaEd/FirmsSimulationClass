@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -33,27 +34,23 @@ class CourseSessionDetailOut(BaseModel):
     module_id: int
     numero_sesion: int
     titulo: str
-    descripcion: str | None
-    embed_url: str | None
-    # `X | None`/`list[X]` es sintaxis válida en Python 3.11 (ver
-    # backend/Dockerfile); "noinspection" de abajo evita el falso positivo
-    # confirmado de Qodana en esta línea — detalle completo en
-    # backend/qodana.yaml.
-    attachments: list[AttachmentOut]  # noinspection PyTypeHints
+    descripcion: Optional[str]
+    embed_url: Optional[str]
+    attachments: List[AttachmentOut]
 
 
 class CourseSessionIn(BaseModel):
     numero_sesion: int = Field(ge=1)
     titulo: str = Field(min_length=1, max_length=200)
-    descripcion: str | None = Field(default=None, max_length=10_000)
-    embed_url: str | None = Field(default=None, max_length=500)  # noinspection PyTypeHints
+    descripcion: Optional[str] = Field(default=None, max_length=10_000)
+    embed_url: Optional[str] = Field(default=None, max_length=500)
 
 
 class CourseSessionUpdate(BaseModel):
-    numero_sesion: int | None = Field(default=None, ge=1)
-    titulo: str | None = Field(default=None, min_length=1, max_length=200)
-    descripcion: str | None = Field(default=None, max_length=10_000)
-    embed_url: str | None = Field(default=None, max_length=500)  # noinspection PyTypeHints
+    numero_sesion: Optional[int] = Field(default=None, ge=1)
+    titulo: Optional[str] = Field(default=None, min_length=1, max_length=200)
+    descripcion: Optional[str] = Field(default=None, max_length=10_000)
+    embed_url: Optional[str] = Field(default=None, max_length=500)
 
 
 # ---- Módulos ----
@@ -63,8 +60,8 @@ class ModuleIn(BaseModel):
 
 
 class ModuleUpdate(BaseModel):
-    numero: int | None = Field(default=None, ge=1)
-    nombre: str | None = Field(default=None, min_length=1, max_length=120)
+    numero: Optional[int] = Field(default=None, ge=1)
+    nombre: Optional[str] = Field(default=None, min_length=1, max_length=120)
 
 
 class ModuleOut(BaseModel):
@@ -73,5 +70,5 @@ class ModuleOut(BaseModel):
     id: int
     numero: int
     nombre: str
-    unlocked_at: datetime | None
-    sessions: list[CourseSessionListOut]
+    unlocked_at: Optional[datetime]
+    sessions: List[CourseSessionListOut]

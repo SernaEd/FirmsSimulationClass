@@ -14,14 +14,18 @@ bootstrap: pip install -r backend/requirements.txt
 # Sequence de typing) dispara "Invalid type argument" en el linter — falso
 # positivo confirmado en el SARIF, no un error real de tipos.
 #
-# Nota: se intentó excluir aquí también "PyTypeHints" ("Invalid type hints
-# definitions and usages", ~110 falsos positivos preexistentes en todo el
-# backend sobre `X | None`/`list[X]` — ver YouTrack PY-82979) tanto sin
-# `paths` (exclusión global documentada) como con `paths: [backend]`;
-# ninguna de las dos redujo el conteo en un run real de CI (confirmado en
-# los logs del job, Qodana for Python 2026.2 RC vía el tag `:latest` sin
-# pin de versión). En vez de dejar configuración que no hace nada, se
-# suprime línea por línea con `# noinspection PyTypeHints` donde aplica.
+# Nota histórica: "PyTypeHints" ("Invalid type hints definitions and
+# usages") disparaba falsos positivos intermitentes sobre `X | None`/
+# `list[X]` en schemas/content.py y services/content.py — probado excluirlo
+# aquí (con y sin `paths`) y con `# noinspection PyTypeHints` en las líneas
+# afectadas; ninguna de las dos redujo el conteo en un run real de CI
+# (Qodana for Python 2026.2 RC vía el tag `:latest`, sin pin de versión).
+# Se resolvió en la raíz: esos dos archivos volvieron a `Optional[X]`/
+# `List[X]` de `typing` en vez de la sintaxis moderna, que Qodana sí
+# reconoce sin ambigüedad. El resto del backend sigue usando `X | None`/
+# `list[X]` (Python 3.11, ver backend/Dockerfile) — son ~110 warnings
+# preexistentes fuera del diff de cualquier PR, así que nunca generan
+# comentarios inline; no hace falta tocarlos.
 exclude:
   - name: All
     paths:

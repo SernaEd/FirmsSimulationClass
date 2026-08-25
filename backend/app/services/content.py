@@ -17,6 +17,7 @@ import re
 import subprocess
 import uuid
 from pathlib import Path
+from typing import Dict, Optional
 
 from fastapi import HTTPException, UploadFile, status
 from sqlalchemy import select
@@ -42,7 +43,7 @@ UPLOAD_ROOT = (Path("uploads") / "sessions").resolve()
 # que el content-type que manda el navegador, que a veces llega genérico
 # como application/octet-stream) y se guarda el content-type real solo para
 # la respuesta de descarga.
-ALLOWED_EXTENSIONS: dict[str, str] = {
+ALLOWED_EXTENSIONS: Dict[str, str] = {
     ".pdf": "application/pdf",
     ".ppt": "application/vnd.ms-powerpoint",
     ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
@@ -116,10 +117,7 @@ def session_is_visible_to(user: User, session: CourseSession) -> bool:
 # Adjuntos
 # ---------------------------------------------------------------------------
 
-# `X | None` es sintaxis válida en Python 3.11 (ver backend/Dockerfile);
-# "noinspection" de abajo evita el falso positivo confirmado de Qodana en
-# esta línea — detalle completo en backend/qodana.yaml.
-def _convert_to_pdf_preview(storage_path: Path, session_dir: Path) -> str | None:  # noinspection PyTypeHints
+def _convert_to_pdf_preview(storage_path: Path, session_dir: Path) -> Optional[str]:
     """Convierte un PPT/PPTX a PDF con LibreOffice headless para la vista
     previa. Nunca lanza — si falla (binario ausente, archivo corrupto,
     timeout), se loguea y se devuelve None: la conversión es un extra, el
@@ -223,7 +221,7 @@ def save_attachment(db: Session, session: CourseSession, upload_file: UploadFile
     return attachment
 
 
-def get_preview_source(db: Session, attachment: SessionAttachment) -> Path | None:  # noinspection PyTypeHints
+def get_preview_source(db: Session, attachment: SessionAttachment) -> Optional[Path]:
     """Ruta al PDF a servir como vista previa. Un PDF nativo se sirve a sí
     mismo; un PPT/PPTX ya convertido sirve `preview_path`; si no hay
     conversión todavía (adjunto subido antes de que existiera esta función,
