@@ -23,7 +23,12 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from app.config import settings
-from app.models.content import CourseSession, Module, SessionAttachment
+from app.models.content import (
+    PREVIEWABLE_VIA_CONVERSION_CONTENT_TYPES,
+    CourseSession,
+    Module,
+    SessionAttachment,
+)
 from app.models.user import User
 
 logger = logging.getLogger(__name__)
@@ -49,12 +54,6 @@ ALLOWED_EXTENSIONS: dict[str, str] = {
 }
 
 _UNSAFE_CHARS = re.compile(r"[^A-Za-z0-9._-]+")
-
-# Extensiones que se convierten a PDF para poder previsualizarse (ver
-# _convert_to_pdf_preview) — un .pdf ya subido se previsualiza a sí mismo,
-# no necesita esto. Word (.doc/.docx) e imágenes quedan fuera a propósito:
-# no se pidió vista previa para esos, solo PDF/PPT.
-CONVERTIBLE_TO_PREVIEW = {".ppt", ".pptx"}
 
 # Tiempo máximo por conversión. LibreOffice headless puede tardar varios
 # segundos incluso en arrancar (no es un límite ajustado al tamaño del
@@ -200,9 +199,10 @@ def save_attachment(db: Session, session: CourseSession, upload_file: UploadFile
         storage_path.unlink(missing_ok=True)
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="El archivo está vacío.")
 
+    content_type = ALLOWED_EXTENSIONS[extension]
     preview_path = (
         _convert_to_pdf_preview(storage_path, session_dir)
-        if extension in CONVERTIBLE_TO_PREVIEW
+        if content_type in PREVIEWABLE_VIA_CONVERSION_CONTENT_TYPES
         else None
     )
 
@@ -210,7 +210,7 @@ def save_attachment(db: Session, session: CourseSession, upload_file: UploadFile
         session_id=session.id,
         filename=safe_name,
         storage_path=str(storage_path),
-        content_type=ALLOWED_EXTENSIONS[extension],
+        content_type=content_type,
         size_bytes=size,
         preview_path=preview_path,
     )
@@ -218,6 +218,36 @@ def save_attachment(db: Session, session: CourseSession, upload_file: UploadFile
     db.commit()
     db.refresh(attachment)
     return attachment
+
+
+def get_preview_source(db: Session, attachment: SessionAttachment) -> Path | None:
+    """Ruta al PDF a servir como vista previa. Un PDF nativo se sirve a sí
+    mismo; un PPT/PPTX ya convertido sirve `preview_path`; si no hay
+    conversión todavía (adjunto subido antes de que existiera esta función,
+    o cuya conversión falló al subirlo) se genera aquí mismo y se persiste,
+    para no dejarlo sin vista previa para siempre. None si el tipo no es
+    previsualizable o la conversión vuelve a fallar."""
+    if attachment.content_type == "application/pdf":
+        path = Path(attachment.storage_path)
+        return path if path.is_file() else None
+
+    if attachment.preview_path:
+        path = Path(attachment.preview_path)
+        if path.is_file():
+            return path
+
+    if attachment.content_type not in PREVIEWABLE_VIA_CONVERSION_CONTENT_TYPES:
+        return None
+
+    storage_path = Path(attachment.storage_path)
+    if not storage_path.is_file():
+        return None
+    preview_path = _convert_to_pdf_preview(storage_path, storage_path.parent)
+    if preview_path is None:
+        return None
+    attachment.preview_path = preview_path
+    db.commit()
+    return Path(preview_path)
 
 
 def delete_attachment(db: Session, attachment: SessionAttachment) -> None:

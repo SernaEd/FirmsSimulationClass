@@ -31,6 +31,16 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
 
+# Content-types que LibreOffice puede convertir a PDF para vista previa (ver
+# app.services.content.get_preview_source). PDF nativo no necesita
+# conversión; Word/imágenes no la piden.
+PREVIEWABLE_VIA_CONVERSION_CONTENT_TYPES = frozenset(
+    {
+        "application/vnd.ms-powerpoint",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    }
+)
+
 
 class Module(Base):
     __tablename__ = "modules"
@@ -107,10 +117,17 @@ class SessionAttachment(Base):
 
     @property
     def preview_available(self) -> bool:
-        """True si /attachments/{id}/preview puede servir algo — el propio
-        PDF si ya lo es, o el PDF convertido si existe. Pydantic (from_attributes)
-        lee esto como cualquier otro atributo, sin duplicar la regla en el schema."""
-        return self.content_type == "application/pdf" or self.preview_path is not None
+        """True si /attachments/{id}/preview puede servir algo: el propio
+        PDF, un PDF ya convertido, o un PPT/PPTX aún sin convertir (la
+        conversión se genera bajo demanda la primera vez que se pide, ver
+        services.content.get_preview_source — cubre adjuntos subidos antes
+        de que existiera esa función). Pydantic (from_attributes) lee esto
+        como cualquier otro atributo, sin duplicar la regla en el schema."""
+        return (
+            self.content_type == "application/pdf"
+            or self.preview_path is not None
+            or self.content_type in PREVIEWABLE_VIA_CONVERSION_CONTENT_TYPES
+        )
 
     def __repr__(self) -> str:
         return f"<SessionAttachment {self.filename} (session {self.session_id})>"

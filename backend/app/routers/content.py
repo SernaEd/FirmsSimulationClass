@@ -14,6 +14,7 @@ from app.models.user import User
 from app.schemas.content import CourseSessionDetailOut, ModuleOut
 from app.services.content import (
     get_attachment_or_404,
+    get_preview_source,
     get_session_or_404,
     session_is_visible_to,
 )
@@ -71,23 +72,18 @@ def preview_attachment(
     user: User = Depends(get_current_active_user),
 ) -> FileResponse:
     """Sirve el PDF a mostrar inline: el propio archivo si ya es PDF, o el
-    PDF convertido de un PPT/PPTX (ver save_attachment). Mismos chequeos de
-    visibilidad que /download — es un adjunto más, no un atajo sin auth."""
+    PDF convertido de un PPT/PPTX — generándolo ahora mismo si hace falta
+    (ver get_preview_source). Mismos chequeos de visibilidad que /download —
+    es un adjunto más, no un atajo sin auth."""
     attachment = get_attachment_or_404(db, attachment_id)
     if attachment.session_id != session_id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Adjunto no existe.")
     if not session_is_visible_to(user, attachment.session):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Adjunto no existe.")
 
-    if attachment.content_type == "application/pdf":
-        preview_source = Path(attachment.storage_path)
-    elif attachment.preview_path:
-        preview_source = Path(attachment.preview_path)
-    else:
+    preview_source = get_preview_source(db, attachment)
+    if preview_source is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Vista previa no disponible para este archivo."
         )
-
-    if not preview_source.is_file():
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El archivo ya no está disponible.")
     return FileResponse(preview_source, media_type="application/pdf")
