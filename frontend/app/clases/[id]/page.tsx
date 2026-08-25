@@ -154,6 +154,10 @@ export default function SesionDetallePage() {
 // PDF nativo, o el PDF convertido de un PPT/PPTX (ver preview_available /
 // SessionAttachment.preview_path en el backend) — un tipo no previsualizable
 // (Word, imágenes) solo muestra el botón de descarga, sin el de vista previa.
+// La vista previa se carga y muestra sola en cuanto se sabe que hay una
+// (sin esperar clic) — el alumno puede ocultarla con el mismo botón; el blob
+// ya descargado se conserva, así que volver a mostrarla no repite el fetch
+// (ni, para un PPT sin convertir aún, la conversión).
 // `sm:col-span-2` cuando está expandida: el iframe necesita el ancho
 // completo, no la mitad de la grilla de 2 columnas.
 function AttachmentRow({
@@ -170,6 +174,7 @@ function AttachmentRow({
   onDownload: () => void;
 }) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewExpanded, setPreviewExpanded] = useState(true);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
 
@@ -181,11 +186,7 @@ function AttachmentRow({
     };
   }, [previewUrl]);
 
-  async function togglePreview() {
-    if (previewUrl) {
-      setPreviewUrl(null);
-      return;
-    }
+  const loadPreview = useCallback(async () => {
     setPreviewLoading(true);
     setPreviewError(null);
     try {
@@ -195,10 +196,26 @@ function AttachmentRow({
     } finally {
       setPreviewLoading(false);
     }
+  }, [sessionId, attachment.id, token]);
+
+  useEffect(() => {
+    if (attachment.preview_available) loadPreview();
+  }, [attachment.preview_available, loadPreview]);
+
+  function togglePreview() {
+    if (previewUrl) {
+      setPreviewExpanded((v) => !v);
+      return;
+    }
+    // Sin blob todavía (la carga automática falló) — reintenta al pedirla.
+    setPreviewExpanded(true);
+    loadPreview();
   }
 
+  const showingPreview = previewExpanded && previewUrl !== null;
+
   return (
-    <li className={`rounded-md bg-surface p-3 ${previewUrl ? "sm:col-span-2" : ""}`}>
+    <li className={`rounded-md bg-surface p-3 ${showingPreview ? "sm:col-span-2" : ""}`}>
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
           <p className="text-sm text-white truncate">{attachment.filename}</p>
@@ -211,7 +228,7 @@ function AttachmentRow({
               disabled={previewLoading}
               className="rounded-md border border-surface-border hover:bg-neutral-800 disabled:opacity-50 px-3 py-1.5 text-xs font-medium text-neutral-300 transition-colors"
             >
-              {previewLoading ? "Cargando…" : previewUrl ? "Ocultar" : "Vista previa"}
+              {previewLoading ? "Cargando…" : showingPreview ? "Ocultar" : "Vista previa"}
             </button>
           )}
           <button
@@ -226,7 +243,7 @@ function AttachmentRow({
 
       {previewError && <p className="text-xs text-red-400 mt-2">{previewError}</p>}
 
-      {previewUrl && (
+      {previewExpanded && previewUrl && (
         <iframe
           src={previewUrl}
           title={`Vista previa · ${attachment.filename}`}
