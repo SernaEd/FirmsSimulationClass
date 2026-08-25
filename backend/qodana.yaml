@@ -8,3 +8,12 @@ linter: jetbrains/qodana-python-community:latest
 # los imports de FastAPI/SQLAlchemy/Pydantic en vez de marcarlos como error.
 # Ruta relativa a la raíz del repo: --only-directory no cambia el cwd.
 bootstrap: pip install -r backend/requirements.txt
+
+# Los archivos de migración de Alembic son autogenerados y no se editan a
+# mano: su encabezado estándar (`Union[str, Sequence[str], None]`, con
+# Sequence de typing) dispara "Invalid type argument" en el linter — falso
+# positivo confirmado en el SARIF, no un error real de tipos.
+exclude:
+  - name: All
+    paths:
+      - backend/alembic/versions
