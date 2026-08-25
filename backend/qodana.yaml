@@ -13,10 +13,22 @@ bootstrap: pip install -r backend/requirements.txt
 # mano: su encabezado estándar (`Union[str, Sequence[str], None]`, con
 # Sequence de typing) dispara "Invalid type argument" en el linter — falso
 # positivo confirmado en el SARIF, no un error real de tipos.
+#
+# "PyTypeHints" ("Invalid type hints definitions and usages") se excluye
+# aparte, para todo el repo: marca como inválida la sintaxis moderna que
+# usa TODO el backend — uniones `X | None` (PEP 604, Python 3.10+) y
+# genéricos nativos `list[X]`/`dict[X, Y]` (Python 3.9+) — aunque el
+# runtime real es Python 3.11 (ver backend/Dockerfile). Es un falso
+# positivo confirmado del propio inspector de JetBrains
+# (https://youtrack.jetbrains.com/issue/PY-82979: resolución de type
+# aliases entre módulos, no algo específico de este repo). Sin este
+# exclude cada PR nuevo arrastra ~110 warnings preexistentes de este tipo
+# repartidos por todo el árbol, ninguno accionable.
 exclude:
   - name: All
     paths:
       - backend/alembic/versions
+  - name: PyTypeHints
 
 # Preservado del qodana.yaml que generó la config web de Qodana Cloud
 # (ahora consolidado en este archivo): no está en el perfil "recommended"
