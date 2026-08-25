@@ -67,7 +67,7 @@ export default function Inicio() {
     <main className="max-w-[960px] mx-auto px-4 sm:px-8 pt-[22.4px] pb-20">
       <header className="mb-8">
         <p className="text-accent-400 text-xs uppercase tracking-[0.12em] mb-1">
-          IBERO · Cálculo 3
+          Cálculo 3
         </p>
         <h1 className="text-[30px] font-medium">Hola, {user.nombre}</h1>
         {team !== undefined && (
