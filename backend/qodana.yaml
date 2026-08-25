@@ -7,7 +7,12 @@ linter: jetbrains/qodana-python-community:latest
 # Instala las dependencias antes de analizar para que el linter resuelva
 # los imports de FastAPI/SQLAlchemy/Pydantic en vez de marcarlos como error.
 # Ruta relativa a la raíz del repo: --only-directory no cambia el cwd.
-bootstrap: pip install -r backend/requirements.txt
+bootstrap: |
+  echo "QODANA-DIAG python3: $(command -v python3), $(python3 --version 2>&1)"
+  echo "QODANA-DIAG conda: $(command -v conda || echo 'not found')"
+  echo "QODANA-DIAG pyenv: $(command -v pyenv || echo 'not found')"
+  ls /usr/bin/python3.* 2>/dev/null | sed 's/^/QODANA-DIAG found: /' || echo "QODANA-DIAG no /usr/bin/python3.* found"
+  pip install -r backend/requirements.txt
 
 # Los archivos de migración de Alembic son autogenerados y no se editan a
 # mano: su encabezado estándar (`Union[str, Sequence[str], None]`, con
