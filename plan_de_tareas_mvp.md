@@ -166,6 +166,8 @@
 
 *Interacción síncrona en el aula + cierre del primer ciclo de retroalimentación.*
 
+Casos ya redactados para esta iteración: ver [`casos_licitaciones.md`](casos_licitaciones.md).
+
 - [ ] **Motor de Licitaciones:**
   - [ ] Conexiones WebSockets manejadas en RAM.
   - [ ] Interfaz de proyección del profesor.

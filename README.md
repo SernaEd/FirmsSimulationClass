@@ -2,8 +2,10 @@
 
 Plataforma de aprendizaje para el curso de Ecuaciones Diferenciales (Cálculo 3).
 
-Consulta [`implementation_plan_v2.md`](implementation_plan_v2.md) para el diseño completo y
-[`plan_de_tareas_mvp.md`](plan_de_tareas_mvp.md) para el roadmap de implementación.
+Consulta [`implementation_plan_v2.md`](implementation_plan_v2.md) para el diseño completo,
+[`plan_de_tareas_mvp.md`](plan_de_tareas_mvp.md) para el roadmap de implementación, y
+[`casos_licitaciones.md`](casos_licitaciones.md) para el banco de casos reales usados en las
+licitaciones (§10).
 
 ## Arranque en desarrollo
 
