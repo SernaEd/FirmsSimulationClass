@@ -193,6 +193,24 @@ export async function openAttachment(
   setTimeout(() => URL.revokeObjectURL(url), 60_000);
 }
 
+// Vista previa inline (PDF, o el PDF convertido de un PPT/PPTX — ver
+// preview_available). A diferencia de openAttachment(), no abre nada: el
+// caller decide qué hacer con el blob URL (ej. un <iframe>) y es quien debe
+// revocarlo cuando ya no lo necesite (deja de mostrarse / unmount).
+export async function fetchAttachmentPreviewUrl(
+  sessionId: number,
+  attachmentId: number,
+  token: string,
+): Promise<string> {
+  const res = await fetch(
+    `${API_URL}/sessions/${sessionId}/attachments/${attachmentId}/preview`,
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  await throwIfError(res);
+  const blob = await res.blob();
+  return URL.createObjectURL(blob);
+}
+
 // ---- Tipos test de perfil (§3, Iteración 1) ----
 export type ProfileTestOptionOut = {
   perfil: UserProfile;
@@ -496,6 +514,7 @@ export type SessionAttachmentOut = {
   filename: string;
   content_type: string;
   size_bytes: number;
+  preview_available: boolean;
   created_at: string;
 };
 

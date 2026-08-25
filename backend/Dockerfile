@@ -1,11 +1,16 @@
 FROM python:3.11-slim
 
-# Herramientas de sistema (MySQL client, compilación de algunas libs)
+# Herramientas de sistema (MySQL client, compilación de algunas libs).
+# libreoffice-impress: conversión headless PPT/PPTX -> PDF para la vista
+# previa de adjuntos (ver app/services/content.py, _convert_to_pdf_preview).
+# Es la pieza más pesada de esta imagen (cientos de MB) — deliberado, no
+# hay alternativa liviana para renderizar PPTX real sin ella.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     default-libmysqlclient-dev \
     build-essential \
     pkg-config \
     curl \
+    libreoffice-impress \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

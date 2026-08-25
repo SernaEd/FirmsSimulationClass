@@ -12,7 +12,9 @@ ni por URL directa de un adjunto).
 
 from __future__ import annotations
 
+import logging
 import re
+import subprocess
 import uuid
 from pathlib import Path
 
@@ -23,6 +25,8 @@ from sqlalchemy.orm import Session, selectinload
 from app.config import settings
 from app.models.content import CourseSession, Module, SessionAttachment
 from app.models.user import User
+
+logger = logging.getLogger(__name__)
 
 # Resuelto a absoluta al importar (no relativa al cwd del proceso que la
 # lea después) — `storage_path` se guarda en BD tal cual, y un cwd distinto
@@ -45,6 +49,19 @@ ALLOWED_EXTENSIONS: dict[str, str] = {
 }
 
 _UNSAFE_CHARS = re.compile(r"[^A-Za-z0-9._-]+")
+
+# Extensiones que se convierten a PDF para poder previsualizarse (ver
+# _convert_to_pdf_preview) — un .pdf ya subido se previsualiza a sí mismo,
+# no necesita esto. Word (.doc/.docx) e imágenes quedan fuera a propósito:
+# no se pidió vista previa para esos, solo PDF/PPT.
+CONVERTIBLE_TO_PREVIEW = {".ppt", ".pptx"}
+
+# Tiempo máximo por conversión. LibreOffice headless puede tardar varios
+# segundos incluso en arrancar (no es un límite ajustado al tamaño del
+# archivo) — generoso a propósito porque esto corre síncrono dentro del
+# request de upload (no hay cola de tareas en este proyecto todavía) y una
+# conversión colgada no debe bloquear el worker para siempre.
+CONVERSION_TIMEOUT_SECONDS = 90
 
 
 def _sanitize_filename(original: str) -> str:
@@ -100,6 +117,47 @@ def session_is_visible_to(user: User, session: CourseSession) -> bool:
 # Adjuntos
 # ---------------------------------------------------------------------------
 
+def _convert_to_pdf_preview(storage_path: Path, session_dir: Path) -> str | None:
+    """Convierte un PPT/PPTX a PDF con LibreOffice headless para la vista
+    previa. Nunca lanza — si falla (binario ausente, archivo corrupto,
+    timeout), se loguea y se devuelve None: la conversión es un extra, el
+    adjunto original ya se guardó bien y el upload no debe fallar por esto.
+
+    `-env:UserInstallation=...` con un directorio único por conversión evita
+    que dos subidas simultáneas compitan por el mismo perfil de LibreOffice
+    (causa típica de que `soffice` se cuelgue o falle bajo concurrencia)."""
+    profile_dir = f"/tmp/lo_profile_{uuid.uuid4().hex}"
+    try:
+        result = subprocess.run(
+            [
+                "soffice",
+                "--headless",
+                f"-env:UserInstallation=file://{profile_dir}",
+                "--convert-to",
+                "pdf",
+                "--outdir",
+                str(session_dir),
+                str(storage_path),
+            ],
+            capture_output=True,
+            timeout=CONVERSION_TIMEOUT_SECONDS,
+        )
+    except (subprocess.TimeoutExpired, FileNotFoundError, OSError) as err:
+        logger.warning("Conversión a PDF de %s falló: %s", storage_path.name, err)
+        return None
+
+    expected_output = session_dir / f"{storage_path.stem}.pdf"
+    if result.returncode != 0 or not expected_output.is_file():
+        logger.warning(
+            "Conversión a PDF de %s salió con código %s: %s",
+            storage_path.name,
+            result.returncode,
+            result.stderr.decode(errors="replace")[:500],
+        )
+        return None
+    return str(expected_output)
+
+
 def save_attachment(db: Session, session: CourseSession, upload_file: UploadFile) -> SessionAttachment:
     original_name = upload_file.filename or "archivo"
     extension = Path(original_name).suffix.lower()
@@ -142,12 +200,19 @@ def save_attachment(db: Session, session: CourseSession, upload_file: UploadFile
         storage_path.unlink(missing_ok=True)
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="El archivo está vacío.")
 
+    preview_path = (
+        _convert_to_pdf_preview(storage_path, session_dir)
+        if extension in CONVERTIBLE_TO_PREVIEW
+        else None
+    )
+
     attachment = SessionAttachment(
         session_id=session.id,
         filename=safe_name,
         storage_path=str(storage_path),
         content_type=ALLOWED_EXTENSIONS[extension],
         size_bytes=size,
+        preview_path=preview_path,
     )
     db.add(attachment)
     db.commit()
@@ -160,6 +225,9 @@ def delete_attachment(db: Session, attachment: SessionAttachment) -> None:
     # archivo en disco sigue ahí y no queda una fila apuntando a un archivo
     # que ya no existe. El archivo se borra solo después de confirmar.
     path = Path(attachment.storage_path)
+    preview_path = Path(attachment.preview_path) if attachment.preview_path else None
     db.delete(attachment)
     db.commit()
     path.unlink(missing_ok=True)
+    if preview_path is not None:
+        preview_path.unlink(missing_ok=True)

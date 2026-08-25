@@ -3,7 +3,14 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { ApiError, CourseSessionDetailOut, api, openAttachment } from "@/lib/api";
+import {
+  ApiError,
+  CourseSessionDetailOut,
+  SessionAttachmentOut,
+  api,
+  fetchAttachmentPreviewUrl,
+  openAttachment,
+} from "@/lib/api";
 import { formatBytes } from "@/lib/format";
 import { useAuth } from "@/lib/useAuth";
 import { CARD_SM } from "@/lib/ui";
@@ -122,22 +129,14 @@ export default function SesionDetallePage() {
             ) : (
               <ul className="grid sm:grid-cols-2 gap-3">
                 {session.attachments.map((a) => (
-                  <li
+                  <AttachmentRow
                     key={a.id}
-                    className="flex items-center justify-between gap-3 rounded-md bg-surface p-3"
-                  >
-                    <div className="min-w-0">
-                      <p className="text-sm text-white truncate">{a.filename}</p>
-                      <p className="text-xs text-neutral-500">{formatBytes(a.size_bytes)}</p>
-                    </div>
-                    <button
-                      onClick={() => handleOpen(a.id, a.filename)}
-                      disabled={openingId !== null}
-                      className="shrink-0 rounded-md border border-accent-500 text-accent-300 hover:bg-accent-500/10 disabled:opacity-50 px-3 py-1.5 text-xs font-medium transition-colors"
-                    >
-                      {openingId === a.id ? "Abriendo…" : "Ver / descargar"}
-                    </button>
-                  </li>
+                    attachment={a}
+                    sessionId={sessionId}
+                    token={token!}
+                    downloading={openingId === a.id}
+                    onDownload={() => handleOpen(a.id, a.filename)}
+                  />
                 ))}
               </ul>
             )}
@@ -149,5 +148,92 @@ export default function SesionDetallePage() {
         </>
       )}
     </main>
+  );
+}
+
+// PDF nativo, o el PDF convertido de un PPT/PPTX (ver preview_available /
+// SessionAttachment.preview_path en el backend) — un tipo no previsualizable
+// (Word, imágenes) solo muestra el botón de descarga, sin el de vista previa.
+// `sm:col-span-2` cuando está expandida: el iframe necesita el ancho
+// completo, no la mitad de la grilla de 2 columnas.
+function AttachmentRow({
+  attachment,
+  sessionId,
+  token,
+  downloading,
+  onDownload,
+}: {
+  attachment: SessionAttachmentOut;
+  sessionId: number;
+  token: string;
+  downloading: boolean;
+  onDownload: () => void;
+}) {
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewError, setPreviewError] = useState<string | null>(null);
+
+  // Revoca el blob URL al desmontar o al cambiar a otro — no hay que
+  // esperar a que el navegador lo recolecte solo.
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
+
+  async function togglePreview() {
+    if (previewUrl) {
+      setPreviewUrl(null);
+      return;
+    }
+    setPreviewLoading(true);
+    setPreviewError(null);
+    try {
+      setPreviewUrl(await fetchAttachmentPreviewUrl(sessionId, attachment.id, token));
+    } catch (err) {
+      setPreviewError(err instanceof ApiError ? err.detail : String(err));
+    } finally {
+      setPreviewLoading(false);
+    }
+  }
+
+  return (
+    <li className={`rounded-md bg-surface p-3 ${previewUrl ? "sm:col-span-2" : ""}`}>
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-sm text-white truncate">{attachment.filename}</p>
+          <p className="text-xs text-neutral-500">{formatBytes(attachment.size_bytes)}</p>
+        </div>
+        <div className="flex gap-2 shrink-0">
+          {attachment.preview_available && (
+            <button
+              onClick={togglePreview}
+              disabled={previewLoading}
+              className="rounded-md border border-surface-border hover:bg-neutral-800 disabled:opacity-50 px-3 py-1.5 text-xs font-medium text-neutral-300 transition-colors"
+            >
+              {previewLoading ? "Cargando…" : previewUrl ? "Ocultar" : "Vista previa"}
+            </button>
+          )}
+          <button
+            onClick={onDownload}
+            disabled={downloading}
+            className="rounded-md border border-accent-500 text-accent-300 hover:bg-accent-500/10 disabled:opacity-50 px-3 py-1.5 text-xs font-medium transition-colors"
+          >
+            {downloading ? "Abriendo…" : "Ver / descargar"}
+          </button>
+        </div>
+      </div>
+
+      {previewError && <p className="text-xs text-red-400 mt-2">{previewError}</p>}
+
+      {previewUrl && (
+        <iframe
+          src={previewUrl}
+          title={`Vista previa · ${attachment.filename}`}
+          className="w-full rounded-md border border-surface-border mt-3"
+          style={{ height: "70vh" }}
+        />
+      )}
+    </li>
   );
 }

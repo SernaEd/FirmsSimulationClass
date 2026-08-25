@@ -11,6 +11,7 @@ class AttachmentOut(BaseModel):
     filename: str
     content_type: str
     size_bytes: int
+    preview_available: bool
     created_at: datetime
 
 

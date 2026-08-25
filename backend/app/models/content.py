@@ -94,12 +94,23 @@ class SessionAttachment(Base):
     storage_path: Mapped[str] = mapped_column(String(500), nullable=False)
     content_type: Mapped[str] = mapped_column(String(100), nullable=False)
     size_bytes: Mapped[int] = mapped_column(Integer, nullable=False)
+    # Ruta al PDF generado por LibreOffice para un PPT/PPTX (ver
+    # save_attachment). Nulo si el adjunto ya es PDF (se previsualiza a sí
+    # mismo, no necesita esta columna) o si la conversión falló/no aplica.
+    preview_path: Mapped[str | None] = mapped_column(String(500), nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
 
     session: Mapped[CourseSession] = relationship(back_populates="attachments")
+
+    @property
+    def preview_available(self) -> bool:
+        """True si /attachments/{id}/preview puede servir algo — el propio
+        PDF si ya lo es, o el PDF convertido si existe. Pydantic (from_attributes)
+        lee esto como cualquier otro atributo, sin duplicar la regla en el schema."""
+        return self.content_type == "application/pdf" or self.preview_path is not None
 
     def __repr__(self) -> str:
         return f"<SessionAttachment {self.filename} (session {self.session_id})>"
