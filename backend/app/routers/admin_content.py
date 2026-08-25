@@ -145,6 +145,7 @@ def create_session(
         numero_sesion=payload.numero_sesion,
         titulo=payload.titulo,
         descripcion=payload.descripcion,
+        embed_url=payload.embed_url,
     )
     db.add(session)
     db.commit()

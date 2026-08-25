@@ -511,6 +511,7 @@ export type CourseSessionDetailOut = {
   numero_sesion: number;
   titulo: string;
   descripcion: string | null;
+  embed_url: string | null;
   attachments: SessionAttachmentOut[];
 };
 
@@ -802,7 +803,7 @@ export const api = {
   adminCreateSession: (
     token: string,
     moduleId: number,
-    body: { numero_sesion: number; titulo: string; descripcion?: string | null },
+    body: { numero_sesion: number; titulo: string; descripcion?: string | null; embed_url?: string | null },
   ) =>
     request<CourseSessionDetailOut>(
       `/admin/modules/${moduleId}/sessions`,
@@ -812,7 +813,7 @@ export const api = {
   adminUpdateSession: (
     token: string,
     sessionId: number,
-    body: { numero_sesion?: number; titulo?: string; descripcion?: string | null },
+    body: { numero_sesion?: number; titulo?: string; descripcion?: string | null; embed_url?: string | null },
   ) =>
     request<CourseSessionDetailOut>(
       `/admin/sessions/${sessionId}`,

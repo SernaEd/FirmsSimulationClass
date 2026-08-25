@@ -77,12 +77,33 @@ export default function SesionDetallePage() {
 
       {session && (
         <>
-          <header className="space-y-1">
-            <p className="text-xs uppercase tracking-widest text-neutral-500">
-              Sesión {session.numero_sesion}
-            </p>
-            <h1 className="text-3xl font-semibold">{session.titulo}</h1>
+          <header className="flex items-start justify-between gap-4 flex-wrap">
+            <div className="space-y-1">
+              <p className="text-xs uppercase tracking-widest text-neutral-500">
+                Sesión {session.numero_sesion}
+              </p>
+              <h1 className="text-3xl font-semibold">{session.titulo}</h1>
+            </div>
+            {session.embed_url && (
+              <a
+                href={session.embed_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-neutral-400 hover:text-white underline"
+              >
+                Abrir en pestaña nueva ↗
+              </a>
+            )}
           </header>
+
+          {session.embed_url && (
+            <iframe
+              src={session.embed_url}
+              title={session.titulo}
+              className="w-full rounded-md border border-surface-border"
+              style={{ height: "80vh" }}
+            />
+          )}
 
           <section className={`${CARD_SM} p-6`}>
             {session.descripcion ? (

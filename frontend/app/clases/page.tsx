@@ -2,8 +2,6 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { ActionBanner } from "@/components/ActionBanner";
-import { IconSession } from "@/components/icons";
 import { ApiError, ModuleOut, api } from "@/lib/api";
 import { useAuth } from "@/lib/useAuth";
 import { CARD_SM } from "@/lib/ui";
@@ -52,14 +50,6 @@ export default function ClasesPage() {
           Apuntes y material de cada sesión, agrupados por módulo.
         </p>
       </header>
-
-      <ActionBanner
-        href="/clase1"
-        icon={<IconSession />}
-        title="Sesión 1 · Introducción"
-        description="La primera clase interactiva del curso, lista para repasar cuando quieras."
-        cta="Abrir sesión"
-      />
 
       {error && (
         <p className="rounded-md border border-red-800 bg-red-950/40 p-3 text-sm text-red-300">

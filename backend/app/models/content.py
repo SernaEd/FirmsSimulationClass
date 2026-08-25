@@ -58,6 +58,13 @@ class CourseSession(Base):
     numero_sesion: Mapped[int] = mapped_column(Integer, nullable=False)
     titulo: Mapped[str] = mapped_column(String(200), nullable=False)
     descripcion: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # URL (relativa, p. ej. "/clase1-content/index.html", o absoluta) de una
+    # presentación/deck interactivo para embeber en un iframe — a diferencia
+    # de SessionAttachment (un archivo subido y descargable), esto apunta a
+    # contenido servido aparte (típicamente un asset estático). Nace de
+    # consolidar /clase1 (página standalone, hardcoded) dentro de este
+    # sistema — ver UiDesign/README.md.
+    embed_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
 
     module: Mapped[Module] = relationship(back_populates="sessions")
     posts: Mapped[list["ForumPost"]] = relationship(

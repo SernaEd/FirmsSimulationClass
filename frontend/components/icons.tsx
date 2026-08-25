@@ -12,15 +12,6 @@ export function IconRings() {
   );
 }
 
-export function IconSession() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="4" y="4" width="16" height="16" rx="2" />
-      <path d="M10 9.5v5l4-2.5-4-2.5Z" fill="currentColor" stroke="none" />
-    </svg>
-  );
-}
-
 export function IconArrowRight() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
