@@ -12,6 +12,7 @@ import string
 from collections import defaultdict
 from datetime import datetime, timezone
 from itertools import product
+from typing import Optional
 
 from fastapi import HTTPException, status
 from sqlalchemy import and_, select
@@ -233,12 +234,17 @@ def get_active_teams_for_users(db: Session, user_ids: list[int]) -> dict[int, Te
     return {user_id: team for user_id, team in db.execute(stmt).all()}
 
 
-def set_user_team(db: Session, user_id: int, team_id: int | None) -> Team | None:
+def set_user_team(db: Session, user_id: int, team_id: Optional[int]) -> Optional[Team]:
     """Mueve al usuario a `team_id`, cerrando su membresía activa previa si
     la había (misma mecánica de "baja" que usa el resto del dominio:
     `left_at`, nunca se borra la fila). `team_id=None` lo deja sin equipo.
     No hace commit — el caller decide. Devuelve el equipo resultante (o
-    None si quedó sin equipo)."""
+    None si quedó sin equipo).
+
+    Optional[X] en vez de `X | None`: mismo falso positivo confirmado del
+    linter Qodana que StudentAdminOut (ver backend/qodana.yaml) — esta vez
+    en la firma de una función en un archivo con
+    `from __future__ import annotations`."""
     current = get_active_team_of_user(db, user_id)
     if current is not None and (team_id is None or current.id != team_id):
         for m in current.members:

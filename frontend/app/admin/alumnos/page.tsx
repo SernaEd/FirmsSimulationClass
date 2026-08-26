@@ -381,8 +381,7 @@ export default function AdminAlumnosPage() {
 
   useEffect(() => {
     if (token) reload();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token]);
+  }, [token, reload]);
 
   const studentById = useMemo(() => {
     const map: Record<number, StudentAdminOut> = {};
@@ -390,18 +389,25 @@ export default function AdminAlumnosPage() {
     return map;
   }, [students]);
 
-  const dirtyIds = useMemo(
-    () =>
-      Object.keys(drafts)
-        .map(Number)
-        .filter((id) => studentById[id] && !draftsEqual(drafts[id], toDraft(studentById[id]))),
-    [drafts, studentById],
-  );
-
-  const balanceChangedIds = useMemo(
-    () => dirtyIds.filter((id) => drafts[id].balance !== toDraft(studentById[id]).balance),
-    [dirtyIds, drafts, studentById],
-  );
+  // Una sola pasada sobre `drafts` para las tres derivadas que el resto de
+  // la página necesita: qué filas están sucias (como Set, para lookup O(1)
+  // por fila al renderizar la tabla), en qué orden, y cuáles tocan el saldo.
+  const { dirtySet, dirtyIds, balanceChangedIds } = useMemo(() => {
+    const dirtySet = new Set<number>();
+    const dirtyIds: number[] = [];
+    const balanceChangedIds: number[] = [];
+    for (const idStr of Object.keys(drafts)) {
+      const id = Number(idStr);
+      const student = studentById[id];
+      if (!student) continue;
+      const baseline = toDraft(student);
+      if (draftsEqual(drafts[id], baseline)) continue;
+      dirtySet.add(id);
+      dirtyIds.push(id);
+      if (drafts[id].balance !== baseline.balance) balanceChangedIds.push(id);
+    }
+    return { dirtySet, dirtyIds, balanceChangedIds };
+  }, [drafts, studentById]);
 
   // Aplica una respuesta del servidor (aprobar/rechazar) a `students` y
   // resincroniza el draft de esa fila con el nuevo valor. Sin esto, un draft
@@ -432,30 +438,42 @@ export default function AdminAlumnosPage() {
     setError(null);
     const nextErrors: Record<number, string> = {};
 
+    // Los hasta 4 campos de una fila son escrituras independientes (cada una
+    // pega a un endpoint distinto) — se disparan en paralelo con
+    // allSettled en vez de encadenarlas con await secuencial, y un fallo en
+    // un campo no le impide intentarse a los demás de la misma fila.
     await Promise.all(
       dirtyIds.map(async (id) => {
         const student = studentById[id];
         const draft = drafts[id];
         const baseline = toDraft(student);
-        try {
-          if (draft.nombre.trim() !== baseline.nombre || draft.apellidos.trim() !== baseline.apellidos) {
-            await api.adminRenameUser(token!, id, draft.nombre.trim(), draft.apellidos.trim());
-          }
-          if (draft.perfil && draft.perfil !== baseline.perfil) {
-            await api.adminReassignProfile(token!, id, draft.perfil);
-          }
-          if (draft.team_id !== baseline.team_id) {
-            await api.adminSetUserTeam(token!, id, draft.team_id);
-          }
-          if (draft.balance !== baseline.balance) {
-            await api.adminAdjustTokens(token!, {
+
+        const calls: Promise<unknown>[] = [];
+        if (draft.nombre.trim() !== baseline.nombre || draft.apellidos.trim() !== baseline.apellidos) {
+          calls.push(api.adminRenameUser(token!, id, draft.nombre.trim(), draft.apellidos.trim()));
+        }
+        if (draft.perfil && draft.perfil !== baseline.perfil) {
+          calls.push(api.adminReassignProfile(token!, id, draft.perfil));
+        }
+        if (draft.team_id !== baseline.team_id) {
+          calls.push(api.adminSetUserTeam(token!, id, draft.team_id));
+        }
+        if (draft.balance !== baseline.balance) {
+          calls.push(
+            api.adminAdjustTokens(token!, {
               user_id: id,
               delta: draft.balance - baseline.balance,
               nota: tokenNote.trim(),
-            });
-          }
-        } catch (err) {
-          nextErrors[id] = err instanceof ApiError ? err.detail : String(err);
+            }),
+          );
+        }
+
+        const results = await Promise.allSettled(calls);
+        const failed = results.filter((r): r is PromiseRejectedResult => r.status === "rejected");
+        if (failed.length > 0) {
+          nextErrors[id] = failed
+            .map((r) => (r.reason instanceof ApiError ? r.reason.detail : String(r.reason)))
+            .join(" · ");
         }
       }),
     );
@@ -580,7 +598,7 @@ export default function AdminAlumnosPage() {
                     key={s.id}
                     student={s}
                     draft={drafts[s.id] ?? toDraft(s)}
-                    dirty={dirtyIds.includes(s.id)}
+                    dirty={dirtySet.has(s.id)}
                     saveError={rowErrors[s.id] ?? null}
                     teams={teams}
                     onDraftChange={(patch) =>
