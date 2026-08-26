@@ -49,6 +49,22 @@ def get_balance(db: Session, user_id: int) -> int:
     return int(result)
 
 
+def get_balances(db: Session, user_ids: Iterable[int]) -> dict[int, int]:
+    """Versión en lote de `get_balance`: una sola consulta agregada para el
+    saldo de varios usuarios a la vez (evita N+1 en vistas tipo tabla, ej.
+    Admin · Alumnos). Un user_id ausente del resultado no tiene movimientos
+    — su saldo es 0."""
+    user_ids = list(user_ids)
+    if not user_ids:
+        return {}
+    rows = db.execute(
+        select(TokenLedger.user_id, func.coalesce(func.sum(TokenLedger.delta), 0))
+        .where(TokenLedger.user_id.in_(user_ids))
+        .group_by(TokenLedger.user_id)
+    ).all()
+    return {user_id: int(total) for user_id, total in rows}
+
+
 def get_movements(
     db: Session,
     user_id: int,

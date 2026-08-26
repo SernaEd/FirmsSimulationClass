@@ -29,6 +29,12 @@ export type UserOut = {
   created_at: string;
 };
 
+export type StudentAdminOut = UserOut & {
+  team_id: number | null;
+  team_nombre: string | null;
+  balance: number;
+};
+
 export type RegisterPayload = {
   nombre: string;
   apellidos: string;
@@ -734,6 +740,8 @@ export const api = {
     ),
   adminListUsers: (token: string) =>
     request<UserOut[]>("/admin/users", {}, token),
+  adminListAllStudents: (token: string) =>
+    request<StudentAdminOut[]>("/admin/users/all", {}, token),
   adminApproveUser: (token: string, userId: number) =>
     request<UserOut>(`/admin/users/${userId}/approve`, { method: "POST" }, token),
   adminRejectUser: (token: string, userId: number) =>
@@ -748,6 +756,18 @@ export const api = {
     request<UserOut>(
       `/admin/users/${userId}/reassign-profile`,
       { method: "POST", body: JSON.stringify({ perfil }) },
+      token,
+    ),
+  adminRenameUser: (token: string, userId: number, nombre: string, apellidos: string) =>
+    request<UserOut>(
+      `/admin/users/${userId}/rename`,
+      { method: "POST", body: JSON.stringify({ nombre, apellidos }) },
+      token,
+    ),
+  adminSetUserTeam: (token: string, userId: number, teamId: number | null) =>
+    request<StudentAdminOut>(
+      `/admin/users/${userId}/team`,
+      { method: "POST", body: JSON.stringify({ team_id: teamId }) },
       token,
     ),
 

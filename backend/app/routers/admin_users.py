@@ -13,9 +13,17 @@ from app.database import get_db
 from app.deps import get_current_admin
 from app.models.system import InboxItemType
 from app.models.user import User, UserStatus
-from app.schemas.auth import ReassignProfileIn, UserOut
+from app.schemas.auth import (
+    ReassignProfileIn,
+    RenameUserIn,
+    SetTeamIn,
+    StudentAdminOut,
+    UserOut,
+)
 from app.security import hash_pin
 from app.services.inbox import resolve_inbox_items
+from app.services.teams import get_active_teams_for_users, set_user_team
+from app.services.tokens import get_balance, get_balances
 
 router = APIRouter(prefix="/admin/users", tags=["admin:users"])
 
@@ -65,6 +73,44 @@ def reassign_profile(
     return user
 
 
+@router.post("/{user_id}/rename", response_model=UserOut)
+def rename_user(
+    user_id: int,
+    payload: RenameUserIn,
+    db: Session = Depends(get_db),
+    _admin: User = Depends(get_current_admin),
+) -> User:
+    user = db.get(User, user_id)
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no existe.")
+    user.nombre = payload.nombre.strip()
+    user.apellidos = payload.apellidos.strip()
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+@router.post("/{user_id}/team", response_model=StudentAdminOut)
+def set_team(
+    user_id: int,
+    payload: SetTeamIn,
+    db: Session = Depends(get_db),
+    _admin: User = Depends(get_current_admin),
+) -> StudentAdminOut:
+    user = db.get(User, user_id)
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no existe.")
+    team = set_user_team(db, user_id, payload.team_id)
+    db.commit()
+    db.refresh(user)
+    return StudentAdminOut(
+        **UserOut.model_validate(user).model_dump(),
+        team_id=team.id if team else None,
+        team_nombre=team.nombre_firma if team else None,
+        balance=get_balance(db, user_id),
+    )
+
+
 @router.post("/{user_id}/approve", response_model=UserOut)
 def approve(
     user_id: int,
@@ -92,6 +138,11 @@ def reject(
     db: Session = Depends(get_db),
     admin: User = Depends(get_current_admin),
 ) -> User:
+    """Sin guarda de estado a propósito: se usa tanto para rechazar un
+    registro pendiente como para desactivar una cuenta ya activa (ej. un
+    alumno que dio de baja la materia) — ambos casos terminan en
+    `estado=rejected`, la única forma que hoy tiene el modelo de revocar
+    acceso."""
     user = db.get(User, user_id)
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no existe.")
@@ -129,3 +180,40 @@ def list_users(
         .order_by(User.nombre.asc())
         .all()
     )
+
+
+@router.get("/all", response_model=list[StudentAdminOut])
+def list_all_students(
+    db: Session = Depends(get_db),
+    _admin: User = Depends(get_current_admin),
+) -> list[StudentAdminOut]:
+    """Vista de Admin · Alumnos: todas las cuentas de alumnado (cualquier
+    estado, `is_admin=False`), enriquecida con equipo activo y saldo de
+    Tokens. A diferencia de GET /admin/users (solo activas, pensada para
+    poblar selects), esta es la fuente de la tabla administrable completa.
+    """
+    students = (
+        db.query(User)
+        .filter(User.is_admin.is_(False))
+        .order_by(User.apellidos.asc(), User.nombre.asc())
+        .all()
+    )
+    if not students:
+        return []
+
+    user_ids = [u.id for u in students]
+    team_by_user = get_active_teams_for_users(db, user_ids)
+    balance_by_user = get_balances(db, user_ids)
+
+    result: list[StudentAdminOut] = []
+    for u in students:
+        team = team_by_user.get(u.id)
+        result.append(
+            StudentAdminOut(
+                **UserOut.model_validate(u).model_dump(),
+                team_id=team.id if team else None,
+                team_nombre=team.nombre_firma if team else None,
+                balance=balance_by_user.get(u.id, 0),
+            )
+        )
+    return result

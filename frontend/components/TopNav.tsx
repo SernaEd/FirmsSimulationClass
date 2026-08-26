@@ -31,6 +31,7 @@ const ADMIN_GROUP: NavGroup = {
   label: "Admin",
   accent: true,
   links: [
+    { href: "/admin/alumnos", label: "Alumnos" },
     { href: "/admin/equipos", label: "Equipos" },
     { href: "/admin/economia", label: "Economía" },
     { href: "/admin/sistema", label: "Sistema" },
