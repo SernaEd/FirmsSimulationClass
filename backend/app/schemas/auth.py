@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
@@ -81,8 +82,11 @@ class StudentAdminOut(UserOut):
     sobre todas las cuentas en una tabla, sin que cada fila dispare sus
     propias consultas de equipo/saldo."""
 
-    team_id: int | None
-    team_nombre: str | None
+    # Optional[X] en vez de `X | None`: la sintaxis moderna dispara un falso
+    # positivo confirmado del linter Qodana en campos de modelos Pydantic
+    # (mismo caso ya resuelto así en schemas/content.py — ver backend/qodana.yaml).
+    team_id: Optional[int]
+    team_nombre: Optional[str]
     balance: int
 
 
