@@ -548,6 +548,64 @@ export type ModuleOut = {
   sessions: CourseSessionListOut[];
 };
 
+// ---- Tipos Licitaciones (§10) ----
+export type EstadoLicitacion = "abierta" | "cerrada";
+
+export type TipoModeloCaso = "mezcla_lineal_tanque";
+
+export type CasoOut = {
+  id: number;
+  numero: number;
+  titulo: string;
+  modulo: string;
+  contexto: string;
+  tipo_modelo: TipoModeloCaso;
+  volumen_l: number;
+  concentracion_inicial: number;
+  concentracion_max: number;
+  plazo_horas: number;
+  presion_max_q: number;
+};
+
+export type LicitacionOut = {
+  id: number;
+  estado: EstadoLicitacion;
+  caso: CasoOut;
+  pts_primero: number;
+  pts_segundo: number;
+  pts_tercero: number;
+  pts_correcta_fuera_podio: number;
+  pts_participacion: number;
+  abierta_at: string;
+  cerrada_at: string | null;
+};
+
+export type Consecuencia = "lote_perdido" | "linea_danada" | "ninguna";
+
+export type SimulacionResultadoOut = {
+  a_final: number;
+  cumple_plazo: boolean;
+  cumple_presion: boolean;
+  correcta: boolean;
+  consecuencia: Consecuencia;
+  dinero_perdido_mxn: number;
+  pacientes_afectados: number;
+  costo_reparacion_mxn: number;
+};
+
+export type LicitacionResponseOut = {
+  id: number;
+  licitacion_id: number;
+  team_id: number;
+  submitted_by: number;
+  q_propuesta: number;
+  resultado: SimulacionResultadoOut;
+  correcta: boolean;
+  orden_llegada: number | null;
+  puntos_tokens: number | null;
+  created_at: string;
+};
+
 // ---- API pública ----
 export const api = {
   // Dominio 1
@@ -872,6 +930,20 @@ export const api = {
   },
   adminDeleteAttachment: (token: string, attachmentId: number) =>
     request<void>(`/admin/attachments/${attachmentId}`, { method: "DELETE" }, token),
+
+  // Licitaciones — alumno (§10)
+  licitacionActiva: (token: string) =>
+    request<LicitacionOut | null>("/licitaciones/activa", {}, token),
+  getLicitacion: (token: string, licitacionId: number) =>
+    request<LicitacionOut>(`/licitaciones/${licitacionId}`, {}, token),
+  responderLicitacion: (token: string, licitacionId: number, q: number) =>
+    request<LicitacionResponseOut>(
+      `/licitaciones/${licitacionId}/responder`,
+      { method: "POST", body: JSON.stringify({ q }) },
+      token,
+    ),
+  miRespuestaLicitacion: (token: string, licitacionId: number) =>
+    request<LicitacionResponseOut | null>(`/licitaciones/${licitacionId}/mi-respuesta`, {}, token),
 };
 
 // ---- Sesión en localStorage (token + usuario cacheado) ----

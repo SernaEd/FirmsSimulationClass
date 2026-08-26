@@ -13,8 +13,9 @@ import {
 // Cuenta ascendente ease-out-cubic desde 0 hasta `target`, ~1s (UiDesign/README.md
 // §2 "Token count-up"). Corre una sola vez por valor real recibido (guardado en
 // un ref), no en cada re-render — evita reanimar al hacer focus/blur de la
-// pestaña o en updates que no cambian el saldo.
-function useCountUp(target: number | null): number {
+// pestaña o en updates que no cambian el saldo. Exportado: lo reutiliza
+// cualquier pantalla con un contador numérico animado (ej. /licitaciones).
+export function useCountUp(target: number | null): number {
   const [value, setValue] = useState(0);
   const animatedFor = useRef<number | null>(null);
 
@@ -31,7 +32,18 @@ function useCountUp(target: number | null): number {
       if (p < 1) raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    // Resetear el ref en el cleanup (no solo cancelar el frame): en React
+    // Strict Mode, dev monta-desmonta-remonta cada efecto una vez al
+    // inicio para detectar efectos no idempotentes. Sin este reset, el
+    // remontaje real quedaría con `animatedFor.current` ya apuntando al
+    // target y se saltaría la animación por completo — reproducible en
+    // cualquier consumidor que reciba un target no nulo desde el primer
+    // render (a diferencia de BalanceWidget, que arranca en null mientras
+    // carga y por eso nunca lo disparaba).
+    return () => {
+      cancelAnimationFrame(raf);
+      animatedFor.current = null;
+    };
   }, [target]);
 
   return value;

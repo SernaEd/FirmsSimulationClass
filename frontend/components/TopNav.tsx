@@ -21,6 +21,7 @@ const STUDENT_ENTRIES: NavEntry[] = [
   { href: "/inicio", label: "Inicio" },
   { href: "/clases", label: "Clases" },
   { href: "/mi-equipo", label: "Mi equipo" },
+  { href: "/licitaciones", label: "Licitaciones" },
   { href: "/privilegios", label: "Privilegios" },
   { href: "/mis-tickets", label: "Mis tickets" },
   { href: "/movimientos", label: "Movimientos" },

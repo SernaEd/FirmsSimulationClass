@@ -31,8 +31,42 @@ from alembic.config import Config
 
 from app.config import settings
 from app.database import SessionLocal
+from app.models.licitaciones import Caso, TipoModeloCaso
 from app.models.user import User, UserStatus
 from app.security import hash_pin
+
+# Caso 1 del banco de licitaciones (`casos_licitaciones.md`) — contaminación
+# viral en un biorreactor farmacéutico (caso real: Genzyme, Allston
+# Landing, 2009). Valores ilustrativos: con estos parámetros, Q_min ≈ 499
+# L/h (por debajo del plazo de 60h se pierde el lote) y el límite de
+# presión de la línea es 650 L/h (por encima se daña la línea de purga) —
+# deja una ventana de Q correcta ([~499, 650] L/h) que exige calcular el
+# caudal mínimo, no solo "usar el máximo posible".
+CASO_1_BIORREACTOR = {
+    "numero": 1,
+    "titulo": "Contaminación viral en un biorreactor farmacéutico",
+    "modulo": "Módulo 1 — ecuaciones separables y lineales de primer orden",
+    "contexto": (
+        "En junio de 2009, Genzyme Corporation detectó contaminación por "
+        "Vesivirus 2117 en un biorreactor de su planta de Allston Landing "
+        "(Boston, MA), usada para producir Cerezyme, Fabrazyme, Myozyme y "
+        "Thyrogen. La planta cerró varias semanas para descontaminarse; "
+        "casi todo el material en proceso se perdió y miles de pacientes "
+        "quedaron con acceso limitado a su tratamiento. La FDA impuso "
+        "después un decreto de consentimiento con $175M en utilidades "
+        "cedidas. Tu firma debe calcular el caudal de purga (Q) mínimo "
+        "que descontamina el tanque a tiempo, sin dañar la línea de purga."
+    ),
+    "tipo_modelo": TipoModeloCaso.mezcla_lineal_tanque,
+    "volumen_l": 10_000,
+    "concentracion_inicial": 100,
+    "concentracion_max": 5,
+    "plazo_horas": 60,
+    "presion_max_q": 650,
+    "dinero_perdido_mxn": 4_500_000,
+    "pacientes_afectados": 120,
+    "costo_reparacion_mxn": 850_000,
+}
 
 SEED_USERS = [
     {
@@ -92,6 +126,14 @@ def seed() -> None:
             db.commit()
             rol = "admin" if data["is_admin"] else "alumno"
             print(f"seed_dev_data: creada cuenta {rol} {data['numero_cuenta']}.")
+
+        existing_caso = db.query(Caso).filter(Caso.numero == CASO_1_BIORREACTOR["numero"]).first()
+        if existing_caso is not None:
+            print(f"seed_dev_data: caso {CASO_1_BIORREACTOR['numero']} ya existe, se omite.")
+        else:
+            db.add(Caso(**CASO_1_BIORREACTOR))
+            db.commit()
+            print(f"seed_dev_data: creado caso {CASO_1_BIORREACTOR['numero']} ({CASO_1_BIORREACTOR['titulo']}).")
     finally:
         db.close()
 
