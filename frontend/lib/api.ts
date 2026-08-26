@@ -758,6 +758,18 @@ export const api = {
       { method: "POST", body: JSON.stringify({ perfil }) },
       token,
     ),
+  adminRenameUser: (token: string, userId: number, nombre: string, apellidos: string) =>
+    request<UserOut>(
+      `/admin/users/${userId}/rename`,
+      { method: "POST", body: JSON.stringify({ nombre, apellidos }) },
+      token,
+    ),
+  adminSetUserTeam: (token: string, userId: number, teamId: number | null) =>
+    request<StudentAdminOut>(
+      `/admin/users/${userId}/team`,
+      { method: "POST", body: JSON.stringify({ team_id: teamId }) },
+      token,
+    ),
 
   // Dominio 4 — admin: Inbox
   adminGetInbox: (

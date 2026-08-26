@@ -2,7 +2,14 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ApiError, StudentAdminOut, UserProfile, UserStatus, api } from "@/lib/api";
+import {
+  ApiError,
+  StudentAdminOut,
+  TeamOut,
+  UserProfile,
+  UserStatus,
+  api,
+} from "@/lib/api";
 import { useAuth } from "@/lib/useAuth";
 import { toggleSet } from "@/lib/toggleSet";
 import { PROFILE_LABEL } from "@/lib/profile";
@@ -30,6 +37,79 @@ const STATUS_FILTER_OPTIONS: UserStatus[] = [
   "rejected",
 ];
 
+// Edición diferida (§ pedido: "no cambiar en vivo, agregar botón Guardar"):
+// cada fila mantiene un draft local independiente de `students`; nada llama
+// a la API hasta "Guardar cambios". Ver AdminAlumnosPage.handleSaveAll.
+type RowDraft = {
+  nombre: string;
+  apellidos: string;
+  perfil: UserProfile | "";
+  team_id: number | null;
+  balance: number;
+};
+
+function toDraft(s: StudentAdminOut): RowDraft {
+  return {
+    nombre: s.nombre,
+    apellidos: s.apellidos,
+    perfil: s.perfil ?? "",
+    team_id: s.team_id,
+    balance: s.balance,
+  };
+}
+
+function draftsEqual(a: RowDraft, b: RowDraft): boolean {
+  return (
+    a.nombre === b.nombre &&
+    a.apellidos === b.apellidos &&
+    a.perfil === b.perfil &&
+    a.team_id === b.team_id &&
+    a.balance === b.balance
+  );
+}
+
+function teamLabel(team: TeamOut): string {
+  return team.nombre_firma ?? `Equipo #${team.id}`;
+}
+
+// Input de texto (no type="number") con buffer local: un <input type="number">
+// controlado por React pierde el "-" en cuanto se escribe, porque el DOM
+// reporta value="" para un número incompleto y React lo vuelve a pintar como
+// "0" en el siguiente render — imposible teclear un saldo negativo. Aquí se
+// guarda el texto tal cual se escribe y solo se "commitea" al draft cuando ya
+// parsea a un entero completo; el efecto resincroniza el buffer si el valor
+// cambia desde afuera (descartar cambios, recarga tras guardar).
+function BalanceInput({
+  value,
+  onCommit,
+  className,
+}: {
+  value: number;
+  onCommit: (n: number) => void;
+  className: string;
+}) {
+  const [text, setText] = useState(String(value));
+
+  useEffect(() => {
+    setText(String(value));
+  }, [value]);
+
+  return (
+    <input
+      type="text"
+      inputMode="numeric"
+      value={text}
+      onChange={(e) => {
+        const raw = e.target.value;
+        if (!/^-?\d*$/.test(raw)) return;
+        setText(raw);
+        if (raw !== "" && raw !== "-") onCommit(Number(raw));
+      }}
+      className={className}
+    />
+  );
+}
+
 function StatusBadge({ estado }: { estado: UserStatus }) {
   return (
     <span
@@ -45,28 +125,36 @@ function StatusBadge({ estado }: { estado: UserStatus }) {
 
 function StudentRow({
   student,
+  draft,
+  dirty,
+  saveError,
+  teams,
+  onDraftChange,
   onApprove,
   onReject,
   onResetPin,
-  onReassignProfile,
 }: {
   student: StudentAdminOut;
+  draft: RowDraft;
+  dirty: boolean;
+  saveError: string | null;
+  teams: TeamOut[];
+  onDraftChange: (patch: Partial<RowDraft>) => void;
   onApprove: (id: number) => Promise<void>;
   onReject: (id: number) => Promise<void>;
   onResetPin: (id: number) => Promise<string>;
-  onReassignProfile: (id: number, perfil: UserProfile) => Promise<void>;
 }) {
   const [busy, setBusy] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [tempPin, setTempPin] = useState<string | null>(null);
 
   async function run(action: string, fn: () => Promise<void>) {
     setBusy(action);
-    setError(null);
+    setActionError(null);
     try {
       await fn();
     } catch (err) {
-      setError(err instanceof ApiError ? err.detail : String(err));
+      setActionError(err instanceof ApiError ? err.detail : String(err));
     } finally {
       setBusy(null);
     }
@@ -94,14 +182,39 @@ function StudentRow({
 
   const isPending = student.estado === "pending_approval" || student.estado === "pending_profile";
   const isRejected = student.estado === "rejected";
-  const fullName = `${student.nombre} ${student.apellidos}`;
+  const inputClass =
+    "w-full rounded-md border border-surface-border bg-surface px-2 py-1 text-xs text-white focus:border-ibero-red focus:outline-none";
 
   return (
     <>
-      <tr className="border-b border-surface-border/60 align-top hover:bg-surface/60 transition-colors">
+      <tr
+        className={
+          "border-b border-surface-border/60 align-top transition-colors hover:bg-surface/60 " +
+          (dirty ? "bg-accent-900/10" : "")
+        }
+      >
         <td className="py-3 pr-4">
-          <p className="text-sm font-medium text-white">{fullName}</p>
-          <p className="text-xs text-neutral-500">@{student.nickname}</p>
+          {isRejected ? (
+            <p className="text-sm font-medium text-white">
+              {student.nombre} {student.apellidos}
+            </p>
+          ) : (
+            <div className="flex flex-col gap-1 sm:flex-row sm:gap-1.5">
+              <input
+                value={draft.nombre}
+                onChange={(e) => onDraftChange({ nombre: e.target.value })}
+                placeholder="Nombre"
+                className={inputClass + " sm:w-28"}
+              />
+              <input
+                value={draft.apellidos}
+                onChange={(e) => onDraftChange({ apellidos: e.target.value })}
+                placeholder="Apellidos"
+                className={inputClass + " sm:w-32"}
+              />
+            </div>
+          )}
+          <p className="mt-1 text-xs text-neutral-500">@{student.nickname}</p>
         </td>
         <td className="py-3 pr-4 font-mono text-sm text-neutral-300">{student.numero_cuenta}</td>
         <td className="py-3 pr-4">
@@ -112,14 +225,9 @@ function StudentRow({
             <span className="text-xs text-neutral-600">—</span>
           ) : (
             <select
-              value={student.perfil ?? ""}
-              disabled={busy !== null}
-              onChange={(e) => {
-                const v = e.target.value;
-                if (!v) return;
-                run("reassign", () => onReassignProfile(student.id, v as UserProfile));
-              }}
-              className="rounded-md border border-surface-border bg-surface px-2 py-1 text-xs text-white disabled:opacity-50 focus:border-ibero-red focus:outline-none"
+              value={draft.perfil}
+              onChange={(e) => onDraftChange({ perfil: e.target.value as UserProfile | "" })}
+              className={inputClass}
             >
               <option value="" disabled>
                 Sin perfil
@@ -132,15 +240,39 @@ function StudentRow({
             </select>
           )}
         </td>
-        <td className="py-3 pr-4 text-sm text-neutral-300">
-          {student.team_nombre ??
-            (student.team_id ? (
-              `Equipo #${student.team_id}`
-            ) : (
-              <span className="text-neutral-600">Sin equipo</span>
-            ))}
+        <td className="py-3 pr-4">
+          {isRejected ? (
+            student.team_nombre ?? (
+              <span className="text-xs text-neutral-600">Sin equipo</span>
+            )
+          ) : (
+            <select
+              value={draft.team_id ?? ""}
+              onChange={(e) =>
+                onDraftChange({ team_id: e.target.value === "" ? null : Number(e.target.value) })
+              }
+              className={inputClass}
+            >
+              <option value="">Sin equipo</option>
+              {teams.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {teamLabel(t)}
+                </option>
+              ))}
+            </select>
+          )}
         </td>
-        <td className="py-3 pr-4 text-right text-sm tabular-nums text-white">{student.balance}</td>
+        <td className="py-3 pr-4 text-right">
+          {isRejected ? (
+            <span className="text-sm tabular-nums text-white">{student.balance}</span>
+          ) : (
+            <BalanceInput
+              value={draft.balance}
+              onCommit={(n) => onDraftChange({ balance: n })}
+              className={inputClass + " text-right tabular-nums"}
+            />
+          )}
+        </td>
         <td className="py-3 pl-0">
           <div className="flex flex-wrap justify-end gap-1.5">
             {isPending && (
@@ -152,7 +284,7 @@ function StudentRow({
                 >
                   {busy === "approve" ? "…" : "Aprobar"}
                 </button>
-                {rejectButton("Rechazar", `¿Rechazar la cuenta de ${fullName}?`)}
+                {rejectButton("Rechazar", `¿Rechazar la cuenta de ${student.nombre} ${student.apellidos}?`)}
               </>
             )}
             {!isRejected && (
@@ -167,12 +299,12 @@ function StudentRow({
             {student.estado === "active" &&
               rejectButton(
                 "Desactivar",
-                `¿Rechazar (desactivar) la cuenta activa de ${fullName}? Perderá acceso a la plataforma.`,
+                `¿Rechazar (desactivar) la cuenta activa de ${student.nombre} ${student.apellidos}? Perderá acceso a la plataforma.`,
               )}
           </div>
         </td>
       </tr>
-      {(tempPin || error) && (
+      {(tempPin || actionError || saveError) && (
         <tr className="border-b border-surface-border/60">
           <td colSpan={7} className="pb-3">
             {tempPin && (
@@ -190,7 +322,10 @@ function StudentRow({
                 </button>
               </div>
             )}
-            {error && <p className="mt-1 text-xs text-red-400">{error}</p>}
+            {actionError && <p className="mt-1 text-xs text-red-400">{actionError}</p>}
+            {saveError && (
+              <p className="mt-1 text-xs text-red-400">No se guardó: {saveError}</p>
+            )}
           </td>
         </tr>
       )}
@@ -203,36 +338,132 @@ export default function AdminAlumnosPage() {
   const token = authState.status === "authenticated" ? authState.token : null;
 
   const [students, setStudents] = useState<StudentAdminOut[]>([]);
+  const [teams, setTeams] = useState<TeamOut[]>([]);
+  const [drafts, setDrafts] = useState<Record<number, RowDraft>>({});
+  const [rowErrors, setRowErrors] = useState<Record<number, string>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<Set<UserStatus>>(new Set());
+  const [tokenNote, setTokenNote] = useState("");
+  const [saving, setSaving] = useState(false);
 
-  const reload = useCallback(async () => {
-    if (!token) return;
-    setLoading(true);
-    setError(null);
-    try {
-      setStudents(await api.adminListAllStudents(token));
-    } catch (err) {
-      setError(err instanceof ApiError ? err.detail : String(err));
-    } finally {
-      setLoading(false);
-    }
-  }, [token]);
+  // `preserveIds`: filas cuyo draft NO debe pisarse con el valor recién
+  // llegado del servidor — usado tras guardar, para las filas que fallaron
+  // (así el admin no pierde lo que intentó guardar).
+  const reload = useCallback(
+    async (preserveIds?: Set<number>) => {
+      if (!token) return;
+      setLoading(true);
+      setError(null);
+      try {
+        const [studentList, teamList] = await Promise.all([
+          api.adminListAllStudents(token),
+          api.adminListTeams(token),
+        ]);
+        setStudents(studentList);
+        setTeams(teamList);
+        setDrafts((prev) => {
+          const next: Record<number, RowDraft> = {};
+          for (const s of studentList) {
+            next[s.id] = preserveIds?.has(s.id) ? (prev[s.id] ?? toDraft(s)) : toDraft(s);
+          }
+          return next;
+        });
+      } catch (err) {
+        setError(err instanceof ApiError ? err.detail : String(err));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token],
+  );
 
   useEffect(() => {
     if (token) reload();
-  }, [token, reload]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
 
-  // Envuelve una mutación (approve/reject/reassign) con el reload posterior
-  // que todas comparten — solo reset-pin no toca datos listados y por eso
-  // no pasa por aquí.
-  function mutateAndReload<Args extends unknown[]>(fn: (...args: Args) => Promise<unknown>) {
-    return async (...args: Args) => {
-      await fn(...args);
-      await reload();
-    };
+  const studentById = useMemo(() => {
+    const map: Record<number, StudentAdminOut> = {};
+    for (const s of students) map[s.id] = s;
+    return map;
+  }, [students]);
+
+  const dirtyIds = useMemo(
+    () =>
+      Object.keys(drafts)
+        .map(Number)
+        .filter((id) => studentById[id] && !draftsEqual(drafts[id], toDraft(studentById[id]))),
+    [drafts, studentById],
+  );
+
+  const balanceChangedIds = useMemo(
+    () => dirtyIds.filter((id) => drafts[id].balance !== toDraft(studentById[id]).balance),
+    [dirtyIds, drafts, studentById],
+  );
+
+  // Aplica una respuesta del servidor (aprobar/rechazar) a `students` y
+  // resincroniza el draft de esa fila con el nuevo valor. Sin esto, un draft
+  // sin guardar (ej. un nombre a medio editar) sobrevive a un "Rechazar" en
+  // la misma fila — la fila pasa a solo-lectura pero el draft queda "sucio"
+  // y se reenviaría igual en el siguiente "Guardar cambios".
+  function applyServerUpdate(id: number, patch: Partial<StudentAdminOut>) {
+    const current = studentById[id];
+    if (!current) return;
+    const merged = { ...current, ...patch };
+    setStudents((prev) => prev.map((s) => (s.id === id ? merged : s)));
+    setDrafts((prev) => ({ ...prev, [id]: toDraft(merged) }));
+  }
+
+  function discardChanges() {
+    setDrafts(Object.fromEntries(students.map((s) => [s.id, toDraft(s)])));
+    setRowErrors({});
+    setError(null);
+  }
+
+  async function handleSaveAll() {
+    if (dirtyIds.length === 0) return;
+    if (balanceChangedIds.length > 0 && !tokenNote.trim()) {
+      setError("Escribe una nota para justificar el cambio de saldo antes de guardar.");
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    const nextErrors: Record<number, string> = {};
+
+    await Promise.all(
+      dirtyIds.map(async (id) => {
+        const student = studentById[id];
+        const draft = drafts[id];
+        const baseline = toDraft(student);
+        try {
+          if (draft.nombre.trim() !== baseline.nombre || draft.apellidos.trim() !== baseline.apellidos) {
+            await api.adminRenameUser(token!, id, draft.nombre.trim(), draft.apellidos.trim());
+          }
+          if (draft.perfil && draft.perfil !== baseline.perfil) {
+            await api.adminReassignProfile(token!, id, draft.perfil);
+          }
+          if (draft.team_id !== baseline.team_id) {
+            await api.adminSetUserTeam(token!, id, draft.team_id);
+          }
+          if (draft.balance !== baseline.balance) {
+            await api.adminAdjustTokens(token!, {
+              user_id: id,
+              delta: draft.balance - baseline.balance,
+              nota: tokenNote.trim(),
+            });
+          }
+        } catch (err) {
+          nextErrors[id] = err instanceof ApiError ? err.detail : String(err);
+        }
+      }),
+    );
+
+    setRowErrors(nextErrors);
+    if (Object.keys(nextErrors).length === 0) setTokenNote("");
+    await reload(new Set(Object.keys(nextErrors).map(Number)));
+    setSaving(false);
   }
 
   const filtered = useMemo(() => {
@@ -265,8 +496,8 @@ export default function AdminAlumnosPage() {
         </Link>
         <h1 className="text-3xl font-semibold">Admin · Alumnos</h1>
         <p className="text-neutral-400 text-sm">
-          Todas las cuentas inscritas, con estado, perfil, equipo y saldo, y acciones directas
-          por fila.
+          Todas las cuentas inscritas. Edita nombre, perfil, equipo y saldo directamente en la
+          tabla — los cambios no se aplican hasta que presionas &ldquo;Guardar cambios&rdquo;.
         </p>
       </header>
 
@@ -317,7 +548,7 @@ export default function AdminAlumnosPage() {
           </p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[720px] border-collapse text-sm">
+            <table className="w-full min-w-[820px] border-collapse text-sm">
               <thead>
                 <tr className="border-b border-surface-border text-left">
                   <th className="pb-2 pr-4 text-[11px] font-medium uppercase tracking-widest text-neutral-500">
@@ -348,19 +579,65 @@ export default function AdminAlumnosPage() {
                   <StudentRow
                     key={s.id}
                     student={s}
-                    onApprove={mutateAndReload((id: number) => api.adminApproveUser(token!, id))}
-                    onReject={mutateAndReload((id: number) => api.adminRejectUser(token!, id))}
+                    draft={drafts[s.id] ?? toDraft(s)}
+                    dirty={dirtyIds.includes(s.id)}
+                    saveError={rowErrors[s.id] ?? null}
+                    teams={teams}
+                    onDraftChange={(patch) =>
+                      setDrafts((prev) => ({ ...prev, [s.id]: { ...prev[s.id], ...patch } }))
+                    }
+                    onApprove={async (id) => {
+                      const updated = await api.adminApproveUser(token!, id);
+                      applyServerUpdate(id, updated);
+                    }}
+                    onReject={async (id) => {
+                      const updated = await api.adminRejectUser(token!, id);
+                      applyServerUpdate(id, updated);
+                    }}
                     onResetPin={async (id) => {
                       const res = await api.adminResetUserPin(token!, id);
                       return res.temp_pin;
                     }}
-                    onReassignProfile={mutateAndReload((id: number, perfil: UserProfile) =>
-                      api.adminReassignProfile(token!, id, perfil),
-                    )}
                   />
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {!loading && filtered.length > 0 && (
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-surface-border/60 pt-4">
+            <div className="flex flex-1 flex-wrap items-center gap-2">
+              {balanceChangedIds.length > 0 && (
+                <input
+                  value={tokenNote}
+                  onChange={(e) => setTokenNote(e.target.value)}
+                  placeholder="Nota que justifica el/los ajuste(s) de saldo (obligatoria)…"
+                  className="min-w-[240px] flex-1 rounded-md border border-surface-border bg-surface px-3 py-1.5 text-xs text-white placeholder:text-neutral-600 focus:border-ibero-red focus:outline-none"
+                />
+              )}
+              <p className="text-xs text-neutral-500">
+                {dirtyIds.length === 0
+                  ? "Sin cambios pendientes."
+                  : `${dirtyIds.length} fila(s) con cambios sin guardar.`}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={discardChanges}
+                disabled={dirtyIds.length === 0 || saving}
+                className="rounded-md border border-surface-border px-4 py-2 text-sm text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
+              >
+                Descartar cambios
+              </button>
+              <button
+                onClick={handleSaveAll}
+                disabled={dirtyIds.length === 0 || saving}
+                className="rounded-lg border border-accent-500 px-5 py-2 text-sm font-medium text-accent-300 hover:bg-accent-500/10 disabled:opacity-50"
+              >
+                {saving ? "Guardando…" : "Guardar cambios"}
+              </button>
+            </div>
           </div>
         )}
       </section>

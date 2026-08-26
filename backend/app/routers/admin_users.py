@@ -13,11 +13,17 @@ from app.database import get_db
 from app.deps import get_current_admin
 from app.models.system import InboxItemType
 from app.models.user import User, UserStatus
-from app.schemas.auth import ReassignProfileIn, StudentAdminOut, UserOut
+from app.schemas.auth import (
+    ReassignProfileIn,
+    RenameUserIn,
+    SetTeamIn,
+    StudentAdminOut,
+    UserOut,
+)
 from app.security import hash_pin
 from app.services.inbox import resolve_inbox_items
-from app.services.teams import get_active_teams_for_users
-from app.services.tokens import get_balances
+from app.services.teams import get_active_teams_for_users, set_user_team
+from app.services.tokens import get_balance, get_balances
 
 router = APIRouter(prefix="/admin/users", tags=["admin:users"])
 
@@ -65,6 +71,44 @@ def reassign_profile(
     db.commit()
     db.refresh(user)
     return user
+
+
+@router.post("/{user_id}/rename", response_model=UserOut)
+def rename_user(
+    user_id: int,
+    payload: RenameUserIn,
+    db: Session = Depends(get_db),
+    _admin: User = Depends(get_current_admin),
+) -> User:
+    user = db.get(User, user_id)
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no existe.")
+    user.nombre = payload.nombre.strip()
+    user.apellidos = payload.apellidos.strip()
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+@router.post("/{user_id}/team", response_model=StudentAdminOut)
+def set_team(
+    user_id: int,
+    payload: SetTeamIn,
+    db: Session = Depends(get_db),
+    _admin: User = Depends(get_current_admin),
+) -> StudentAdminOut:
+    user = db.get(User, user_id)
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no existe.")
+    team = set_user_team(db, user_id, payload.team_id)
+    db.commit()
+    db.refresh(user)
+    return StudentAdminOut(
+        **UserOut.model_validate(user).model_dump(),
+        team_id=team.id if team else None,
+        team_nombre=team.nombre_firma if team else None,
+        balance=get_balance(db, user_id),
+    )
 
 
 @router.post("/{user_id}/approve", response_model=UserOut)

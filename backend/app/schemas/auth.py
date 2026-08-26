@@ -98,3 +98,19 @@ class ReassignProfileIn(BaseModel):
     sin material para balancear."""
 
     perfil: UserProfile
+
+
+class RenameUserIn(BaseModel):
+    """Corrección manual de nombre/apellidos (ej. error de captura al
+    registrarse). Mismos límites que RegisterIn."""
+
+    nombre: str = Field(min_length=1, max_length=100)
+    apellidos: str = Field(min_length=1, max_length=100)
+
+
+class SetTeamIn(BaseModel):
+    """Mueve al usuario al equipo `team_id`, o lo deja sin equipo si se
+    omite/envía `null`. Usado por Admin · Alumnos para reasignar equipo
+    directamente desde la tabla, sin pasar por /admin/teams/generate."""
+
+    team_id: Optional[int] = None
