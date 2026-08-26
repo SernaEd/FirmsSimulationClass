@@ -30,6 +30,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
+from typing import List, Optional
 
 from sqlalchemy import (
     Boolean,
@@ -100,7 +101,7 @@ class Caso(Base):
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
 
-    licitaciones: Mapped[list["Licitacion"]] = relationship(back_populates="caso")
+    licitaciones: Mapped[List["Licitacion"]] = relationship(back_populates="caso")
 
     def __repr__(self) -> str:
         return f"<Caso #{self.numero} {self.titulo}>"
@@ -132,11 +133,11 @@ class Licitacion(Base):
     abierta_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
-    cerrada_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    cerrada_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     created_by: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
 
     caso: Mapped[Caso] = relationship(back_populates="licitaciones")
-    respuestas: Mapped[list["LicitacionResponse"]] = relationship(
+    respuestas: Mapped[List["LicitacionResponse"]] = relationship(
         back_populates="licitacion", cascade="all, delete-orphan"
     )
 
@@ -167,8 +168,8 @@ class LicitacionResponse(Base):
     resultado: Mapped[dict] = mapped_column(JSON, nullable=False)
     correcta: Mapped[bool] = mapped_column(Boolean, nullable=False)
 
-    orden_llegada: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    puntos_tokens: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    orden_llegada: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    puntos_tokens: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now(), index=True

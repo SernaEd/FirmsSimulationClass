@@ -1,5 +1,7 @@
 """Endpoints de Licitaciones para el alumno (§10)."""
 
+from typing import Optional
+
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
@@ -19,11 +21,11 @@ from app.services.licitaciones import (
 router = APIRouter(tags=["licitaciones"])
 
 
-@router.get("/licitaciones/activa", response_model=LicitacionOut | None)
+@router.get("/licitaciones/activa", response_model=Optional[LicitacionOut])
 def licitacion_activa(
     db: Session = Depends(get_db),
     _user: User = Depends(get_current_active_user),
-) -> Licitacion | None:
+) -> Optional[Licitacion]:
     return get_licitacion_abierta(db)
 
 
@@ -50,11 +52,11 @@ def responder_licitacion(
     return enviar_respuesta(db, user, licitacion_id, payload.q)
 
 
-@router.get("/licitaciones/{licitacion_id}/mi-respuesta", response_model=LicitacionResponseOut | None)
+@router.get("/licitaciones/{licitacion_id}/mi-respuesta", response_model=Optional[LicitacionResponseOut])
 def mi_respuesta(
     licitacion_id: int,
     user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
-) -> LicitacionResponse | None:
+) -> Optional[LicitacionResponse]:
     assert_licitacion_existe(db, licitacion_id)
     return get_mi_respuesta(db, user, licitacion_id)

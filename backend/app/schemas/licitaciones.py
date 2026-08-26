@@ -1,6 +1,7 @@
 """Schemas Pydantic de licitaciones (§10, §12.6)."""
 
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -47,19 +48,19 @@ class CasoIn(BaseModel):
 
 
 class CasoUpdate(BaseModel):
-    numero: int | None = Field(default=None, ge=1)
-    titulo: str | None = Field(default=None, min_length=1, max_length=200)
-    modulo: str | None = Field(default=None, min_length=1, max_length=200)
-    contexto: str | None = Field(default=None, min_length=1)
-    tipo_modelo: TipoModeloCaso | None = None
-    volumen_l: float | None = Field(default=None, gt=0)
-    concentracion_inicial: float | None = Field(default=None, gt=0)
-    concentracion_max: float | None = Field(default=None, gt=0)
-    plazo_horas: float | None = Field(default=None, gt=0)
-    presion_max_q: float | None = Field(default=None, gt=0)
-    dinero_perdido_mxn: float | None = Field(default=None, ge=0)
-    pacientes_afectados: int | None = Field(default=None, ge=0)
-    costo_reparacion_mxn: float | None = Field(default=None, ge=0)
+    numero: Optional[int] = Field(default=None, ge=1)
+    titulo: Optional[str] = Field(default=None, min_length=1, max_length=200)
+    modulo: Optional[str] = Field(default=None, min_length=1, max_length=200)
+    contexto: Optional[str] = Field(default=None, min_length=1)
+    tipo_modelo: Optional[TipoModeloCaso] = None
+    volumen_l: Optional[float] = Field(default=None, gt=0)
+    concentracion_inicial: Optional[float] = Field(default=None, gt=0)
+    concentracion_max: Optional[float] = Field(default=None, gt=0)
+    plazo_horas: Optional[float] = Field(default=None, gt=0)
+    presion_max_q: Optional[float] = Field(default=None, gt=0)
+    dinero_perdido_mxn: Optional[float] = Field(default=None, ge=0)
+    pacientes_afectados: Optional[int] = Field(default=None, ge=0)
+    costo_reparacion_mxn: Optional[float] = Field(default=None, ge=0)
 
 
 # ---------------------------------------------------------------------------
@@ -93,7 +94,7 @@ class LicitacionOut(BaseModel):
     pts_correcta_fuera_podio: int
     pts_participacion: int
     abierta_at: datetime
-    cerrada_at: datetime | None
+    cerrada_at: Optional[datetime]
 
 
 class LicitacionAbrirIn(BaseModel):
@@ -123,6 +124,6 @@ class LicitacionResponseOut(BaseModel):
     q_propuesta: float
     resultado: SimulacionResultadoOut
     correcta: bool
-    orden_llegada: int | None
-    puntos_tokens: int | None
+    orden_llegada: Optional[int]
+    puntos_tokens: Optional[int]
     created_at: datetime

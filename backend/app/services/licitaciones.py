@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import math
 from datetime import datetime, timezone
+from typing import Dict, List, Optional
 
 from fastapi import HTTPException, status
 from sqlalchemy import select
@@ -98,7 +99,7 @@ def assert_licitacion_existe(db: Session, licitacion_id: int) -> None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Licitación no existe.")
 
 
-def get_licitacion_abierta(db: Session) -> Licitacion | None:
+def get_licitacion_abierta(db: Session) -> Optional[Licitacion]:
     stmt = (
         select(Licitacion)
         .options(selectinload(Licitacion.caso))
@@ -178,14 +179,14 @@ def cerrar_licitacion(db: Session, licitacion_id: int) -> Licitacion:
 
 
 def _acreditar_tokens(
-    db: Session, respuestas: list[LicitacionResponse], licitacion: Licitacion
+    db: Session, respuestas: List[LicitacionResponse], licitacion: Licitacion
 ) -> None:
     """Acredita Tokens a los integrantes activos de cada equipo. Resuelve
     los miembros de todos los equipos en una sola consulta (en vez de una
     por respuesta) — una licitación con muchos equipos no debe pagar una
     ida a la base de datos por cada uno."""
     team_ids = {r.team_id for r in respuestas if r.puntos_tokens}
-    miembros_por_equipo: dict[int, list[int]] = {team_id: [] for team_id in team_ids}
+    miembros_por_equipo: Dict[int, List[int]] = {team_id: [] for team_id in team_ids}
     if team_ids:
         rows = db.execute(
             select(TeamMember.team_id, TeamMember.user_id).where(
@@ -265,7 +266,7 @@ def enviar_respuesta(db: Session, user: User, licitacion_id: int, q: float) -> L
     return respuesta
 
 
-def get_mi_respuesta(db: Session, user: User, licitacion_id: int) -> LicitacionResponse | None:
+def get_mi_respuesta(db: Session, user: User, licitacion_id: int) -> Optional[LicitacionResponse]:
     team = get_active_team_of_user(db, user.id)
     if team is None:
         return None

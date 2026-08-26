@@ -7,6 +7,8 @@ licitación al inicio de la sesión y la cierra al terminar la fase de
 resolución; `cerrar_licitacion` calcula el podio y acredita Tokens.
 """
 
+from typing import List, Optional
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
@@ -32,7 +34,7 @@ router = APIRouter(prefix="/admin", tags=["admin:licitaciones"])
 # Casos
 # ---------------------------------------------------------------------------
 
-def _check_numero_caso_unique(db: Session, numero: int, exclude_id: int | None = None) -> None:
+def _check_numero_caso_unique(db: Session, numero: int, exclude_id: Optional[int] = None) -> None:
     stmt = select(Caso).where(Caso.numero == numero)
     if exclude_id is not None:
         stmt = stmt.where(Caso.id != exclude_id)
@@ -43,11 +45,11 @@ def _check_numero_caso_unique(db: Session, numero: int, exclude_id: int | None =
         )
 
 
-@router.get("/casos", response_model=list[CasoOut])
+@router.get("/casos", response_model=List[CasoOut])
 def admin_list_casos(
     db: Session = Depends(get_db),
     _admin: User = Depends(get_current_admin),
-) -> list[Caso]:
+) -> List[Caso]:
     return list(db.scalars(select(Caso).order_by(Caso.numero)).all())
 
 
@@ -87,11 +89,11 @@ def admin_update_caso(
 # Licitaciones
 # ---------------------------------------------------------------------------
 
-@router.get("/licitaciones", response_model=list[LicitacionOut])
+@router.get("/licitaciones", response_model=List[LicitacionOut])
 def admin_list_licitaciones(
     db: Session = Depends(get_db),
     _admin: User = Depends(get_current_admin),
-) -> list[Licitacion]:
+) -> List[Licitacion]:
     return list(
         db.scalars(
             select(Licitacion)
@@ -128,12 +130,12 @@ def admin_cerrar_licitacion(
     return cerrar_licitacion(db, licitacion_id)
 
 
-@router.get("/licitaciones/{licitacion_id}/respuestas", response_model=list[LicitacionResponseOut])
+@router.get("/licitaciones/{licitacion_id}/respuestas", response_model=List[LicitacionResponseOut])
 def admin_list_respuestas(
     licitacion_id: int,
     db: Session = Depends(get_db),
     _admin: User = Depends(get_current_admin),
-) -> list[LicitacionResponse]:
+) -> List[LicitacionResponse]:
     return list(
         db.scalars(
             select(LicitacionResponse)
