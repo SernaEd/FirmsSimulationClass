@@ -217,6 +217,20 @@ def get_active_team_of_user(db: Session, user_id: int) -> Team | None:
     return db.scalars(stmt).first()
 
 
+def get_active_teams_for_users(db: Session, user_ids: list[int]) -> dict[int, Team]:
+    """Versión en lote de `get_active_team_of_user`: una sola consulta para
+    resolver el equipo activo de varios usuarios a la vez (evita N+1 en
+    vistas tipo tabla, ej. Admin · Alumnos)."""
+    if not user_ids:
+        return {}
+    stmt = (
+        select(TeamMember.user_id, Team)
+        .join(Team, Team.id == TeamMember.team_id)
+        .where(and_(TeamMember.user_id.in_(user_ids), TeamMember.left_at.is_(None)))
+    )
+    return {user_id: team for user_id, team in db.execute(stmt).all()}
+
+
 def user_is_member_of_team(db: Session, user_id: int, team_id: int) -> bool:
     stmt = select(TeamMember.id).where(
         and_(

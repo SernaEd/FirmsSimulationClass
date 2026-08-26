@@ -75,6 +75,17 @@ class RegisterOut(UserOut):
     expires_in_minutes: int
 
 
+class StudentAdminOut(UserOut):
+    """UserOut + equipo activo y saldo de Tokens: la vista enriquecida que
+    consume Admin · Alumnos (GET /admin/users/all) para listar y operar
+    sobre todas las cuentas en una tabla, sin que cada fila dispare sus
+    propias consultas de equipo/saldo."""
+
+    team_id: int | None
+    team_nombre: str | None
+    balance: int
+
+
 class ReassignProfileIn(BaseModel):
     """Corrección manual del perfil de trabajo en equipo (§3.1): el
     resultado del test no es editable por el alumno, pero el profesor puede
