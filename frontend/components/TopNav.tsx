@@ -34,8 +34,10 @@ const ADMIN_GROUP: NavGroup = {
     { href: "/admin/alumnos", label: "Alumnos" },
     { href: "/admin/equipos", label: "Equipos" },
     { href: "/admin/economia", label: "Economía" },
-    { href: "/admin/sistema", label: "Sistema" },
+    { href: "/admin/racha", label: "Rachas" },
+    { href: "/admin/ejercicios", label: "Ejercicios" },
     { href: "/admin/contenido", label: "Contenido" },
+    { href: "/admin/sistema", label: "Sistema" },
   ],
 };
 
