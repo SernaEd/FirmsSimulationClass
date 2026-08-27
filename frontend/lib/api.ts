@@ -29,6 +29,12 @@ export type UserOut = {
   created_at: string;
 };
 
+export type StudentAdminOut = UserOut & {
+  team_id: number | null;
+  team_nombre: string | null;
+  balance: number;
+};
+
 export type RegisterPayload = {
   nombre: string;
   apellidos: string;
@@ -508,6 +514,47 @@ export type KnownFlagOut = {
   description: string | null;
 };
 
+// ---- Racha (Streak) ----
+export type StreakDayStatus = "completado" | "fallido" | "neutro" | "pase_aplicado" | "pendiente_revision";
+
+export type StreakEvidenceOut = {
+  id: number;
+  streak_day_id: number;
+  user_id: number;
+  user: {
+    nombre: string;
+    apellidos: string;
+    numero_cuenta: string;
+  };
+  daily_exercise_id: number | null;
+  solucion_path: string;
+  submitted_at: string;
+};
+
+export type StreakDayOut = {
+  id: number;
+  user_id: number;
+  fecha: string;
+  estado: StreakDayStatus;
+  evidence: StreakEvidenceOut | null;
+};
+
+// ---- Banco de Ejercicios Diarios ----
+export type DailyExerciseOut = {
+  id: number;
+  fecha: string;
+  course_session?: {
+    id: number;
+    module_id: number;
+    numero_sesion: number;
+    titulo: string;
+  } | null;
+  numero: number;
+  enunciado: string;
+  imagen_path: string | null;
+  created_at: string;
+};
+
 // ---- Contenido (Módulos, Sesiones, adjuntos) — Iteración 1 ----
 export type SessionAttachmentOut = {
   id: number;
@@ -540,6 +587,101 @@ export type ModuleOut = {
   nombre: string;
   unlocked_at: string | null;
   sessions: CourseSessionListOut[];
+};
+
+// ---- Tipos Licitaciones (§10) ----
+export type EstadoLicitacion = "abierta" | "cerrada";
+
+export type TipoModeloCaso = "mezcla_lineal_tanque";
+
+export type CasoOut = {
+  id: number;
+  numero: number;
+  titulo: string;
+  modulo: string;
+  contexto: string;
+  tipo_modelo: TipoModeloCaso;
+  volumen_l: number;
+  concentracion_inicial: number;
+  concentracion_max: number;
+  plazo_horas: number;
+  presion_max_q: number;
+};
+
+export type LicitacionOut = {
+  id: number;
+  estado: EstadoLicitacion;
+  caso: CasoOut;
+  pts_primero: number;
+  pts_segundo: number;
+  pts_tercero: number;
+  pts_correcta_fuera_podio: number;
+  pts_participacion: number;
+  abierta_at: string;
+  cerrada_at: string | null;
+};
+
+export type Consecuencia = "lote_perdido" | "linea_danada" | "ninguna";
+
+export type SimulacionResultadoOut = {
+  a_final: number;
+  cumple_plazo: boolean;
+  cumple_presion: boolean;
+  correcta: boolean;
+  consecuencia: Consecuencia;
+  dinero_perdido_mxn: number;
+  pacientes_afectados: number;
+  costo_reparacion_mxn: number;
+};
+
+export type LicitacionResponseOut = {
+  id: number;
+  licitacion_id: number;
+  team_id: number;
+  submitted_by: number;
+  q_propuesta: number;
+  resultado: SimulacionResultadoOut;
+  correcta: boolean;
+  orden_llegada: number | null;
+  puntos_tokens: number | null;
+  created_at: string;
+};
+
+// ---- Tipos Licitaciones — admin (§10) ----
+// Como CasoOut, pero incluye las consecuencias — ocultas al alumnado en
+// CasoOut para no revelar la severidad antes de responder.
+export type CasoAdminOut = CasoOut & {
+  dinero_perdido_mxn: number;
+  pacientes_afectados: number;
+  costo_reparacion_mxn: number;
+};
+
+export type CasoIn = {
+  numero: number;
+  titulo: string;
+  modulo: string;
+  contexto: string;
+  tipo_modelo: TipoModeloCaso;
+  volumen_l: number;
+  concentracion_inicial: number;
+  concentracion_max: number;
+  plazo_horas: number;
+  presion_max_q: number;
+  dinero_perdido_mxn: number;
+  pacientes_afectados: number;
+  costo_reparacion_mxn: number;
+};
+
+// Todos los campos opcionales: PATCH solo envía lo que cambió.
+export type CasoUpdate = Partial<CasoIn>;
+
+export type LicitacionAbrirIn = {
+  caso_id: number;
+  pts_primero?: number;
+  pts_segundo?: number;
+  pts_tercero?: number;
+  pts_correcta_fuera_podio?: number;
+  pts_participacion?: number;
 };
 
 // ---- API pública ----
@@ -734,6 +876,8 @@ export const api = {
     ),
   adminListUsers: (token: string) =>
     request<UserOut[]>("/admin/users", {}, token),
+  adminListAllStudents: (token: string) =>
+    request<StudentAdminOut[]>("/admin/users/all", {}, token),
   adminApproveUser: (token: string, userId: number) =>
     request<UserOut>(`/admin/users/${userId}/approve`, { method: "POST" }, token),
   adminRejectUser: (token: string, userId: number) =>
@@ -748,6 +892,18 @@ export const api = {
     request<UserOut>(
       `/admin/users/${userId}/reassign-profile`,
       { method: "POST", body: JSON.stringify({ perfil }) },
+      token,
+    ),
+  adminRenameUser: (token: string, userId: number, nombre: string, apellidos: string) =>
+    request<UserOut>(
+      `/admin/users/${userId}/rename`,
+      { method: "POST", body: JSON.stringify({ nombre, apellidos }) },
+      token,
+    ),
+  adminSetUserTeam: (token: string, userId: number, teamId: number | null) =>
+    request<StudentAdminOut>(
+      `/admin/users/${userId}/team`,
+      { method: "POST", body: JSON.stringify({ team_id: teamId }) },
       token,
     ),
 
@@ -799,6 +955,60 @@ export const api = {
   // Dominio 4 — alumno: lectura de feature flags (mostrar/ocultar UI)
   getFeatureFlag: (token: string, key: string) =>
     request<FlagStatusOut>(`/system/flags/${key}`, {}, token),
+
+  // ---- Banco de Ejercicios Diarios ----
+  getTodayExercise: (token: string) =>
+    request<DailyExerciseOut | null>("/daily-exercises/today", {}, token),
+  adminListExercises: (token: string) =>
+    request<DailyExerciseOut[]>("/admin/daily-exercises", {}, token),
+  adminCreateExercise: (token: string, formData: FormData) =>
+    requestUpload<DailyExerciseOut>("/admin/daily-exercises", formData, token),
+
+  // ---- Racha (Streak) ----
+  submitStreakEvidence: (token: string, formData: FormData) =>
+    requestUpload<StreakDayOut>("/me/streak/evidence", formData, token),
+  getMyStreak: (token: string, year?: number, month?: number) => {
+    const params = new URLSearchParams();
+    if (year) params.append("year", String(year));
+    if (month) params.append("month", String(month));
+    const qs = params.toString();
+    return request<StreakDayOut[]>(`/me/streak${qs ? `?${qs}` : ""}`, {}, token);
+  },
+  adminGetStreakEvidence: (token: string, skip: number = 0, limit: number = 50, userId?: number) => {
+    const params = new URLSearchParams();
+    params.append("skip", String(skip));
+    params.append("limit", String(limit));
+    if (userId) params.append("user_id", String(userId));
+    return request<StreakEvidenceOut[]>(`/admin/streak/evidence?${params.toString()}`, {}, token);
+  },
+  adminGetStreakEvidenceUrl: async (token: string, id: number) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"}/admin/streak/evidence/${id}/download`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) throw new Error("Error al obtener evidencia");
+    const blob = await res.blob();
+    return { url: URL.createObjectURL(blob), type: blob.type };
+  },
+  adminDownloadStreakEvidence: async (token: string, id: number, filename: string) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"}/admin/streak/evidence/${id}/download`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) throw new Error("Error al descargar");
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.target = "_blank";
+    link.download = filename;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  },
+  adminResolveStreakDay: (token: string, dayId: number, estado: "fallido" | "neutro") =>
+    request<StreakDayOut>(
+      `/admin/streak/days/${dayId}/resolve`,
+      { method: "POST", body: JSON.stringify({ estado }) },
+      token,
+    ),
 
   // Contenido — alumno
   listModules: (token: string) => request<ModuleOut[]>("/modules", {}, token),
@@ -852,6 +1062,44 @@ export const api = {
   },
   adminDeleteAttachment: (token: string, attachmentId: number) =>
     request<void>(`/admin/attachments/${attachmentId}`, { method: "DELETE" }, token),
+
+  // Licitaciones — alumno (§10)
+  licitacionActiva: (token: string) =>
+    request<LicitacionOut | null>("/licitaciones/activa", {}, token),
+  getLicitacion: (token: string, licitacionId: number) =>
+    request<LicitacionOut>(`/licitaciones/${licitacionId}`, {}, token),
+  responderLicitacion: (token: string, licitacionId: number, q: number) =>
+    request<LicitacionResponseOut>(
+      `/licitaciones/${licitacionId}/responder`,
+      { method: "POST", body: JSON.stringify({ q }) },
+      token,
+    ),
+  miRespuestaLicitacion: (token: string, licitacionId: number) =>
+    request<LicitacionResponseOut | null>(`/licitaciones/${licitacionId}/mi-respuesta`, {}, token),
+
+  // Licitaciones — admin (§10)
+  adminListCasos: (token: string) =>
+    request<CasoAdminOut[]>("/admin/casos", {}, token),
+  adminCreateCaso: (token: string, body: CasoIn) =>
+    request<CasoAdminOut>("/admin/casos", { method: "POST", body: JSON.stringify(body) }, token),
+  adminUpdateCaso: (token: string, casoId: number, body: CasoUpdate) =>
+    request<CasoAdminOut>(
+      `/admin/casos/${casoId}`,
+      { method: "PATCH", body: JSON.stringify(body) },
+      token,
+    ),
+  adminListLicitaciones: (token: string) =>
+    request<LicitacionOut[]>("/admin/licitaciones", {}, token),
+  adminAbrirLicitacion: (token: string, body: LicitacionAbrirIn) =>
+    request<LicitacionOut>(
+      "/admin/licitaciones/abrir",
+      { method: "POST", body: JSON.stringify(body) },
+      token,
+    ),
+  adminCerrarLicitacion: (token: string, licitacionId: number) =>
+    request<LicitacionOut>(`/admin/licitaciones/${licitacionId}/cerrar`, { method: "POST" }, token),
+  adminListRespuestasLicitacion: (token: string, licitacionId: number) =>
+    request<LicitacionResponseOut[]>(`/admin/licitaciones/${licitacionId}/respuestas`, {}, token),
 };
 
 // ---- Sesión en localStorage (token + usuario cacheado) ----

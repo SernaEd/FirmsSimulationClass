@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
@@ -75,6 +76,20 @@ class RegisterOut(UserOut):
     expires_in_minutes: int
 
 
+class StudentAdminOut(UserOut):
+    """UserOut + equipo activo y saldo de Tokens: la vista enriquecida que
+    consume Admin · Alumnos (GET /admin/users/all) para listar y operar
+    sobre todas las cuentas en una tabla, sin que cada fila dispare sus
+    propias consultas de equipo/saldo."""
+
+    # Optional[X] en vez de `X | None`: la sintaxis moderna dispara un falso
+    # positivo confirmado del linter Qodana en campos de modelos Pydantic
+    # (mismo caso ya resuelto así en schemas/content.py — ver backend/qodana.yaml).
+    team_id: Optional[int]
+    team_nombre: Optional[str]
+    balance: int
+
+
 class ReassignProfileIn(BaseModel):
     """Corrección manual del perfil de trabajo en equipo (§3.1): el
     resultado del test no es editable por el alumno, pero el profesor puede
@@ -83,3 +98,19 @@ class ReassignProfileIn(BaseModel):
     sin material para balancear."""
 
     perfil: UserProfile
+
+
+class RenameUserIn(BaseModel):
+    """Corrección manual de nombre/apellidos (ej. error de captura al
+    registrarse). Mismos límites que RegisterIn."""
+
+    nombre: str = Field(min_length=1, max_length=100)
+    apellidos: str = Field(min_length=1, max_length=100)
+
+
+class SetTeamIn(BaseModel):
+    """Mueve al usuario al equipo `team_id`, o lo deja sin equipo si se
+    omite/envía `null`. Usado por Admin · Alumnos para reasignar equipo
+    directamente desde la tabla, sin pasar por /admin/teams/generate."""
+
+    team_id: Optional[int] = None

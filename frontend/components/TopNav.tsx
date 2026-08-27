@@ -21,6 +21,7 @@ const STUDENT_ENTRIES: NavEntry[] = [
   { href: "/inicio", label: "Inicio" },
   { href: "/clases", label: "Clases" },
   { href: "/mi-equipo", label: "Mi equipo" },
+  { href: "/licitaciones", label: "Licitaciones" },
   { href: "/privilegios", label: "Privilegios" },
   { href: "/mis-tickets", label: "Mis tickets" },
   { href: "/movimientos", label: "Movimientos" },
@@ -31,10 +32,14 @@ const ADMIN_GROUP: NavGroup = {
   label: "Admin",
   accent: true,
   links: [
+    { href: "/admin/alumnos", label: "Alumnos" },
     { href: "/admin/equipos", label: "Equipos" },
     { href: "/admin/economia", label: "Economía" },
-    { href: "/admin/sistema", label: "Sistema" },
+    { href: "/admin/licitaciones", label: "Licitaciones" },
+    { href: "/admin/racha", label: "Rachas" },
+    { href: "/admin/ejercicios", label: "Ejercicios" },
     { href: "/admin/contenido", label: "Contenido" },
+    { href: "/admin/sistema", label: "Sistema" },
   ],
 };
 

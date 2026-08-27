@@ -10,8 +10,11 @@ from __future__ import annotations
 import random
 import string
 from collections import defaultdict
+from datetime import datetime, timezone
 from itertools import product
+from typing import Optional
 
+from fastapi import HTTPException, status
 from sqlalchemy import and_, select
 from sqlalchemy.orm import Session, selectinload
 
@@ -215,6 +218,50 @@ def get_active_team_of_user(db: Session, user_id: int) -> Team | None:
         .options(selectinload(Team.members))
     )
     return db.scalars(stmt).first()
+
+
+def get_active_teams_for_users(db: Session, user_ids: list[int]) -> dict[int, Team]:
+    """Versión en lote de `get_active_team_of_user`: una sola consulta para
+    resolver el equipo activo de varios usuarios a la vez (evita N+1 en
+    vistas tipo tabla, ej. Admin · Alumnos)."""
+    if not user_ids:
+        return {}
+    stmt = (
+        select(TeamMember.user_id, Team)
+        .join(Team, Team.id == TeamMember.team_id)
+        .where(and_(TeamMember.user_id.in_(user_ids), TeamMember.left_at.is_(None)))
+    )
+    return {user_id: team for user_id, team in db.execute(stmt).all()}
+
+
+def set_user_team(db: Session, user_id: int, team_id: Optional[int]) -> Optional[Team]:
+    """Mueve al usuario a `team_id`, cerrando su membresía activa previa si
+    la había (misma mecánica de "baja" que usa el resto del dominio:
+    `left_at`, nunca se borra la fila). `team_id=None` lo deja sin equipo.
+    No hace commit — el caller decide. Devuelve el equipo resultante (o
+    None si quedó sin equipo).
+
+    Optional[X] en vez de `X | None`: mismo falso positivo confirmado del
+    linter Qodana que StudentAdminOut (ver backend/qodana.yaml) — esta vez
+    en la firma de una función en un archivo con
+    `from __future__ import annotations`."""
+    current = get_active_team_of_user(db, user_id)
+    if current is not None and (team_id is None or current.id != team_id):
+        for m in current.members:
+            if m.user_id == user_id and m.left_at is None:
+                m.left_at = datetime.now(timezone.utc)
+                break
+
+    if team_id is None:
+        return None
+    if current is not None and current.id == team_id:
+        return current
+
+    target = db.get(Team, team_id)
+    if target is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Equipo no existe.")
+    db.add(TeamMember(team_id=team_id, user_id=user_id))
+    return target
 
 
 def user_is_member_of_team(db: Session, user_id: int, team_id: int) -> bool:

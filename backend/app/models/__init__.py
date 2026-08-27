@@ -10,7 +10,8 @@ Cada dominio agrega sus modelos aquí. Actualmente:
   en Brightspace, ver plan_de_tareas_mvp.md)
 - Iteración 1 (Test de perfil): ProfileTestQuestion, ProfileTestAnswer
 - Iteración 1 (Contenido): Module, CourseSession, ForumPost, SessionAttachment
-- Iteración 1 (Racha): StreakDay, StreakEvidence
+- Iteración 1 (Racha): StreakDay, StreakEvidence, DailyExercise
+- Licitaciones (§10, §12.6): Caso, Licitacion, LicitacionResponse
 """
 
 from .content import CourseSession, ForumPost, Module, SessionAttachment  # noqa: F401
@@ -23,6 +24,14 @@ from .economy import (  # noqa: F401
     TicketStatus,
     TokenLedger,
     TokenSource,
+)
+from .exercises import DailyExercise  # noqa: F401
+from .licitaciones import (  # noqa: F401
+    Caso,
+    EstadoLicitacion,
+    Licitacion,
+    LicitacionResponse,
+    TipoModeloCaso,
 )
 from .profile_test import ProfileTestAnswer, ProfileTestQuestion  # noqa: F401
 from .streak import StreakDay, StreakDayStatus, StreakEvidence  # noqa: F401

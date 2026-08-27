@@ -49,6 +49,22 @@ def get_balance(db: Session, user_id: int) -> int:
     return int(result)
 
 
+def get_balances(db: Session, user_ids: Iterable[int]) -> dict[int, int]:
+    """Versión en lote de `get_balance`: una sola consulta agregada para el
+    saldo de varios usuarios a la vez (evita N+1 en vistas tipo tabla, ej.
+    Admin · Alumnos). Un user_id ausente del resultado no tiene movimientos
+    — su saldo es 0."""
+    user_ids = list(user_ids)
+    if not user_ids:
+        return {}
+    rows = db.execute(
+        select(TokenLedger.user_id, func.coalesce(func.sum(TokenLedger.delta), 0))
+        .where(TokenLedger.user_id.in_(user_ids))
+        .group_by(TokenLedger.user_id)
+    ).all()
+    return {user_id: int(total) for user_id, total in rows}
+
+
 def get_movements(
     db: Session,
     user_id: int,
@@ -63,7 +79,7 @@ def get_movements(
     return list(db.scalars(stmt).all())
 
 
-def _add_ledger_entry(
+def add_ledger_entry(
     db: Session,
     *,
     user_id: int,
@@ -215,7 +231,7 @@ def purchase_individual(
             ticket_id=ticket.id, user_id=user.id, amount=catalog.costo
         )
     )
-    _add_ledger_entry(
+    add_ledger_entry(
         db,
         user_id=user.id,
         delta=-catalog.costo,
@@ -303,7 +319,7 @@ def initiate_split_bill(
     db.flush()
 
     db.add(SplitBillContribution(ticket_id=ticket.id, user_id=user.id, amount=first_amount))
-    _add_ledger_entry(
+    add_ledger_entry(
         db,
         user_id=user.id,
         delta=-first_amount,
@@ -385,7 +401,7 @@ def contribute_to_ticket(
     # parcial). Distinguimos la fuente para que los reportes por fuente (§17.1)
     # no mezclen gasto real con reembolsos.
     if delta > 0:
-        _add_ledger_entry(
+        add_ledger_entry(
             db,
             user_id=user.id,
             delta=-delta,
@@ -395,7 +411,7 @@ def contribute_to_ticket(
             nota=f"Aportación split bill: ticket {ticket.folio}",
         )
     else:
-        _add_ledger_entry(
+        add_ledger_entry(
             db,
             user_id=user.id,
             delta=-delta,
@@ -435,7 +451,7 @@ def cancel_funding_ticket(
     for c in ticket.contribuciones:
         if c.refunded_at is None:
             c.refunded_at = now
-            _add_ledger_entry(
+            add_ledger_entry(
                 db,
                 user_id=c.user_id,
                 delta=c.amount,
@@ -498,7 +514,7 @@ def adjust_tokens(
     if target is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no existe.")
 
-    entry = _add_ledger_entry(
+    entry = add_ledger_entry(
         db,
         user_id=user_id,
         delta=delta,
@@ -570,7 +586,7 @@ def request_decimal_redemption(
     db.flush()
 
     # Deducción inmediata; si el profesor rechaza, se reembolsa.
-    _add_ledger_entry(
+    add_ledger_entry(
         db,
         user_id=user.id,
         delta=-pts_costo,
@@ -610,7 +626,7 @@ def resolve_decimal_request(
 
     if not aprobar:
         # Reembolsar los Tks deducidos al crear la solicitud.
-        _add_ledger_entry(
+        add_ledger_entry(
             db,
             user_id=req.user_id,
             delta=req.pts_costo,
