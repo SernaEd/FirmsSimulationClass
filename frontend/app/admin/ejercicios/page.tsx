@@ -19,7 +19,6 @@ export default function AdminEjercicios() {
 
   const [fecha, setFecha] = useState("");
   const [courseSessionId, setCourseSessionId] = useState("");
-  const [numero, setNumero] = useState(1);
   const [enunciado, setEnunciado] = useState("");
   const [file, setFile] = useState<File | null>(null);
 
@@ -57,7 +56,6 @@ export default function AdminEjercicios() {
     if (courseSessionId) {
       formData.append("course_session_id", courseSessionId);
     }
-    formData.append("numero", String(numero));
     formData.append("enunciado", enunciado);
     if (file) {
       formData.append("imagen", file);
@@ -67,7 +65,6 @@ export default function AdminEjercicios() {
       await api.adminCreateExercise(authState.token, formData);
       setFecha("");
       setCourseSessionId("");
-      setNumero(1);
       setEnunciado("");
       setFile(null);
       await loadData();
@@ -95,7 +92,7 @@ export default function AdminEjercicios() {
       <section className="bg-surface-raised rounded-lg shadow p-6 mb-8 border border-surface-border">
         <h2 className="text-lg font-semibold text-neutral-100 mb-4">Programar Nuevo Ejercicio</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-neutral-300 mb-1">Fecha de publicación</label>
               <input
@@ -122,17 +119,6 @@ export default function AdminEjercicios() {
                   </optgroup>
                 ))}
               </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-neutral-300 mb-1">Número de Ejercicio</label>
-              <input
-                type="number"
-                min="1"
-                required
-                value={numero}
-                onChange={(e) => setNumero(Number(e.target.value))}
-                className="w-full bg-surface border-surface-border text-neutral-100 rounded-md shadow-sm focus:border-accent-500 focus:ring-accent-500 p-2 border"
-              />
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

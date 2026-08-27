@@ -2,7 +2,7 @@ import os
 import shutil
 from datetime import date
 from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile, status, File
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.orm import Session, selectinload
 
 from app.database import get_db
@@ -29,7 +29,6 @@ def list_exercises(
 def create_exercise(
     fecha: date = Form(...),
     course_session_id: int | None = Form(None),
-    numero: int = Form(...),
     enunciado: str = Form(...),
     imagen: UploadFile | None = File(None),
     db: Session = Depends(get_db),
@@ -40,6 +39,15 @@ def create_exercise(
     existing = db.scalar(select(DailyExercise).where(DailyExercise.fecha == fecha))
     if existing:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Ya existe un ejercicio para esta fecha.")
+
+    # Calcular el número de ejercicio automáticamente según la clase
+    if course_session_id:
+        stmt_max = select(func.max(DailyExercise.numero)).where(DailyExercise.course_session_id == course_session_id)
+    else:
+        stmt_max = select(func.max(DailyExercise.numero)).where(DailyExercise.course_session_id.is_(None))
+    
+    max_num = db.scalar(stmt_max)
+    numero_calculado = (max_num or 0) + 1
 
     imagen_path = None
     if imagen:
@@ -52,7 +60,7 @@ def create_exercise(
     exercise = DailyExercise(
         fecha=fecha,
         course_session_id=course_session_id,
-        numero=numero,
+        numero=numero_calculado,
         enunciado=enunciado,
         imagen_path=imagen_path
     )
