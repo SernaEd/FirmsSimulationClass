@@ -14,17 +14,17 @@ export const PROFILE_LABEL: Record<UserProfile, string> = {
 export const PROFILE_HINT: Record<UserProfile, string> = {
   analista: "Rigor y verificación",
   integrador: "Organización y síntesis",
-  modelador: "Planteo del modelo",
+  modelador: "Estructura y estrategia",
 };
 
 // Versión larga — pantalla de resultado del test de perfil.
 export const PROFILE_DESCRIPTION: Record<UserProfile, string> = {
   analista:
-    "Revisas resultados, detectas errores y verificas que el modelo esté bien planteado antes de entregarlo.",
+    "Revisas resultados, detectas errores y verificas que el trabajo esté bien planteado antes de entregarlo.",
   integrador:
-    "Conectas el trabajo del equipo, organizas tiempos y entregas, y presentas el resultado final de la firma.",
+    "Conectas el trabajo del equipo, organizas tiempos y entregas, y consolidas el resultado final.",
   modelador:
-    "Traduces el problema real a ecuaciones: planteas el modelo matemático que el equipo va a resolver.",
+    "Traduces el problema a resolver en un plan estructurado: planteas la estrategia o esquema conceptual que el equipo va a desarrollar.",
 };
 
 export function profileLabel(perfil: UserProfile | null): string {

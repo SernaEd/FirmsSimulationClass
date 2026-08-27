@@ -32,17 +32,16 @@ QUESTIONS = [
     {
         "orden": 1,
         "enunciado": (
-            "Tu equipo debe resolver un caso de licitación con ecuaciones "
-            "diferenciales. Es la primera reunión y aún no hay un plan claro. "
-            "¿Qué haces primero?"
+            "Tu equipo debe resolver un caso complejo. Es la primera reunión y "
+            "aún no hay un plan claro. ¿Qué haces primero?"
         ),
         "opcion_analista": (
             "Antes de que alguien proponga algo, quiero tener claro qué dato del "
             "enunciado sostiene cada supuesto que vamos a usar."
         ),
         "opcion_modelador": (
-            "Ya tengo una idea de qué ecuación podría describir esto — la "
-            "comparto aunque todavía le falten detalles."
+            "Ya tengo una idea de cómo se podría enfocar la solución — la comparto "
+            "aunque todavía le falten detalles."
         ),
         "opcion_integrador": (
             "Pregunto qué sabe cada quien del tema, y de ahí salimos con quién "
@@ -52,16 +51,16 @@ QUESTIONS = [
     {
         "orden": 2,
         "enunciado": (
-            "Un compañero de equipo presenta una solución que 'se ve bien' pero "
-            "no verificó unidades ni condiciones de frontera. ¿Cómo reaccionas?"
+            "Un compañero de equipo presenta una propuesta que 'se ve bien' pero "
+            "le falta verificar detalles técnicos o validaciones. ¿Cómo reaccionas?"
         ),
         "opcion_analista": (
-            "Antes de dar el visto bueno, corro el resultado por un caso límite "
-            "conocido a ver si las unidades siguen cuadrando."
+            "Antes de dar el visto bueno, pongo a prueba la propuesta con un "
+            "caso extremo o límite para ver si los datos siguen cuadrando."
         ),
         "opcion_modelador": (
-            "Lo que me hace dudar no es la cuenta — es si ese planteamiento "
-            "realmente corresponde a lo que está pasando físicamente."
+            "Lo que me hace dudar no es la presentación — es si ese planteamiento "
+            "realmente resuelve el problema de fondo que estamos abordando."
         ),
         "opcion_integrador": (
             "Le pido que nos lo explique en voz alta paso a paso; entre todos es "
@@ -71,16 +70,16 @@ QUESTIONS = [
     {
         "orden": 3,
         "enunciado": (
-            "Faltan 30 minutos para entregar la tarea grupal y todavía hay dos "
-            "formas distintas de resolver el problema sobre la mesa. ¿Qué haces?"
+            "Faltan 30 minutos para la entrega del proyecto grupal y todavía hay "
+            "dos formas distintas de resolver el problema sobre la mesa. ¿Qué haces?"
         ),
         "opcion_analista": (
             "Pongo las dos soluciones lado a lado contra los datos originales — "
             "la que sostenga mejor la prueba es la que entregamos."
         ),
         "opcion_modelador": (
-            "Me fijo en cuál de los dos planteamientos se parece más a lo que de "
-            "verdad está pasando en el problema, no solo cuál se ve más limpio."
+            "Me fijo en cuál de los dos planteamientos atiende mejor la raíz del "
+            "problema original, no solo cuál se ve más ordenado."
         ),
         "opcion_integrador": (
             "Con el reloj encima, mejor decidimos rápido entre todos y "
@@ -90,16 +89,16 @@ QUESTIONS = [
     {
         "orden": 4,
         "enunciado": (
-            "El profesor anuncia una licitación sorpresa sobre un tema que el "
-            "equipo apenas repasó. ¿Cuál es tu primer instinto?"
+            "Se presenta un reto sorpresa sobre un tema que el equipo apenas "
+            "conoce. ¿Cuál es tu primer instinto?"
         ),
         "opcion_analista": (
-            "Bajo presión lo que más me preocupa es no equivocarme en un signo o "
-            "una condición, así que repaso eso primero."
+            "Bajo presión, lo que más me preocupa es no equivocarme en los "
+            "detalles clave o requisitos, así que los repaso primero."
         ),
         "opcion_modelador": (
-            "Intento imaginar qué está pasando físicamente en el caso antes de "
-            "pensar en qué ecuación usar."
+            "Intento imaginar el panorama general y entender el contexto del "
+            "problema antes de proponer cualquier solución."
         ),
         "opcion_integrador": (
             "Reviso rápido quién del equipo se sabe mejor el tema, para que "
@@ -109,71 +108,69 @@ QUESTIONS = [
     {
         "orden": 5,
         "enunciado": (
-            "Durante una sustentación oral, a tu compañero le cuesta explicar "
-            "por qué el equipo usó cierto método. ¿Qué haces?"
+            "Durante una presentación, a tu compañero le cuesta explicar por qué "
+            "el equipo tomó cierta decisión. ¿Qué haces?"
         ),
         "opcion_analista": (
-            "Le susurro el paso exacto de la derivación que se le está "
-            "olvidando, para que pueda justificarlo con precisión."
+            "Le recuerdo rápidamente el dato exacto o el paso técnico que se "
+            "le está olvidando para que pueda justificarlo con precisión."
         ),
         "opcion_modelador": (
-            "Le recuerdo qué estábamos representando en la realidad con eso, "
-            "para que la explicación deje de sonar solo a álgebra."
+            "Le recuerdo el razonamiento conceptual detrás de nuestra decisión "
+            "para que su explicación tenga más sentido."
         ),
         "opcion_integrador": (
-            "Tomo la palabra un momento para completar lo que dijo y que la "
-            "conversación con el profesor no se corte."
+            "Tomo la palabra un momento para complementar lo que dijo y evitar "
+            "que la conversación se estanque."
         ),
     },
     {
         "orden": 6,
         "enunciado": (
-            "El equipo debe recolectar datos empíricos (ej. la curva de "
-            "enfriamiento de un café) para el proyecto final. ¿Qué prefieres "
-            "hacer?"
+            "El equipo debe recolectar y analizar información de múltiples fuentes "
+            "para el proyecto final. ¿Qué prefieres hacer?"
         ),
         "opcion_analista": (
-            "Me preocupa más el protocolo: qué instrumento, cada cuánto medir, "
-            "cómo evitar que el error se nos cuele en los datos."
+            "Me preocupa más el método: qué herramientas usaremos, cómo estructurar "
+            "los datos y cómo evitar que haya errores en la información."
         ),
         "opcion_modelador": (
-            "Ya estoy pensando en qué ecuación debería ajustarse a esos datos y "
-            "qué estamos suponiendo del fenómeno para que funcione."
+            "Ya estoy pensando en cómo vamos a interpretar esa información y "
+            "qué conclusiones podremos sacar para darle forma al proyecto."
         ),
         "opcion_integrador": (
-            "Reparto quién graba, quién mide y quién anota, para que el proceso "
-            "quede bien documentado sin que se nos pase nada."
+            "Reparto tareas claras: quién investiga, quién documenta y quién "
+            "revisa, para que todo el proceso quede bien cubierto."
         ),
     },
     {
         "orden": 7,
         "enunciado": (
             "Dos integrantes del equipo no están de acuerdo sobre cómo plantear "
-            "un sistema de ecuaciones diferenciales. ¿Cómo participas?"
+            "la estrategia para abordar el proyecto. ¿Cómo participas?"
         ),
         "opcion_analista": (
             "Pido que cada quien escriba su planteamiento completo — así vemos "
             "juntos si de verdad son consistentes o no."
         ),
         "opcion_modelador": (
-            "Sospecho que el desacuerdo no es de matemáticas sino de qué le "
-            "están suponiendo cada uno al fenómeno, así que pregunto eso "
-            "primero."
+            "Sospecho que el desacuerdo no es sobre los detalles técnicos, sino "
+            "sobre cómo ven el panorama general, así que pregunto eso primero."
         ),
         "opcion_integrador": (
-            "Me aseguro de que se escuchen sin interrumpirse, y propongo probar "
-            "las dos ideas antes de descartar alguna."
+            "Me aseguro de que se escuchen sin interrumpirse y propongo evaluar "
+            "las dos ideas en equipo antes de descartar alguna."
         ),
     },
     {
         "orden": 8,
         "enunciado": (
-            "Terminó el módulo y toca la retroalimentación entre pares. ¿Qué "
-            "tiendes a valorar más al evaluar a tus compañeros?"
+            "Terminó el proyecto y toca la evaluación de pares. ¿Qué tiendes "
+            "a valorar más al evaluar a tus compañeros?"
         ),
         "opcion_analista": (
-            "Si de verdad se tomaron el tiempo de comprobar resultados antes de "
-            "darlos por buenos."
+            "Si de verdad se tomaron el tiempo de verificar la calidad del "
+            "trabajo antes de darlo por bueno."
         ),
         "opcion_modelador": "Si aportaron una idea o un ángulo distinto que destrabó algún problema.",
         "opcion_integrador": (
