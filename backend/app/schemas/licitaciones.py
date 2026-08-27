@@ -47,6 +47,17 @@ class CasoIn(BaseModel):
     costo_reparacion_mxn: float = Field(ge=0)
 
 
+class CasoAdminOut(CasoOut):
+    """Como `CasoOut`, pero incluye las consecuencias (dinero, pacientes,
+    costo de reparación) — se ocultan del alumnado en `CasoOut` para no
+    revelar la severidad antes de responder, pero el admin sí necesita
+    verlas y editarlas."""
+
+    dinero_perdido_mxn: float
+    pacientes_afectados: int
+    costo_reparacion_mxn: float
+
+
 class CasoUpdate(BaseModel):
     numero: Optional[int] = Field(default=None, ge=1)
     titulo: Optional[str] = Field(default=None, min_length=1, max_length=200)

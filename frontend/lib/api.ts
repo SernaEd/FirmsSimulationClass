@@ -647,6 +647,43 @@ export type LicitacionResponseOut = {
   created_at: string;
 };
 
+// ---- Tipos Licitaciones — admin (§10) ----
+// Como CasoOut, pero incluye las consecuencias — ocultas al alumnado en
+// CasoOut para no revelar la severidad antes de responder.
+export type CasoAdminOut = CasoOut & {
+  dinero_perdido_mxn: number;
+  pacientes_afectados: number;
+  costo_reparacion_mxn: number;
+};
+
+export type CasoIn = {
+  numero: number;
+  titulo: string;
+  modulo: string;
+  contexto: string;
+  tipo_modelo: TipoModeloCaso;
+  volumen_l: number;
+  concentracion_inicial: number;
+  concentracion_max: number;
+  plazo_horas: number;
+  presion_max_q: number;
+  dinero_perdido_mxn: number;
+  pacientes_afectados: number;
+  costo_reparacion_mxn: number;
+};
+
+// Todos los campos opcionales: PATCH solo envía lo que cambió.
+export type CasoUpdate = Partial<CasoIn>;
+
+export type LicitacionAbrirIn = {
+  caso_id: number;
+  pts_primero?: number;
+  pts_segundo?: number;
+  pts_tercero?: number;
+  pts_correcta_fuera_podio?: number;
+  pts_participacion?: number;
+};
+
 // ---- API pública ----
 export const api = {
   // Dominio 1
@@ -1039,6 +1076,30 @@ export const api = {
     ),
   miRespuestaLicitacion: (token: string, licitacionId: number) =>
     request<LicitacionResponseOut | null>(`/licitaciones/${licitacionId}/mi-respuesta`, {}, token),
+
+  // Licitaciones — admin (§10)
+  adminListCasos: (token: string) =>
+    request<CasoAdminOut[]>("/admin/casos", {}, token),
+  adminCreateCaso: (token: string, body: CasoIn) =>
+    request<CasoAdminOut>("/admin/casos", { method: "POST", body: JSON.stringify(body) }, token),
+  adminUpdateCaso: (token: string, casoId: number, body: CasoUpdate) =>
+    request<CasoAdminOut>(
+      `/admin/casos/${casoId}`,
+      { method: "PATCH", body: JSON.stringify(body) },
+      token,
+    ),
+  adminListLicitaciones: (token: string) =>
+    request<LicitacionOut[]>("/admin/licitaciones", {}, token),
+  adminAbrirLicitacion: (token: string, body: LicitacionAbrirIn) =>
+    request<LicitacionOut>(
+      "/admin/licitaciones/abrir",
+      { method: "POST", body: JSON.stringify(body) },
+      token,
+    ),
+  adminCerrarLicitacion: (token: string, licitacionId: number) =>
+    request<LicitacionOut>(`/admin/licitaciones/${licitacionId}/cerrar`, { method: "POST" }, token),
+  adminListRespuestasLicitacion: (token: string, licitacionId: number) =>
+    request<LicitacionResponseOut[]>(`/admin/licitaciones/${licitacionId}/respuestas`, {}, token),
 };
 
 // ---- Sesión en localStorage (token + usuario cacheado) ----

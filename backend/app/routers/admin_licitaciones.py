@@ -18,8 +18,8 @@ from app.deps import get_current_admin
 from app.models.licitaciones import Caso, Licitacion, LicitacionResponse
 from app.models.user import User
 from app.schemas.licitaciones import (
+    CasoAdminOut,
     CasoIn,
-    CasoOut,
     CasoUpdate,
     LicitacionAbrirIn,
     LicitacionOut,
@@ -45,7 +45,7 @@ def _check_numero_caso_unique(db: Session, numero: int, exclude_id: Optional[int
         )
 
 
-@router.get("/casos", response_model=List[CasoOut])
+@router.get("/casos", response_model=List[CasoAdminOut])
 def admin_list_casos(
     db: Session = Depends(get_db),
     _admin: User = Depends(get_current_admin),
@@ -53,7 +53,7 @@ def admin_list_casos(
     return list(db.scalars(select(Caso).order_by(Caso.numero)).all())
 
 
-@router.post("/casos", response_model=CasoOut, status_code=status.HTTP_201_CREATED)
+@router.post("/casos", response_model=CasoAdminOut, status_code=status.HTTP_201_CREATED)
 def admin_create_caso(
     payload: CasoIn,
     db: Session = Depends(get_db),
@@ -67,7 +67,7 @@ def admin_create_caso(
     return caso
 
 
-@router.patch("/casos/{caso_id}", response_model=CasoOut)
+@router.patch("/casos/{caso_id}", response_model=CasoAdminOut)
 def admin_update_caso(
     caso_id: int,
     payload: CasoUpdate,
