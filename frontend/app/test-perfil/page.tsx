@@ -7,6 +7,7 @@ import { ApiError, ProfileTestQuestionOut, UserOut, UserProfile, api, auth } fro
 import { PROFILE_DESCRIPTION, profileAvatarClass, profileLabel } from "@/lib/profile";
 import { CARD_SM } from "@/lib/ui";
 import { useAuth } from "@/lib/useAuth";
+import { RoleIcon } from "@/components/icons";
 
 function CenteredMessage({ children, className }: { children: ReactNode; className?: string }) {
   return (
@@ -55,11 +56,9 @@ export default function TestPerfil() {
   // movió `user.estado` a "pending_approval" (vía AuthContext), así que sin
   // este chequeo el guard de "test ya no disponible" se adelantaría y nunca
   // se vería la pantalla de resultado.
-  if (result) {
-    return <ProfileResultScreen user={result} />;
-  }
+  // El result se mostrará como un modal superpuesto al final.
 
-  if (user.estado !== "pending_profile") {
+  if (!result && user.estado !== "pending_profile") {
     return (
       <CenteredMessage>
         <div className="max-w-md w-full space-y-4 text-center">
@@ -109,7 +108,6 @@ export default function TestPerfil() {
   return (
     <main className="min-h-screen max-w-4xl mx-auto px-4 sm:px-8 py-8 space-y-8">
       <header className="space-y-2">
-        <p className="text-ibero-red text-xs uppercase tracking-widest">Cálculo 3</p>
         <h1 className="text-3xl font-semibold">Test de perfil de trabajo en equipo</h1>
         <p className="text-neutral-400 text-sm max-w-2xl">
           Responde cómo tiendes a actuar en cada escenario. No hay respuestas
@@ -200,6 +198,12 @@ export default function TestPerfil() {
         y Felder, R. M., &amp; Brent, R. (2005). &quot;Understanding student
         differences.&quot; <em>Journal of Engineering Education</em>, 94(1), 57-72.
       </footer>
+
+      {result && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+          <ProfileResultScreen user={result} />
+        </div>
+      )}
     </main>
   );
 }
@@ -213,51 +217,36 @@ function ProfileResultScreen({ user }: { user: UserOut }) {
   const perfil = user.perfil;
 
   return (
-    <CenteredMessage>
-      <div className="max-w-md w-full text-center space-y-5 rounded-md bg-surface-raised shadow-lg p-8 animate-fadeUp">
-        <p className="text-accent-400 text-xs uppercase tracking-[0.12em]">
-          Tu perfil de equipo
-        </p>
-        <div
-          className={
-            "mx-auto flex items-center justify-center w-16 h-16 rounded-full animate-popIn " +
-            profileAvatarClass(perfil)
-          }
-          style={{ animationDelay: ".1s" }}
-        >
-          <svg
-            width="28"
-            height="28"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <circle cx="12" cy="8" r="5" />
-            <path d="M9 12.5 7 21l5-3 5 3-2-8.5" />
-          </svg>
-        </div>
-        <h1 className="text-2xl font-medium">
-          {perfil ? profileLabel(perfil) : "Perfil pendiente"}
-        </h1>
-        <p className="text-neutral-400 text-sm">
-          {perfil
-            ? PROFILE_DESCRIPTION[perfil]
-            : "El profesor asignará tu perfil manualmente."}
-        </p>
-        <p className="text-xs text-neutral-500">
-          No es editable; si crees que necesita ajustarse, pídeselo al profesor.
-        </p>
-        <button
-          onClick={() => router.push("/inicio")}
-          className="w-full rounded-lg border border-accent-500 text-accent-300 hover:bg-accent-500/10 transition-colors px-6 py-3 font-medium"
-        >
-          Ir a mi dashboard
-        </button>
+    <div className="max-w-md w-full text-center space-y-5 rounded-md bg-surface-raised shadow-lg p-8 animate-fadeUp">
+      <p className="text-accent-400 text-xs uppercase tracking-[0.12em]">
+        Tu perfil de equipo
+      </p>
+      <div
+        className={
+          "mx-auto flex items-center justify-center w-16 h-16 rounded-full animate-popIn " +
+          profileAvatarClass(perfil)
+        }
+        style={{ animationDelay: ".1s" }}
+      >
+        <RoleIcon perfil={perfil} />
       </div>
-    </CenteredMessage>
+      <h1 className="text-2xl font-medium">
+        {perfil ? profileLabel(perfil) : "Perfil pendiente"}
+      </h1>
+      <p className="text-neutral-400 text-sm">
+        {perfil
+          ? PROFILE_DESCRIPTION[perfil]
+          : "El profesor asignará tu perfil manualmente."}
+      </p>
+      <p className="text-xs text-neutral-500">
+        No es editable; si crees que necesita ajustarse, pídeselo al profesor.
+      </p>
+      <button
+        onClick={() => router.push("/inicio")}
+        className="w-full rounded-lg border border-accent-500 text-accent-300 hover:bg-accent-500/10 transition-colors px-6 py-3 font-medium"
+      >
+        Ir a mi dashboard
+      </button>
+    </div>
   );
 }
