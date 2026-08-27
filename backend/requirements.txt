@@ -25,6 +25,7 @@ slowapi==0.1.9
 # Utilidades
 python-dotenv==1.2.2
 httpx==0.27.2
+apscheduler==3.10.4
 
-# Nota: SymPy, MathLive antlr, APScheduler y otros
+# Nota: SymPy, MathLive antlr, y otros
 # se agregan en iteraciones posteriores del roadmap.

@@ -1,7 +1,7 @@
 """licitaciones_casos_y_respuestas
 
 Revision ID: 088ee53fe24c
-Revises: f4a2d8c19e6b
+Revises: 2175716037d8
 Create Date: 2026-08-26 00:00:00.000000
 
 """
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 revision: str = '088ee53fe24c'
-down_revision: Union[str, None] = 'f4a2d8c19e6b'
+down_revision: Union[str, None] = '2175716037d8'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

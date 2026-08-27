@@ -514,6 +514,47 @@ export type KnownFlagOut = {
   description: string | null;
 };
 
+// ---- Racha (Streak) ----
+export type StreakDayStatus = "completado" | "fallido" | "neutro" | "pase_aplicado" | "pendiente_revision";
+
+export type StreakEvidenceOut = {
+  id: number;
+  streak_day_id: number;
+  user_id: number;
+  user: {
+    nombre: string;
+    apellidos: string;
+    numero_cuenta: string;
+  };
+  daily_exercise_id: number | null;
+  solucion_path: string;
+  submitted_at: string;
+};
+
+export type StreakDayOut = {
+  id: number;
+  user_id: number;
+  fecha: string;
+  estado: StreakDayStatus;
+  evidence: StreakEvidenceOut | null;
+};
+
+// ---- Banco de Ejercicios Diarios ----
+export type DailyExerciseOut = {
+  id: number;
+  fecha: string;
+  course_session?: {
+    id: number;
+    module_id: number;
+    numero_sesion: number;
+    titulo: string;
+  } | null;
+  numero: number;
+  enunciado: string;
+  imagen_path: string | null;
+  created_at: string;
+};
+
 // ---- Contenido (Módulos, Sesiones, adjuntos) — Iteración 1 ----
 export type SessionAttachmentOut = {
   id: number;
@@ -877,6 +918,60 @@ export const api = {
   // Dominio 4 — alumno: lectura de feature flags (mostrar/ocultar UI)
   getFeatureFlag: (token: string, key: string) =>
     request<FlagStatusOut>(`/system/flags/${key}`, {}, token),
+
+  // ---- Banco de Ejercicios Diarios ----
+  getTodayExercise: (token: string) =>
+    request<DailyExerciseOut | null>("/daily-exercises/today", {}, token),
+  adminListExercises: (token: string) =>
+    request<DailyExerciseOut[]>("/admin/daily-exercises", {}, token),
+  adminCreateExercise: (token: string, formData: FormData) =>
+    requestUpload<DailyExerciseOut>("/admin/daily-exercises", formData, token),
+
+  // ---- Racha (Streak) ----
+  submitStreakEvidence: (token: string, formData: FormData) =>
+    requestUpload<StreakDayOut>("/me/streak/evidence", formData, token),
+  getMyStreak: (token: string, year?: number, month?: number) => {
+    const params = new URLSearchParams();
+    if (year) params.append("year", String(year));
+    if (month) params.append("month", String(month));
+    const qs = params.toString();
+    return request<StreakDayOut[]>(`/me/streak${qs ? `?${qs}` : ""}`, {}, token);
+  },
+  adminGetStreakEvidence: (token: string, skip: number = 0, limit: number = 50, userId?: number) => {
+    const params = new URLSearchParams();
+    params.append("skip", String(skip));
+    params.append("limit", String(limit));
+    if (userId) params.append("user_id", String(userId));
+    return request<StreakEvidenceOut[]>(`/admin/streak/evidence?${params.toString()}`, {}, token);
+  },
+  adminGetStreakEvidenceUrl: async (token: string, id: number) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"}/admin/streak/evidence/${id}/download`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) throw new Error("Error al obtener evidencia");
+    const blob = await res.blob();
+    return { url: URL.createObjectURL(blob), type: blob.type };
+  },
+  adminDownloadStreakEvidence: async (token: string, id: number, filename: string) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"}/admin/streak/evidence/${id}/download`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) throw new Error("Error al descargar");
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.target = "_blank";
+    link.download = filename;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  },
+  adminResolveStreakDay: (token: string, dayId: number, estado: "fallido" | "neutro") =>
+    request<StreakDayOut>(
+      `/admin/streak/days/${dayId}/resolve`,
+      { method: "POST", body: JSON.stringify({ estado }) },
+      token,
+    ),
 
   // Contenido — alumno
   listModules: (token: string) => request<ModuleOut[]>("/modules", {}, token),
