@@ -2,9 +2,10 @@
 (`services/scheduler.py`) y el calendario académico editable (§11.5).
 
 `is_racha_day` centraliza la regla de qué días cuentan para la racha
-(lunes-jueves, §5.5) y cuáles son neutros por diseño o por marcarse como
-festivo en `AcademicCalendarDay` -- un solo lugar para no repetir el check
-de weekday+calendario en cada consumidor.
+(lunes-jueves, §5.5) y cuáles son neutros por diseño o por un evento
+`alcance=todos` cuya categoría (`CalendarEventType.afecta_racha`) lo marque
+así -- un solo lugar para no repetir el check de weekday+calendario en cada
+consumidor.
 """
 
 from __future__ import annotations
@@ -15,7 +16,7 @@ from zoneinfo import ZoneInfo
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.models.calendar import AcademicCalendarDay
+from app.models.calendar import CalendarEvent, CalendarEventScope, CalendarEventType
 from app.models.streak import StreakDay, StreakDayStatus
 from app.models.user import User, UserStatus
 
@@ -31,12 +32,23 @@ def is_racha_day(db: Session, fecha: date) -> bool:
     """True si `fecha` cuenta para la racha (puede romperla/hacerla crecer).
 
     Viernes-domingo son neutros por diseño (§5.5, `isoweekday()` 5/6/7);
-    cualquier otro día marcado explícitamente en el calendario académico
-    (`AcademicCalendarDay`) también es neutro -- ej. un lunes festivo.
+    cualquier otro día con un evento `alcance=todos` cuya categoría tenga
+    `afecta_racha=True` (ej. "Descanso obligatorio") también es neutro. Un
+    evento personal (`alcance=alumno`, ej. examen reprogramado) nunca entra
+    aquí -- es informativo, no afecta la racha de nadie.
     """
     if fecha.isoweekday() >= 5:
         return False
-    holiday = db.scalar(select(AcademicCalendarDay).where(AcademicCalendarDay.fecha == fecha))
+    holiday = db.scalar(
+        select(CalendarEvent.id)
+        .join(CalendarEventType, CalendarEvent.tipo_id == CalendarEventType.id)
+        .where(
+            CalendarEvent.fecha == fecha,
+            CalendarEvent.alcance_tipo == CalendarEventScope.todos,
+            CalendarEventType.afecta_racha.is_(True),
+        )
+        .limit(1)
+    )
     return holiday is None
 
 
@@ -83,3 +95,31 @@ def recompute_neutral_for_existing(db: Session, fecha: date) -> int:
         row.estado = StreakDayStatus.neutro
     db.commit()
     return len(rows)
+
+
+def recompute_neutral_for_type(db: Session, tipo_id: int) -> int:
+    """Igual que `recompute_neutral_for_existing`, pero para TODAS las fechas
+    pasadas con un evento `alcance=todos` de esta categoría.
+
+    `is_racha_day` hace un join en vivo contra `CalendarEventType.afecta_racha`
+    -- si un admin activa esa casilla en un tipo que ya tenía eventos creados
+    (ej. se le olvidó marcarla al crear "Descanso obligatorio" y ya hay tres
+    fechas con ese evento), el efecto es retroactivo para todas esas fechas a
+    la vez, no solo la más reciente. `admin_calendar.py::update_event_type`
+    llama esto cuando `afecta_racha` pasa a `True`.
+
+    No hace nada si `afecta_racha` se apaga -- mismo criterio que
+    `admin_calendar.py::delete_event`: no hay forma confiable de distinguir
+    "neutro por este tipo" de "neutro por otra razón" para revertir solo lo
+    correcto. Devuelve cuántas filas de `StreakDay` se actualizaron en total.
+    """
+    fechas = db.scalars(
+        select(CalendarEvent.fecha)
+        .where(
+            CalendarEvent.tipo_id == tipo_id,
+            CalendarEvent.alcance_tipo == CalendarEventScope.todos,
+            CalendarEvent.fecha <= today_mx(),
+        )
+        .distinct()
+    ).all()
+    return sum(recompute_neutral_for_existing(db, fecha) for fecha in fechas)

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import {
   ApiError,
+  CalendarEventTypeOut,
   INBOX_TYPE_LABEL,
   InboxItemOut,
   InboxItemType,
@@ -14,6 +15,7 @@ import {
 } from "@/lib/api";
 import { useAuth } from "@/lib/useAuth";
 import { toggleSet } from "@/lib/toggleSet";
+import { TipoYTituloFields } from "@/components/CalendarEventFields";
 
 // ---------------------------------------------------------------------------
 // Sección 1: Inbox de Aprobaciones
@@ -592,6 +594,98 @@ function FlagsSection({
 }
 
 // ---------------------------------------------------------------------------
+// Sección 3: Agregar evento al calendario (atajo rápido -- la vista
+// completa con mes/semana y el catálogo de tipos vive en /admin/calendario)
+// ---------------------------------------------------------------------------
+
+function QuickAddEventSection({ token }: { token: string }) {
+  const [eventTypes, setEventTypes] = useState<CalendarEventTypeOut[]>([]);
+  const [tipoId, setTipoId] = useState<number | "">("");
+  const [fecha, setFecha] = useState("");
+  const [titulo, setTitulo] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  useEffect(() => {
+    api.adminListCalendarEventTypes(token).then(setEventTypes).catch(() => {});
+  }, [token]);
+
+  async function submit(e: FormEvent) {
+    e.preventDefault();
+    if (!tipoId) return;
+    setError(null);
+    setSuccess(null);
+    setBusy(true);
+    try {
+      // El alcance "alumno específico" (ej. examen reprogramado por un
+      // permiso) necesita elegir a la persona en contexto -- eso vive en
+      // el panel por día de /admin/calendario, no aquí. Este atajo solo
+      // cubre el caso común: un evento para todo el curso.
+      await api.adminCreateCalendarEvent(token, { tipo_id: tipoId, fecha, titulo, alcance_tipo: "todos" });
+      setSuccess(`"${titulo}" agregado al calendario.`);
+      setTipoId("");
+      setFecha("");
+      setTitulo("");
+    } catch (err) {
+      setError(err instanceof ApiError ? err.detail : String(err));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <section className="space-y-4">
+      <h2 className="text-lg font-semibold border-b border-surface-border pb-2">
+        Agregar evento al calendario
+      </h2>
+      <p className="text-sm text-neutral-400">
+        Para excepciones dirigidas a un alumno específico (ej. reprogramar un examen), usa el panel
+        por día en{" "}
+        <Link href="/admin/calendario" className="text-accent-400 hover:underline">
+          Admin · Calendario
+        </Link>
+        .
+      </p>
+      <form onSubmit={submit} className="rounded-md border border-surface-border bg-surface-raised p-4 space-y-3">
+        <div className="sm:w-48">
+          <label className="block text-xs text-neutral-400 mb-1">Fecha</label>
+          <input
+            type="date"
+            required
+            value={fecha}
+            onChange={(e) => setFecha(e.target.value)}
+            className="w-full bg-surface border-surface-border text-neutral-100 rounded-md p-2 border text-sm"
+          />
+        </div>
+        <TipoYTituloFields
+          eventTypes={eventTypes}
+          tipoId={tipoId}
+          onTipoIdChange={setTipoId}
+          titulo={titulo}
+          onTituloChange={setTitulo}
+        />
+        {error && (
+          <p className="text-xs text-red-300 border border-red-800 bg-red-950/40 rounded-md p-2">{error}</p>
+        )}
+        {success && (
+          <p className="text-xs text-emerald-300 border border-emerald-800 bg-emerald-950/40 rounded-md p-2">
+            {success}
+          </p>
+        )}
+        <button
+          type="submit"
+          disabled={busy}
+          className="rounded-md border border-accent-500 text-accent-300 hover:bg-accent-500/10 disabled:opacity-50 px-4 py-1.5 text-xs font-medium transition-colors"
+        >
+          {busy ? "Agregando..." : "Agregar evento"}
+        </button>
+      </form>
+    </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Página principal
 // ---------------------------------------------------------------------------
 
@@ -708,6 +802,8 @@ export default function AdminSistemaPage() {
               setKnownFlags(known);
             }}
           />
+
+          <QuickAddEventSection token={token!} />
         </div>
       )}
     </main>

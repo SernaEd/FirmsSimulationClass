@@ -154,7 +154,11 @@
   - [ ] Opción por post: nickname o anónimo para pares.
   - [ ] Editor con soporte de LaTeX inline.
   - [ ] Marcado de post destacado por el profesor (bono de Tokens al autor).
-- [x] **Calendario académico editable** en admin (§11.5) — `/admin/calendario`: marca días festivos/sin clase como neutros para la racha. Lunes-jueves cuentan por diseño (§5.5); viernes-domingo ya son neutros sin necesidad de marcarlos. Marcar un día retroactivamente recalcula las filas ya evaluadas ese día (§16.5). Alcance recortado respecto al plan original: solo la lista editable que la racha necesita, no la "vista mensual y semestral" completa (sin otro consumidor todavía).
+- [x] **Calendario académico** (§11.5), con vista mensual y semanal interactiva — `/admin/calendario` (admin) y `/calendario` (alumno, solo lectura):
+  - [x] Catálogo de tipos de evento editable desde admin (`CalendarEventType`: nombre, color, si cuenta como día neutro para la racha) — dropdown "Examen"/"Licitación"/"Descanso obligatorio"/"Entrega de tarea"/etc.
+  - [x] Eventos con alcance `todos` (todo el curso) o `alumno` (uno o más alumnos específicos — ej. examen reprogramado por motivos personales). Los alumnos solo ven sus propios eventos personales, nunca los ajenos.
+  - [x] Solo un evento `alcance=todos` cuya categoría tenga `afecta_racha=True` marca el día como neutro para la racha (lunes-jueves cuentan por diseño, §5.5; viernes-domingo ya son neutros sin marcarlos). Marcar un día retroactivamente recalcula las filas ya evaluadas (§16.5).
+  - [x] Atajo "Agregar evento" también desde `/admin/sistema`, además del panel completo por día en `/admin/calendario`.
 - [ ] **Notificaciones opcionales por correo** *(subido desde Iteración 4 original)*:
   - [ ] Opt-in explícito en el perfil.
   - [ ] Recordatorio de evidencia del día (20:00 Lun-Jue).

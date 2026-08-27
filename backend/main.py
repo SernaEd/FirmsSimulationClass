@@ -17,6 +17,7 @@ from app.routers import (
     admin_teams,
     admin_users,
     auth,
+    calendar,
     content,
     economy,
     health,
@@ -74,6 +75,7 @@ app.include_router(admin_streak.router)
 app.include_router(exercises.router)
 app.include_router(admin_exercises.router)
 app.include_router(admin_calendar.router)
+app.include_router(calendar.router)
 
 
 @app.get("/")

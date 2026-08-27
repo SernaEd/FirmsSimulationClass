@@ -11,11 +11,11 @@ Cada dominio agrega sus modelos aquí. Actualmente:
 - Iteración 1 (Test de perfil): ProfileTestQuestion, ProfileTestAnswer
 - Iteración 1 (Contenido): Module, CourseSession, ForumPost, SessionAttachment
 - Iteración 1 (Racha): StreakDay, StreakEvidence, DailyExercise
-- Iteración 1 (Calendario académico, §11.5): AcademicCalendarDay
+- Iteración 1 (Calendario académico, §11.5): CalendarEventType, CalendarEvent
 - Licitaciones (§10, §12.6): Caso, Licitacion, LicitacionResponse
 """
 
-from .calendar import AcademicCalendarDay  # noqa: F401
+from .calendar import CalendarEvent, CalendarEventScope, CalendarEventType  # noqa: F401
 from .content import CourseSession, ForumPost, Module, SessionAttachment  # noqa: F401
 from .economy import (  # noqa: F401
     DecimalRedemptionRequest,
