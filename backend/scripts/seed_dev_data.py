@@ -28,6 +28,7 @@ from datetime import datetime, timezone
 
 from alembic import command
 from alembic.config import Config
+from alembic.util import CommandError
 
 from app.config import settings
 from app.database import SessionLocal
@@ -94,7 +95,34 @@ def _upgrade_schema_to_head() -> None:
     # mano) — sin esto, el insert de abajo fallaría porque la tabla
     # "users" todavía no existe. `upgrade head` es idempotente: si el
     # esquema ya está al día, no hace nada.
-    command.upgrade(Config("alembic.ini"), "head")
+    try:
+        command.upgrade(Config("alembic.ini"), "head")
+    except CommandError as exc:
+        # "Can't locate revision identified by '<hash>'": la tabla
+        # alembic_version de ./data/mysql (bind mount de MySQL, ver
+        # docker-compose.yml — dato de desarrollo desechable, no una BD
+        # real) quedó apuntando a una revisión que ya no existe en
+        # alembic/versions/, típicamente por haber corrido el stack antes
+        # contra otra rama/commit con un historial de migraciones distinto.
+        # Sin este mensaje, lo único que ve quien lo pisa es un traceback
+        # de Alembic sin pista de qué hacer al respecto.
+        if "Can't locate revision" in str(exc):
+            print(
+                "\n"
+                "============================================================\n"
+                " seed_dev_data: la base de datos de desarrollo tiene un\n"
+                " historial de migraciones que ya no coincide con el código\n"
+                " actual (probablemente por venir de otra rama/commit).\n"
+                "\n"
+                " Es dato de desarrollo desechable (./data/mysql, gitignored)\n"
+                " — la solución es recrearlo desde cero:\n"
+                "\n"
+                "   docker compose down\n"
+                "   rm -rf ./data/mysql\n"
+                "   docker compose up --build\n"
+                "============================================================\n"
+            )
+        raise
 
 
 def seed() -> None:

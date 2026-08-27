@@ -16,6 +16,14 @@ services:
     ports:
       - "${MYSQL_PORT:-3306}:3306"
     volumes:
+      # Bind mount (no named volume): persiste en el filesystem local,
+      # gitignored, dato de desarrollo desechable. Si cambias de rama/commit
+      # a un historial de migraciones distinto, el "seed" de abajo puede
+      # fallar con "Can't locate revision identified by '<hash>'" porque la
+      # tabla alembic_version de esta carpeta ya no coincide con
+      # backend/alembic/versions/ del código actual (ver el mensaje que
+      # imprime seed_dev_data.py en ese caso). Solución: `docker compose
+      # down && rm -rf ./data/mysql && docker compose up --build`.
       - ./data/mysql:/var/lib/mysql
     healthcheck:
       # -h 127.0.0.1 (no "localhost"): con "localhost" el cliente de MySQL
