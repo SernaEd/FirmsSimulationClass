@@ -6,6 +6,9 @@ See [README.md](README.md) for the project overview and stack (FastAPI backend, 
 
 [`UiDesign/`](UiDesign/README.md) is the canonical source of truth for this app's visual design — layout, spacing, color tokens, type scale, component states, and motion/interaction patterns. It's built on the **Nocturne** design system with an IBERO red accent override (see [`UiDesign/README.md`](UiDesign/README.md) for the full rationale and the token table).
 
+Try to adapt every page to fit under DESIGN.md rules and always make use of the /modern-web-guidance and /web-artifacts-builder skills.
+If needed, also rely on /algorithmic-art skill.
+
 **Any UI change** (new screen, new component, restyle, layout/spacing tweak) must be based on this model, not improvised:
 
 1. Read the relevant screen section and the Design Tokens table in [`UiDesign/README.md`](UiDesign/README.md).
