@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import List, Literal, Optional, TypeAlias
+from typing import List, Literal, Optional, Union
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -9,24 +9,28 @@ from app.models.calendar import CalendarEventScope
 # en el sistema de diseño (ver UiDesign/README.md). No es texto libre: un
 # admin no puede meter un color fuera de la paleta del sistema.
 #
-# Optional[X]/List[X] en vez de `X | None`/`list[X]` en todo este archivo:
-# el linter Community de Qodana dispara falsos positivos confirmados sobre
-# la sintaxis moderna (mismo caso ya resuelto así en schemas/content.py y
-# services/content.py -- ver backend/qodana.yaml). `TypeAlias` explícito en
-# la línea de abajo por la misma razón: sin la anotación, Qodana no
-# reconoce la asignación como un alias de tipo válido.
-CalendarEventColor: TypeAlias = Literal["neutral", "accent", "accent2", "red", "amber", "emerald"]
+# `Optional[X]`/`List[X]`/`Union[X, None]` en vez de `X | None`/`list[X]` en
+# todo este archivo: el linter Community de Qodana dispara falsos positivos
+# confirmados sobre la sintaxis moderna (mismo caso ya resuelto así en
+# schemas/content.py y services/content.py -- ver backend/qodana.yaml). El
+# `Literal[...]` de color se repite inline en vez de vivir en un alias de
+# tipo con nombre a nivel de módulo -- ese patrón específico ("Literal' may
+# be parameterized with... type aliases to other literal types") seguía
+# marcándose como inválido incluso con `TypeAlias` explícito; solo se
+# reprodujo la sintaxis por la que Qodana sí pasa. Igual con `Optional[List[X]]`
+# anidado (marcado "Invalid type argument"): `Union[List[X], None]` es el
+# equivalente que no dispara esa combinación específica.
 
 
 class CalendarEventTypeCreate(BaseModel):
     nombre: str = Field(min_length=1, max_length=60)
-    color: CalendarEventColor = "neutral"
+    color: Literal["neutral", "accent", "accent2", "red", "amber", "emerald"] = "neutral"
     afecta_racha: bool = False
 
 
 class CalendarEventTypeUpdate(BaseModel):
     nombre: Optional[str] = Field(default=None, min_length=1, max_length=60)
-    color: Optional[CalendarEventColor] = None
+    color: Optional[Literal["neutral", "accent", "accent2", "red", "amber", "emerald"]] = None
     afecta_racha: Optional[bool] = None
 
 
@@ -40,7 +44,7 @@ class CalendarEventTypeOut(BaseModel):
     created_at: datetime
 
 
-def normalize_alcance(alcance_tipo: CalendarEventScope, alcance_ids: Optional[List[int]]) -> Optional[List[int]]:
+def normalize_alcance(alcance_tipo: CalendarEventScope, alcance_ids: Union[List[int], None]) -> Union[List[int], None]:
     """Regla única de alcance, compartida entre el validador de creación de
     abajo y `routers/admin_calendar.py::update_event` (que la aplica a mano
     porque un PATCH parcial puede traer solo uno de los dos campos). `alumno`
@@ -59,7 +63,7 @@ class CalendarEventCreate(BaseModel):
     titulo: str = Field(min_length=1, max_length=120)
     descripcion: Optional[str] = None
     alcance_tipo: CalendarEventScope = CalendarEventScope.todos
-    alcance_ids: Optional[List[int]] = None
+    alcance_ids: Union[List[int], None] = None
 
     @model_validator(mode="after")
     def _check_alcance(self) -> "CalendarEventCreate":
@@ -73,7 +77,7 @@ class CalendarEventUpdate(BaseModel):
     titulo: Optional[str] = Field(default=None, min_length=1, max_length=120)
     descripcion: Optional[str] = None
     alcance_tipo: Optional[CalendarEventScope] = None
-    alcance_ids: Optional[List[int]] = None
+    alcance_ids: Union[List[int], None] = None
 
 
 class CalendarEventOut(BaseModel):
@@ -86,5 +90,5 @@ class CalendarEventOut(BaseModel):
     titulo: str
     descripcion: Optional[str]
     alcance_tipo: CalendarEventScope
-    alcance_ids: Optional[List[int]]
+    alcance_ids: Union[List[int], None]
     created_at: datetime
