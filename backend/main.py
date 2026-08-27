@@ -11,6 +11,7 @@ from app.routers import (
     admin_content,
     admin_economy,
     admin_inbox,
+    admin_licitaciones,
     admin_system,
     admin_teams,
     admin_users,
@@ -18,6 +19,7 @@ from app.routers import (
     content,
     economy,
     health,
+    licitaciones,
     profile_test,
     system,
     teams,
@@ -64,6 +66,8 @@ app.include_router(admin_system.router)
 app.include_router(system.router)
 app.include_router(content.router)
 app.include_router(admin_content.router)
+app.include_router(licitaciones.router)
+app.include_router(admin_licitaciones.router)
 app.include_router(streak.router)
 app.include_router(admin_streak.router)
 app.include_router(exercises.router)

@@ -79,7 +79,7 @@ def get_movements(
     return list(db.scalars(stmt).all())
 
 
-def _add_ledger_entry(
+def add_ledger_entry(
     db: Session,
     *,
     user_id: int,
@@ -231,7 +231,7 @@ def purchase_individual(
             ticket_id=ticket.id, user_id=user.id, amount=catalog.costo
         )
     )
-    _add_ledger_entry(
+    add_ledger_entry(
         db,
         user_id=user.id,
         delta=-catalog.costo,
@@ -319,7 +319,7 @@ def initiate_split_bill(
     db.flush()
 
     db.add(SplitBillContribution(ticket_id=ticket.id, user_id=user.id, amount=first_amount))
-    _add_ledger_entry(
+    add_ledger_entry(
         db,
         user_id=user.id,
         delta=-first_amount,
@@ -401,7 +401,7 @@ def contribute_to_ticket(
     # parcial). Distinguimos la fuente para que los reportes por fuente (§17.1)
     # no mezclen gasto real con reembolsos.
     if delta > 0:
-        _add_ledger_entry(
+        add_ledger_entry(
             db,
             user_id=user.id,
             delta=-delta,
@@ -411,7 +411,7 @@ def contribute_to_ticket(
             nota=f"Aportación split bill: ticket {ticket.folio}",
         )
     else:
-        _add_ledger_entry(
+        add_ledger_entry(
             db,
             user_id=user.id,
             delta=-delta,
@@ -451,7 +451,7 @@ def cancel_funding_ticket(
     for c in ticket.contribuciones:
         if c.refunded_at is None:
             c.refunded_at = now
-            _add_ledger_entry(
+            add_ledger_entry(
                 db,
                 user_id=c.user_id,
                 delta=c.amount,
@@ -514,7 +514,7 @@ def adjust_tokens(
     if target is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no existe.")
 
-    entry = _add_ledger_entry(
+    entry = add_ledger_entry(
         db,
         user_id=user_id,
         delta=delta,
@@ -586,7 +586,7 @@ def request_decimal_redemption(
     db.flush()
 
     # Deducción inmediata; si el profesor rechaza, se reembolsa.
-    _add_ledger_entry(
+    add_ledger_entry(
         db,
         user_id=user.id,
         delta=-pts_costo,
@@ -626,7 +626,7 @@ def resolve_decimal_request(
 
     if not aprobar:
         # Reembolsar los Tks deducidos al crear la solicitud.
-        _add_ledger_entry(
+        add_ledger_entry(
             db,
             user_id=req.user_id,
             delta=req.pts_costo,

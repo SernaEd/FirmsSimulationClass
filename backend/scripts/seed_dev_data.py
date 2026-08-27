@@ -28,11 +28,46 @@ from datetime import datetime, timezone
 
 from alembic import command
 from alembic.config import Config
+from alembic.util import CommandError
 
 from app.config import settings
 from app.database import SessionLocal
+from app.models.licitaciones import Caso, TipoModeloCaso
 from app.models.user import User, UserStatus
 from app.security import hash_pin
+
+# Caso 1 del banco de licitaciones (`casos_licitaciones.md`) — contaminación
+# viral en un biorreactor farmacéutico (caso real: Genzyme, Allston
+# Landing, 2009). Valores ilustrativos: con estos parámetros, Q_min ≈ 499
+# L/h (por debajo del plazo de 60h se pierde el lote) y el límite de
+# presión de la línea es 650 L/h (por encima se daña la línea de purga) —
+# deja una ventana de Q correcta ([~499, 650] L/h) que exige calcular el
+# caudal mínimo, no solo "usar el máximo posible".
+CASO_1_BIORREACTOR = {
+    "numero": 1,
+    "titulo": "Contaminación viral en un biorreactor farmacéutico",
+    "modulo": "Módulo 1 — ecuaciones separables y lineales de primer orden",
+    "contexto": (
+        "En junio de 2009, Genzyme Corporation detectó contaminación por "
+        "Vesivirus 2117 en un biorreactor de su planta de Allston Landing "
+        "(Boston, MA), usada para producir Cerezyme, Fabrazyme, Myozyme y "
+        "Thyrogen. La planta cerró varias semanas para descontaminarse; "
+        "casi todo el material en proceso se perdió y miles de pacientes "
+        "quedaron con acceso limitado a su tratamiento. La FDA impuso "
+        "después un decreto de consentimiento con $175M en utilidades "
+        "cedidas. Tu firma debe calcular el caudal de purga (Q) mínimo "
+        "que descontamina el tanque a tiempo, sin dañar la línea de purga."
+    ),
+    "tipo_modelo": TipoModeloCaso.mezcla_lineal_tanque,
+    "volumen_l": 10_000,
+    "concentracion_inicial": 100,
+    "concentracion_max": 5,
+    "plazo_horas": 60,
+    "presion_max_q": 650,
+    "dinero_perdido_mxn": 4_500_000,
+    "pacientes_afectados": 120,
+    "costo_reparacion_mxn": 850_000,
+}
 
 SEED_USERS = [
     {
@@ -60,7 +95,34 @@ def _upgrade_schema_to_head() -> None:
     # mano) — sin esto, el insert de abajo fallaría porque la tabla
     # "users" todavía no existe. `upgrade head` es idempotente: si el
     # esquema ya está al día, no hace nada.
-    command.upgrade(Config("alembic.ini"), "head")
+    try:
+        command.upgrade(Config("alembic.ini"), "head")
+    except CommandError as exc:
+        # "Can't locate revision identified by '<hash>'": la tabla
+        # alembic_version de ./data/mysql (bind mount de MySQL, ver
+        # docker-compose.yml — dato de desarrollo desechable, no una BD
+        # real) quedó apuntando a una revisión que ya no existe en
+        # alembic/versions/, típicamente por haber corrido el stack antes
+        # contra otra rama/commit con un historial de migraciones distinto.
+        # Sin este mensaje, lo único que ve quien lo pisa es un traceback
+        # de Alembic sin pista de qué hacer al respecto.
+        if "Can't locate revision" in str(exc):
+            print(
+                "\n"
+                "============================================================\n"
+                " seed_dev_data: la base de datos de desarrollo tiene un\n"
+                " historial de migraciones que ya no coincide con el código\n"
+                " actual (probablemente por venir de otra rama/commit).\n"
+                "\n"
+                " Es dato de desarrollo desechable (./data/mysql, gitignored)\n"
+                " — la solución es recrearlo desde cero:\n"
+                "\n"
+                "   docker compose down\n"
+                "   rm -rf ./data/mysql\n"
+                "   docker compose up --build\n"
+                "============================================================\n"
+            )
+        raise
 
 
 def seed() -> None:
@@ -92,6 +154,14 @@ def seed() -> None:
             db.commit()
             rol = "admin" if data["is_admin"] else "alumno"
             print(f"seed_dev_data: creada cuenta {rol} {data['numero_cuenta']}.")
+
+        existing_caso = db.query(Caso).filter(Caso.numero == CASO_1_BIORREACTOR["numero"]).first()
+        if existing_caso is not None:
+            print(f"seed_dev_data: caso {CASO_1_BIORREACTOR['numero']} ya existe, se omite.")
+        else:
+            db.add(Caso(**CASO_1_BIORREACTOR))
+            db.commit()
+            print(f"seed_dev_data: creado caso {CASO_1_BIORREACTOR['numero']} ({CASO_1_BIORREACTOR['titulo']}).")
     finally:
         db.close()
 
