@@ -4,8 +4,9 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ActionBanner } from "@/components/ActionBanner";
 import { BalanceWidget } from "@/components/BalanceWidget";
-import { IconRings } from "@/components/icons";
+import { IconRings, RoleIcon } from "@/components/icons";
 import { TeamOut, UserStatus, api, pickByPronoun } from "@/lib/api";
+import { profileLabel, profileAvatarClass } from "@/lib/profile";
 import { useAuth } from "@/lib/useAuth";
 
 // Rediseño "Dashboard" — ver UiDesign/README.md §2. Los enlaces de Admin ya
@@ -70,6 +71,15 @@ export default function Inicio() {
           Cálculo 3
         </p>
         <h1 className="text-[30px] font-medium">Hola, {user.nombre}</h1>
+        {user.perfil && (
+          <div className={`mt-5 inline-flex items-center gap-3 px-4 py-3 rounded-lg shadow-sm border border-black/10 ${profileAvatarClass(user.perfil)}`}>
+            <RoleIcon perfil={user.perfil} />
+            <div>
+              <p className="text-[10px] uppercase tracking-widest opacity-80 mb-0.5">Rol de equipo</p>
+              <p className="text-xl font-semibold leading-none">{profileLabel(user.perfil)}</p>
+            </div>
+          </div>
+        )}
         {team !== undefined && (
           <p className="text-neutral-500 text-[13px] mt-1">
             {team ? (
@@ -201,7 +211,9 @@ function PendingAccountCard({ estado }: { estado: UserStatus }) {
       <div className="mx-auto flex items-center justify-center w-14 h-14 rounded-full bg-accent2-800 text-accent2-100">
         <IconClock />
       </div>
-      <h2 className="text-lg font-medium">Tu cuenta está en revisión</h2>
+      <h2 className="text-lg font-medium">
+        {estado === "pending_profile" ? "Perfil de equipo pendiente" : "Tu cuenta está en revisión"}
+      </h2>
       <p className="text-neutral-400 text-sm max-w-sm mx-auto">
         {estado === "pending_profile"
           ? "Termina el test de perfil de trabajo en equipo para continuar."
