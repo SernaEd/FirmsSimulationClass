@@ -1,34 +1,40 @@
 "use client";
 
 import { useEffect, useState, FormEvent } from "react";
-import { api, DailyExerciseOut } from "@/lib/api";
+import { api, DailyExerciseOut, ModuleOut } from "@/lib/api";
 import { useAuth } from "@/lib/useAuth";
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
+import Link from "next/link";
 
 export default function AdminEjercicios() {
   const authState = useAuth({ requireAdmin: true });
   const [exercises, setExercises] = useState<DailyExerciseOut[]>([]);
+  const [modules, setModules] = useState<ModuleOut[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const [fecha, setFecha] = useState("");
-  const [tema, setTema] = useState("");
+  const [courseSessionId, setCourseSessionId] = useState("");
   const [numero, setNumero] = useState(1);
   const [enunciado, setEnunciado] = useState("");
   const [file, setFile] = useState<File | null>(null);
 
-  const loadExercises = async () => {
+  const loadData = async () => {
     if (authState.status !== "authenticated") return;
     setLoading(true);
     try {
-      const data = await api.adminListExercises(authState.token);
-      setExercises(data);
+      const [exData, modData] = await Promise.all([
+        api.adminListExercises(authState.token),
+        api.adminListModules(authState.token)
+      ]);
+      setExercises(exData);
+      setModules(modData);
     } catch (err: any) {
-      setError(err.message || "Error al cargar ejercicios.");
+      setError(err.message || "Error al cargar datos.");
     } finally {
       setLoading(false);
     }
@@ -36,7 +42,7 @@ export default function AdminEjercicios() {
 
   useEffect(() => {
     if (authState.status === "authenticated") {
-      loadExercises();
+      loadData();
     }
   }, [authState.status]);
 
@@ -48,7 +54,9 @@ export default function AdminEjercicios() {
 
     const formData = new FormData();
     formData.append("fecha", fecha);
-    formData.append("tema", tema);
+    if (courseSessionId) {
+      formData.append("course_session_id", courseSessionId);
+    }
     formData.append("numero", String(numero));
     formData.append("enunciado", enunciado);
     if (file) {
@@ -58,11 +66,11 @@ export default function AdminEjercicios() {
     try {
       await api.adminCreateExercise(authState.token, formData);
       setFecha("");
-      setTema("");
+      setCourseSessionId("");
       setNumero(1);
       setEnunciado("");
       setFile(null);
-      await loadExercises();
+      await loadData();
     } catch (err: any) {
       setError(err.message || "Error al crear ejercicio.");
     } finally {
@@ -99,15 +107,21 @@ export default function AdminEjercicios() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-neutral-300 mb-1">Tema (ej. Módulo 1, PVI)</label>
-              <input
-                type="text"
-                required
-                value={tema}
-                onChange={(e) => setTema(e.target.value)}
+              <label className="block text-sm font-medium text-neutral-300 mb-1">Clase vinculada (Opcional)</label>
+              <select
+                value={courseSessionId}
+                onChange={(e) => setCourseSessionId(e.target.value)}
                 className="w-full bg-surface border-surface-border text-neutral-100 rounded-md shadow-sm focus:border-accent-500 focus:ring-accent-500 p-2 border"
-                placeholder="Módulo 1, Ecuación Exacta"
-              />
+              >
+                <option value="">(Ninguna / General)</option>
+                {modules.map((m) => (
+                  <optgroup key={m.id} label={`Módulo ${m.numero} - ${m.nombre}`}>
+                    {m.sessions.map((s) => (
+                      <option key={s.id} value={s.id}>#{s.numero_sesion} - {s.titulo}</option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-neutral-300 mb-1">Número de Ejercicio</label>
@@ -166,7 +180,7 @@ export default function AdminEjercicios() {
           <thead className="bg-surface">
             <tr>
               <th className="px-6 py-3 text-left font-semibold text-neutral-200 w-32">Fecha</th>
-              <th className="px-6 py-3 text-left font-semibold text-neutral-200">Tema</th>
+              <th className="px-6 py-3 text-left font-semibold text-neutral-200">Clase</th>
               <th className="px-6 py-3 text-left font-semibold text-neutral-200 w-24">Número</th>
               <th className="px-6 py-3 text-left font-semibold text-neutral-200">Enunciado</th>
               <th className="px-6 py-3 text-left font-semibold text-neutral-200 w-32">Imagen</th>
@@ -181,7 +195,13 @@ export default function AdminEjercicios() {
               exercises.map(ex => (
                 <tr key={ex.id} className="hover:bg-surface transition-colors">
                   <td className="px-6 py-4 font-medium text-neutral-300">{ex.fecha}</td>
-                  <td className="px-6 py-4 font-medium text-neutral-100">{ex.tema}</td>
+                  <td className="px-6 py-4 font-medium text-neutral-100">
+                    {ex.course_session ? (
+                      <span className="text-accent-300">{ex.course_session.titulo}</span>
+                    ) : (
+                      <span className="text-neutral-500">General</span>
+                    )}
+                  </td>
                   <td className="px-6 py-4 font-medium text-neutral-400">#{ex.numero}</td>
                   <td className="px-6 py-4 prose prose-sm prose-invert max-w-none text-neutral-300">
                     <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>

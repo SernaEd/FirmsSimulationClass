@@ -3,7 +3,7 @@ import shutil
 from datetime import date
 from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile, status, File
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from app.database import get_db
 from app.deps import get_current_admin
@@ -22,13 +22,13 @@ def list_exercises(
     admin: User = Depends(get_current_admin),
 ):
     """Obtiene todos los ejercicios programados."""
-    stmt = select(DailyExercise).order_by(DailyExercise.fecha.desc())
+    stmt = select(DailyExercise).options(selectinload(DailyExercise.course_session)).order_by(DailyExercise.fecha.desc())
     return list(db.scalars(stmt).all())
 
 @router.post("", response_model=DailyExerciseOut)
 def create_exercise(
     fecha: date = Form(...),
-    tema: str = Form(...),
+    course_session_id: int | None = Form(None),
     numero: int = Form(...),
     enunciado: str = Form(...),
     imagen: UploadFile | None = File(None),
@@ -51,7 +51,7 @@ def create_exercise(
 
     exercise = DailyExercise(
         fecha=fecha,
-        tema=tema,
+        course_session_id=course_session_id,
         numero=numero,
         enunciado=enunciado,
         imagen_path=imagen_path
@@ -59,4 +59,6 @@ def create_exercise(
     db.add(exercise)
     db.commit()
     db.refresh(exercise)
-    return exercise
+    # Refrescar con la relación cargada
+    stmt = select(DailyExercise).options(selectinload(DailyExercise.course_session)).where(DailyExercise.id == exercise.id)
+    return db.scalar(stmt)

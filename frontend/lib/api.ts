@@ -543,7 +543,12 @@ export type StreakDayOut = {
 export type DailyExerciseOut = {
   id: number;
   fecha: string;
-  tema: string;
+  course_session?: {
+    id: number;
+    module_id: number;
+    numero_sesion: number;
+    titulo: string;
+  } | null;
   numero: number;
   enunciado: string;
   imagen_path: string | null;

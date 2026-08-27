@@ -250,11 +250,15 @@ export function StreakWidget({ token }: { token: string }) {
         </div>
       ) : (
         <div className="mt-6 border-t border-neutral-800 pt-4">
-          <h3 className="text-sm font-medium text-neutral-200 mb-3">
-            Ejercicio del Día
+          <h3 className="text-sm font-medium text-neutral-200 mb-3 flex items-center flex-wrap gap-2">
+            <span>Ejercicio del Día</span>
             {todayExercise && (
-              <span className="text-neutral-500 font-normal ml-2 text-xs">
-                &mdash; {todayExercise.tema} #{todayExercise.numero}
+              <span className="text-neutral-500 font-normal text-xs">
+                &mdash; {todayExercise.course_session ? (
+                  <Link href={`/clases/${todayExercise.course_session.id}`} className="hover:text-accent-400 underline decoration-neutral-700">
+                    {todayExercise.course_session.titulo}
+                  </Link>
+                ) : 'General'} #{todayExercise.numero}
               </span>
             )}
           </h3>

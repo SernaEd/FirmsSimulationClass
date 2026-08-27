@@ -2,7 +2,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from app.database import get_db
 from app.deps import get_current_active_user
@@ -21,7 +21,7 @@ def get_today_exercise(
 ):
     """Obtiene el ejercicio del día actual, si existe."""
     today = datetime.now(ZoneInfo("America/Mexico_City")).date()
-    stmt = select(DailyExercise).where(DailyExercise.fecha == today)
+    stmt = select(DailyExercise).options(selectinload(DailyExercise.course_session)).where(DailyExercise.fecha == today)
     exercise = db.scalar(stmt)
     return exercise
 
