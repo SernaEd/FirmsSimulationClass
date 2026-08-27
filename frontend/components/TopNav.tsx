@@ -38,6 +38,7 @@ const ADMIN_GROUP: NavGroup = {
     { href: "/admin/licitaciones", label: "Licitaciones" },
     { href: "/admin/racha", label: "Rachas" },
     { href: "/admin/ejercicios", label: "Ejercicios" },
+    { href: "/admin/calendario", label: "Calendario" },
     { href: "/admin/contenido", label: "Contenido" },
     { href: "/admin/sistema", label: "Sistema" },
   ],

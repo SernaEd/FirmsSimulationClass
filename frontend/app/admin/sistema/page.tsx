@@ -155,6 +155,21 @@ function InboxRow({
             </button>
           </div>
         </div>
+      ) : item.tipo === "alerta_inactividad" && Array.isArray(payload.alumnos) ? (
+        <div className="space-y-2">
+          <p className="text-sm text-white">
+            {payload.alumnos.length} alumno{payload.alumnos.length === 1 ? "" : "s"} sin actividad en
+            los últimos {String(payload.umbral_dias ?? 14)} días:
+          </p>
+          <ul className="space-y-1">
+            {(payload.alumnos as Record<string, unknown>[]).map((a, i) => (
+              <li key={i} className="text-xs text-neutral-400">
+                {String(a.nombre ?? "")}{" "}
+                <span className="text-neutral-500">(@{String(a.numero_cuenta ?? "")})</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       ) : (
         <div className="space-y-1">
           {Object.entries(payload).map(([k, v]) => (

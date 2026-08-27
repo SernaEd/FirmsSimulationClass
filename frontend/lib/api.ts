@@ -555,6 +555,14 @@ export type DailyExerciseOut = {
   created_at: string;
 };
 
+// ---- Calendario académico (§11.5) ----
+export type AcademicCalendarDayOut = {
+  id: number;
+  fecha: string;
+  motivo: string;
+  created_at: string;
+};
+
 // ---- Contenido (Módulos, Sesiones, adjuntos) — Iteración 1 ----
 export type SessionAttachmentOut = {
   id: number;
@@ -974,6 +982,18 @@ export const api = {
     const qs = params.toString();
     return request<StreakDayOut[]>(`/me/streak${qs ? `?${qs}` : ""}`, {}, token);
   },
+  // ---- Calendario académico (§11.5) ----
+  adminListHolidays: (token: string) =>
+    request<AcademicCalendarDayOut[]>("/admin/calendar/holidays", {}, token),
+  adminCreateHoliday: (token: string, fecha: string, motivo: string) =>
+    request<AcademicCalendarDayOut>(
+      "/admin/calendar/holidays",
+      { method: "POST", body: JSON.stringify({ fecha, motivo }) },
+      token,
+    ),
+  adminDeleteHoliday: (token: string, holidayId: number) =>
+    request<void>(`/admin/calendar/holidays/${holidayId}`, { method: "DELETE" }, token),
+
   adminGetStreakEvidence: (token: string, skip: number = 0, limit: number = 50, userId?: number) => {
     const params = new URLSearchParams();
     params.append("skip", String(skip));

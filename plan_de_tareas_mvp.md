@@ -144,17 +144,17 @@
   - [x] Frontend: página `/test-perfil` accesible inmediatamente tras el registro — `/auth/register` ya deja la sesión lista, sin login aparte.
   - [x] Redacción de las preguntas + bibliografía visible (Belbin, Felder & Brent).
 
-- [ ] **Motor de Racha Diaria** (evidencia WebAssign, APScheduler):
-  - [ ] `POST /me/streak/evidence` — sube link al reporte de WebAssign + captura; marca el día `completado` de inmediato (sin cola de revisión, §5.5).
-  - [ ] Jobs `evaluate_streaks`, `send_streak_reminder`, `detect_inactivity`.
-  - [ ] Widget "Evidencia del día" + calendario mensual de racha con palomitas verdes.
-  - [ ] Pases de racha automáticos + compra en catálogo.
-  - [ ] Vista admin de verificación puntual (spot-check) sobre evidencia subida, para disputas o sospecha de evidencia falsa (§18.4).
+- [x] **Motor de Racha Diaria** (APScheduler) — *(alcance revisado: la evidencia ya no es un link a WebAssign, es la solución al ejercicio del banco propio `DailyExercise`; ver nota de UiDesign/README.md "New feature: Motor de Racha Diaria")*:
+  - [x] `POST /me/streak/evidence` — sube la solución (imagen/PDF) al ejercicio del día; marca el día `completado` de inmediato (sin cola de revisión, §5.5).
+  - [x] Jobs `evaluate_streaks` y `detect_inactivity`. `send_streak_reminder` queda pendiente — depende de la infraestructura de correo y el opt-in de "Notificaciones opcionales por correo" (ver más abajo), que todavía no existen; construirlo ahora sin eso sería un job que no puede enviar nada.
+  - [x] Widget "Evidencia del día" + calendario mensual de racha (grid del mes con color por estado, no el grid de 8 días lunes-jueves del mock original — ver UiDesign/README.md).
+  - [x] Pases de racha automáticos + compra en catálogo.
+  - [x] Vista admin de verificación puntual (spot-check) sobre evidencia subida, para disputas o sospecha de evidencia falsa (§18.4) — `/admin/racha`.
 - [ ] **Comentarios por Clase** (Foros tipo YouTube) *(subido desde Iteración 2 original; usa `ForumPost.session_id`)*:
   - [ ] Opción por post: nickname o anónimo para pares.
   - [ ] Editor con soporte de LaTeX inline.
   - [ ] Marcado de post destacado por el profesor (bono de Tokens al autor).
-- [ ] **Calendario académico editable** en admin (§11.5) — necesario para marcar festivos antes de que la racha llegue.
+- [x] **Calendario académico editable** en admin (§11.5) — `/admin/calendario`: marca días festivos/sin clase como neutros para la racha. Lunes-jueves cuentan por diseño (§5.5); viernes-domingo ya son neutros sin necesidad de marcarlos. Marcar un día retroactivamente recalcula las filas ya evaluadas ese día (§16.5). Alcance recortado respecto al plan original: solo la lista editable que la racha necesita, no la "vista mensual y semestral" completa (sin otro consumidor todavía).
 - [ ] **Notificaciones opcionales por correo** *(subido desde Iteración 4 original)*:
   - [ ] Opt-in explícito en el perfil.
   - [ ] Recordatorio de evidencia del día (20:00 Lun-Jue).
