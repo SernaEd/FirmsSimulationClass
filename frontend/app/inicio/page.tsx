@@ -7,8 +7,6 @@ import { BalanceWidget } from "@/components/BalanceWidget";
 import { IconRings, RoleIcon } from "@/components/icons";
 import { TeamOut, UserStatus, api, pickByPronoun } from "@/lib/api";
 import { profileLabel, profileAvatarClass } from "@/lib/profile";
-import { IconRings } from "@/components/icons";
-import { TeamOut, UserStatus, api, pickByPronoun, StreakDayOut } from "@/lib/api";
 import { useAuth } from "@/lib/useAuth";
 
 // Rediseño "Dashboard" — ver UiDesign/README.md §2. Los enlaces de Admin ya
@@ -137,7 +135,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
-import { DailyExerciseOut } from "@/lib/api";
+import { DailyExerciseOut, StreakDayOut } from "@/lib/api";
 
 export function StreakWidget({ token }: { token: string }) {
   const [streakDays, setStreakDays] = useState<StreakDayOut[]>([]);
@@ -292,7 +290,7 @@ export function StreakWidget({ token }: { token: string }) {
                       rel="noreferrer" 
                       className="text-accent-400 text-xs hover:underline inline-flex items-center gap-1"
                     >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="M21 15l-5-5L5 21"></path></svg>
                       Ver imagen adjunta
                     </a>
                   </div>
