@@ -9,7 +9,9 @@ from app.database import SessionLocal
 from app.models.user import User, UserStatus
 from app.models.streak import StreakDay, StreakDayStatus
 from app.models.economy import PrivilegeTicket, TicketStatus
-from app.models.system import InboxItem, InboxItemType
+from app.models.system import InboxItem, InboxItemType, InboxPriority
+from app.services.inbox import create_inbox_item
+from app.services.streak import is_racha_day, mark_neutral_for_active_users
 from app.services.tokens import consume_ticket_by_folio
 
 logger = logging.getLogger(__name__)
@@ -22,10 +24,17 @@ def evaluate_streaks_job():
     with SessionLocal() as db:
         # Fecha de ayer (la que estamos evaluando)
         yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).date()
-        
+
+        if not is_racha_day(db, yesterday):
+            # Viernes-domingo, o un día marcado en el calendario académico
+            # (§11.5) -- neutro para todos, no rompe ni exige evidencia.
+            affected = mark_neutral_for_active_users(db, yesterday)
+            logger.info(f"{yesterday} no cuenta para la racha (fin de semana o festivo) -- {affected} alumnos marcados neutro.")
+            return
+
         # Obtener alumnos activos
         active_users = db.scalars(select(User).where(User.estado == UserStatus.active)).all()
-        
+
         for user in active_users:
             # Buscar si existe el StreakDay de ayer
             streak_day = db.scalar(
@@ -91,11 +100,71 @@ def evaluate_streaks_job():
             
     logger.info("Evaluación de racha completada.")
 
+
+def detect_inactivity_job():
+    """Detecta alumnos inactivos (§11.1, §12.4): sin login y sin racha
+    completada (ni pase aplicado) en los últimos 14 días. El plan pide un
+    tercer criterio, "sin entregas" -- queda fuera hasta que exista el
+    modelo de Entregas (Iteración 3); no hay nada que consultar todavía.
+    Encola una sola alerta de sistema en el Inbox con la lista completa
+    (no una por alumno) para no inundarlo cada semana.
+    """
+    logger.info("Iniciando detección de inactividad...")
+    with SessionLocal() as db:
+        cutoff = datetime.now(timezone.utc) - timedelta(days=14)
+        cutoff_date = cutoff.date()
+
+        active_users = db.scalars(select(User).where(User.estado == UserStatus.active)).all()
+        inactive = []
+        for user in active_users:
+            if user.last_login_at is not None and user.last_login_at >= cutoff:
+                continue
+            recent_completado = db.scalar(
+                select(StreakDay.id)
+                .where(
+                    StreakDay.user_id == user.id,
+                    StreakDay.fecha >= cutoff_date,
+                    StreakDay.estado.in_([StreakDayStatus.completado, StreakDayStatus.pase_aplicado]),
+                )
+                .limit(1)
+            )
+            if recent_completado is not None:
+                continue
+            inactive.append(user)
+
+        if not inactive:
+            logger.info("Detección de inactividad: sin alumnos inactivos.")
+            return
+
+        create_inbox_item(
+            db,
+            tipo=InboxItemType.alerta_inactividad,
+            referencia_id=None,
+            prioridad=InboxPriority.media,
+            payload={
+                "detectado_en": datetime.now(timezone.utc).isoformat(),
+                "umbral_dias": 14,
+                "alumnos": [
+                    {"user_id": u.id, "nombre": f"{u.nombre} {u.apellidos}", "numero_cuenta": u.numero_cuenta}
+                    for u in inactive
+                ],
+            },
+        )
+        db.commit()
+        logger.info(f"Detección de inactividad: {len(inactive)} alumnos marcados, alerta creada en el Inbox.")
+
+
 def start_scheduler():
     scheduler.add_job(
         evaluate_streaks_job,
         trigger=CronTrigger(hour=0, minute=5), # 5 minutos pasada la medianoche
         id="evaluate_streaks",
+        replace_existing=True,
+    )
+    scheduler.add_job(
+        detect_inactivity_job,
+        trigger=CronTrigger(day_of_week="mon", hour=6, minute=0),
+        id="detect_inactivity",
         replace_existing=True,
     )
     scheduler.start()

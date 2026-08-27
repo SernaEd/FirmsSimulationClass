@@ -555,6 +555,49 @@ export type DailyExerciseOut = {
   created_at: string;
 };
 
+// ---- Calendario académico (§11.5) ----
+export type CalendarEventColor = "neutral" | "accent" | "accent2" | "red" | "amber" | "emerald";
+
+export type CalendarEventTypeOut = {
+  id: number;
+  nombre: string;
+  color: string;
+  afecta_racha: boolean;
+  created_at: string;
+};
+
+export type CalendarEventScope = "todos" | "alumno";
+
+export type CalendarEventOut = {
+  id: number;
+  tipo_id: number;
+  tipo: CalendarEventTypeOut;
+  fecha: string;
+  titulo: string;
+  descripcion: string | null;
+  alcance_tipo: CalendarEventScope;
+  alcance_ids: number[] | null;
+  created_at: string;
+};
+
+// Espejo de los payloads de backend/app/schemas/calendar.py -- un solo lugar
+// para el shape en vez de repetirlo como objeto ad-hoc en cada wrapper y de
+// nuevo como prop type en cada componente que arma el formulario.
+export type CalendarEventTypePayload = {
+  nombre: string;
+  color: CalendarEventColor;
+  afecta_racha: boolean;
+};
+
+export type CalendarEventPayload = {
+  tipo_id: number;
+  fecha: string;
+  titulo: string;
+  descripcion?: string | null;
+  alcance_tipo?: CalendarEventScope;
+  alcance_ids?: number[] | null;
+};
+
 // ---- Contenido (Módulos, Sesiones, adjuntos) — Iteración 1 ----
 export type SessionAttachmentOut = {
   id: number;
@@ -974,6 +1017,43 @@ export const api = {
     const qs = params.toString();
     return request<StreakDayOut[]>(`/me/streak${qs ? `?${qs}` : ""}`, {}, token);
   },
+  // ---- Calendario académico (§11.5) ----
+  adminListCalendarEventTypes: (token: string) =>
+    request<CalendarEventTypeOut[]>("/admin/calendar/event-types", {}, token),
+  adminCreateCalendarEventType: (token: string, payload: CalendarEventTypePayload) =>
+    request<CalendarEventTypeOut>(
+      "/admin/calendar/event-types",
+      { method: "POST", body: JSON.stringify(payload) },
+      token,
+    ),
+  adminUpdateCalendarEventType: (token: string, typeId: number, payload: Partial<CalendarEventTypePayload>) =>
+    request<CalendarEventTypeOut>(
+      `/admin/calendar/event-types/${typeId}`,
+      { method: "PATCH", body: JSON.stringify(payload) },
+      token,
+    ),
+  adminDeleteCalendarEventType: (token: string, typeId: number) =>
+    request<void>(`/admin/calendar/event-types/${typeId}`, { method: "DELETE" }, token),
+
+  adminListCalendarEvents: (token: string, start: string, end: string) =>
+    request<CalendarEventOut[]>(
+      `/admin/calendar/events?start=${start}&end=${end}`,
+      {},
+      token,
+    ),
+  adminCreateCalendarEvent: (token: string, payload: CalendarEventPayload) =>
+    request<CalendarEventOut>(
+      "/admin/calendar/events",
+      { method: "POST", body: JSON.stringify(payload) },
+      token,
+    ),
+  adminDeleteCalendarEvent: (token: string, eventId: number) =>
+    request<void>(`/admin/calendar/events/${eventId}`, { method: "DELETE" }, token),
+
+  // ---- Calendario académico, vista de alumno (solo lectura) ----
+  getMyCalendarEvents: (token: string, start: string, end: string) =>
+    request<CalendarEventOut[]>(`/calendar/events?start=${start}&end=${end}`, {}, token),
+
   adminGetStreakEvidence: (token: string, skip: number = 0, limit: number = 50, userId?: number) => {
     const params = new URLSearchParams();
     params.append("skip", String(skip));

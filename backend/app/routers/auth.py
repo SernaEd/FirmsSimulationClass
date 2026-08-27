@@ -122,6 +122,9 @@ def login(request: Request, payload: LoginIn, db: Session = Depends(get_db)) -> 
             detail="Número de cuenta o PIN incorrecto.",
         )
 
+    user.last_login_at = datetime.now(timezone.utc)
+    db.commit()
+
     token = create_access_token(subject=user.id, extra_claims={"is_admin": user.is_admin})
     return TokenOut(
         access_token=token,

@@ -8,6 +8,7 @@ from app.config import settings
 from app.rate_limit import limiter
 from app.services.scheduler import start_scheduler, stop_scheduler
 from app.routers import (
+    admin_calendar,
     admin_content,
     admin_economy,
     admin_inbox,
@@ -16,6 +17,7 @@ from app.routers import (
     admin_teams,
     admin_users,
     auth,
+    calendar,
     content,
     economy,
     health,
@@ -72,6 +74,8 @@ app.include_router(streak.router)
 app.include_router(admin_streak.router)
 app.include_router(exercises.router)
 app.include_router(admin_exercises.router)
+app.include_router(admin_calendar.router)
+app.include_router(calendar.router)
 
 
 @app.get("/")

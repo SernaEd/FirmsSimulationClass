@@ -4,16 +4,15 @@ See [README.md](README.md) for the project overview and stack (FastAPI backend, 
 
 ## UI design model
 
-[`UiDesign/`](UiDesign/README.md) is the canonical source of truth for this app's visual design — layout, spacing, color tokens, type scale, component states, and motion/interaction patterns. It's built on the **Nocturne** design system with an IBERO red accent override (see [`UiDesign/README.md`](UiDesign/README.md) for the full rationale and the token table).
 
-Try to adapt every page to fit under DESIGN.md rules and always make use of the /modern-web-guidance and /web-artifacts-builder skills.
-If needed, also rely on /algorithmic-art skill.
 
 **Any UI change** (new screen, new component, restyle, layout/spacing tweak) must be based on this model, not improvised:
 
 1. Read the relevant screen section and the Design Tokens table in [`UiDesign/README.md`](UiDesign/README.md).
-2. Check the clickable reference mock, `UiDesign/prototype/IBERO Cálculo 3 - Rediseño.dc.html` (open directly in a browser), for the actual look, spacing, and interaction behavior. **Never copy this HTML into the Next.js app** — recreate the design as real React/Tailwind components in `frontend/`, wired to real data, following existing component conventions (`frontend/components/`).
-3. For base token values and component-level rationale, check `UiDesign/prototype/_ds/nocturne-.../styles.css` and its `readme.md`. Don't invent new colors, spacing, or type-scale values that aren't already in the token set.
+2. Run the skills /modern-web-guidance, /web-artifacts-builder, and /algorithmic-art.
+3. Adapt every page to fit under DESIGN.md rules.
+4. Check the clickable reference mock, `UiDesign/prototype/IBERO Cálculo 3 - Rediseño.dc.html` (open directly in a browser), for the actual look, spacing, and interaction behavior. **Never copy this HTML into the Next.js app** — recreate the design as real React/Tailwind components in `frontend/`, wired to real data, following existing component conventions (`frontend/components/`).
+5. For base token values and component-level rationale, check `UiDesign/prototype/_ds/nocturne-.../styles.css` and its `readme.md`. Don't invent new colors, spacing, or type-scale values that aren't already in the token set.
 
 **Whenever a UI/UX decision changes the design model** — a new or adjusted color/token, a different spacing or type value, a new component pattern, a changed interaction/animation, a new screen layout — update `UiDesign/README.md` (and the token values under `UiDesign/prototype/_ds/` if applicable) to reflect it, so this folder never drifts out of sync with what's actually shipped. Treat it as part of the change, not a follow-up.
 
