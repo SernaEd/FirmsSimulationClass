@@ -19,11 +19,23 @@ services:
     ports: !reset []  # No expone puerto al host en prod/staging
 
   backend:
-    volumes:
+    # !override (no un simple "volumes: [...]"): igual que "ports" en mysql
+    # arriba, Compose concatena listas entre archivos por default — un
+    # "volumes: [...]" aquí se fusiona con "./backend:/app" del archivo base
+    # en vez de reemplazarlo, así que ese bind mount de código en vivo SÍ
+    # seguía activo en prod pese al comentario de abajo.
+    volumes: !override
       - ./uploads:/app/uploads
       # Nota: NO se monta ./backend:/app en prod
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
 
   frontend:
-    volumes: []  # No hot reload
+    # "!reset []" (no un simple "volumes: []"): mismo problema que "ports"
+    # en mysql — un "volumes: []" aquí se fusionaba con "./frontend:/app" +
+    # "/app/node_modules" + "/app/.next" del archivo base en vez de
+    # quitarlos, dejando el bind mount de código en vivo activo en prod.
+    # Eso hacía que /app quedara servido desde el checkout del host (sin
+    # node_modules) en vez de desde la imagen ya construida, causando
+    # "Module not found" en paquetes que sí están instalados en la imagen.
+    volumes: !reset []  # No hot reload
     command: sh -c "npm run build && npm run start"
