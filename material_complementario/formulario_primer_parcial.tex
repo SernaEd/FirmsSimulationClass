@@ -1,0 +1,270 @@
+% ============================================================
+%  FORMULARIO — PRIMER EXAMEN PARCIAL
+%  Cálculo III: Ecuaciones Diferenciales en Ingeniería (MT024)
+%  Universidad Iberoamericana · Sesiones 1–5
+% ============================================================
+\documentclass[10pt,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,mexico]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\usepackage{multicol}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\usepackage{parskip}
+
+\geometry{letterpaper, top=1.2cm, bottom=1.2cm, left=1.3cm, right=1.3cm, columnsep=1cm}
+
+\definecolor{ibero}{RGB}{0,71,133}
+\definecolor{emerald}{RGB}{5,120,85}
+\definecolor{amber}{RGB}{160,90,0}
+\definecolor{rose}{RGB}{160,30,30}
+
+% Cabecera de sección
+\newcommand{\hdr}[2]{%
+  \vspace{5pt}%
+  \noindent\colorbox{#1}{\parbox{\dimexpr\linewidth-2\fboxsep}{%
+    \vspace{2pt}\centering\textbf{\small\color{white}\MakeUppercase{#2}}\vspace{2pt}%
+  }}\par\vspace{4pt}}
+
+% Cuadro resaltado
+\newenvironment{caja}[1][ibero]{%
+  \begin{mdframed}[linecolor=#1,linewidth=1pt,backgroundcolor=#1!8,
+    innerleftmargin=5pt,innerrightmargin=5pt,
+    innertopmargin=3pt,innerbottommargin=3pt,
+    skipabove=4pt,skipbelow=4pt]
+}{\end{mdframed}}
+
+\setlength{\parskip}{3pt}
+\setlength{\parindent}{0pt}
+\renewcommand{\arraystretch}{1.4}
+
+% ============================================================
+\begin{document}
+\pagestyle{empty}
+
+% ---------- Encabezado ----------
+\noindent\colorbox{ibero}{\parbox{\linewidth}{%
+  \vspace{4pt}\centering
+  {\large\bfseries\color{white}FORMULARIO — PRIMER EXAMEN PARCIAL}\\[2pt]
+  {\small\color{white}Cálculo III (MT024) · Univ.\ Iberoamericana · Sesiones 1–5}
+  \vspace{4pt}}}
+
+\vspace{6pt}
+
+% ============================================================
+%  PÁGINA 1: Técnicas de EDOs (Sesiones 1–5)
+% ============================================================
+\begin{multicols}{2}
+
+% ---- S1: Clasificación ----
+\hdr{ibero}{1. Clasificación de EDOs}
+
+\textbf{Forma general lineal de orden $n$:}
+\[
+  a_n(x)\,y^{(n)} + \cdots + a_1(x)\,y' + a_0(x)\,y = g(x)
+\]
+
+\textbf{Lineal si:} $y$ y sus derivadas en potencia 1; coeficientes $a_i$ solo en $x$.
+
+\medskip
+\begin{tabular}{@{}ll@{}}
+  \textit{Explícita}  & $y = \phi(x)$ \\
+  \textit{Implícita}  & $G(x,y) = 0$ \\
+  \textit{General}    & $n$ constantes arbitrarias \\
+  \textit{Particular} & constantes determinadas por CI \\
+  \textit{Singular}   & solución fuera de la familia general \\
+\end{tabular}
+
+% ---- S2: PVI ----
+\hdr{ibero}{2. Problema de Valor Inicial (PVI)}
+
+\[
+  \frac{dy}{dx} = f(x,y), \qquad y(x_0) = y_0
+\]
+
+Para orden $n$: se necesitan $n$ condiciones iniciales en el mismo $x_0$.
+
+\begin{caja}[ibero]
+\textbf{Teorema de Existencia y Unicidad (Picard):}\\
+Si $f$ y $\dfrac{\partial f}{\partial y}$ son \textbf{continuas} en una región que contiene $(x_0,y_0)$,
+existe una \textbf{solución única} en algún intervalo alrededor de $x_0$.
+\end{caja}
+
+El intervalo de validez termina donde $y$ diverge o $f$ pierde continuidad.
+
+% ---- S3: Separables ----
+\hdr{emerald}{3. Ecuaciones Separables}
+
+\[
+  \frac{dy}{dx} = g(x)\,h(y)
+  \qquad\Longrightarrow\qquad
+  \int\frac{dy}{h(y)} = \int g(x)\,dx + C
+\]
+
+\begin{caja}[emerald]
+Verificar siempre las soluciones constantes $y = y_0$ donde $h(y_0) = 0$.
+\end{caja}
+
+% ---- S4: Lineales ----
+\hdr{amber}{4. Ecuaciones Lineales de 1\textsuperscript{er} Orden}
+
+\textbf{Forma estándar:}
+\[
+  y' + P(x)\,y = Q(x)
+\]
+
+\textbf{Factor integrante:}
+\[
+  \mu(x) = e^{\int P(x)\,dx}
+\]
+
+\begin{caja}[amber]
+\[
+  \frac{d}{dx}\bigl[\mu(x)\,y\bigr] = \mu(x)\,Q(x)
+\]
+\[
+  \boxed{y = \frac{1}{\mu(x)}\int \mu(x)\,Q(x)\,dx + \frac{C}{\mu(x)}}
+\]
+\end{caja}
+
+% ---- S5: Exactas ----
+\hdr{rose}{5. Ecuaciones Exactas}
+
+\textbf{Forma diferencial:}
+\[
+  M(x,y)\,dx + N(x,y)\,dy = 0
+\]
+
+\begin{caja}[rose]
+\textbf{Condición de exactitud:}
+\[
+  \frac{\partial M}{\partial y} = \frac{\partial N}{\partial x}
+\]
+\end{caja}
+
+\textbf{Solución:} hallar $F(x,y) = C$ con $F_x = M$ y $F_y = N$:
+\[
+  F = \int M\,dx + g(y), \qquad
+  g'(y) = N - \frac{\partial}{\partial y}\!\int M\,dx
+\]
+
+\textbf{Factor integrante} (cuando no es exacta):
+\[
+  \frac{M_y - N_x}{N} = f(x) \;\Rightarrow\; \mu = e^{\int f(x)\,dx}
+\]
+\[
+  \frac{N_x - M_y}{M} = g(y) \;\Rightarrow\; \mu = e^{\int g(y)\,dy}
+\]
+
+\columnbreak
+
+% ---- Identidades Trig ----
+\hdr{ibero}{6. Identidades Trigonométricas}
+
+\textbf{Pitagóricas}
+\begin{align*}
+  \sin^2\theta + \cos^2\theta &= 1 \\
+  1 + \tan^2\theta            &= \sec^2\theta \\
+  1 + \cot^2\theta            &= \csc^2\theta
+\end{align*}
+
+\textbf{Doble ángulo}
+\begin{align*}
+  \sin 2\theta &= 2\sin\theta\cos\theta \\
+  \cos 2\theta &= \cos^2\theta - \sin^2\theta = 2\cos^2\theta - 1 = 1 - 2\sin^2\theta \\
+  \tan 2\theta &= \dfrac{2\tan\theta}{1-\tan^2\theta}
+\end{align*}
+
+\textbf{Reducción de potencias}
+\[
+  \sin^2\theta = \frac{1-\cos 2\theta}{2}, \qquad
+  \cos^2\theta = \frac{1+\cos 2\theta}{2}
+\]
+
+\textbf{Suma y diferencia de ángulos}
+\begin{align*}
+  \sin(A \pm B) &= \sin A\cos B \pm \cos A\sin B \\
+  \cos(A \pm B) &= \cos A\cos B \mp \sin A\sin B \\
+  \tan(A \pm B) &= \dfrac{\tan A \pm \tan B}{1 \mp \tan A\tan B}
+\end{align*}
+
+\textbf{Relaciones recíprocas}
+\[
+  \tan\theta = \frac{\sin\theta}{\cos\theta}, \qquad
+  \cot\theta = \frac{\cos\theta}{\sin\theta}
+\]
+\[
+  \sec\theta = \frac{1}{\cos\theta}, \qquad
+  \csc\theta = \frac{1}{\sin\theta}
+\]
+
+% ---- Derivadas ----
+\hdr{ibero}{7. Derivadas}
+
+\begin{center}
+\begin{tabular}{@{}>{$}l<{$} >{$}l<{$}@{}}
+  \toprule
+  f(x)      & f'(x) \\
+  \midrule
+  c                & 0 \\
+  x^n              & n\,x^{n-1} \\
+  e^{u(x)}         & e^u\,u' \\
+  a^x              & a^x\ln a \\
+  \ln|u|           & u'/u \\
+  \sin x           & \cos x \\
+  \cos x           & -\sin x \\
+  \tan x           & \sec^2 x \\
+  \cot x           & -\csc^2 x \\
+  \sec x           & \sec x\tan x \\
+  \csc x           & -\csc x\cot x \\
+  \arcsin x        & (1-x^2)^{-1/2} \\
+  \arccos x        & -(1-x^2)^{-1/2} \\
+  \arctan x        & (1+x^2)^{-1} \\
+  \sinh x          & \cosh x \\
+  \cosh x          & \sinh x \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+% ---- Integrales ----
+\hdr{ibero}{8. Integrales}
+
+\begin{center}
+\begin{tabular}{@{}>{$\displaystyle}l<{$} >{$\displaystyle}l<{$}@{}}
+  \toprule
+  \int f\,dx & F(x) + C \\
+  \midrule
+  \int x^n\,dx                    & \dfrac{x^{n+1}}{n+1},\; n\neq -1 \\[6pt]
+  \int \dfrac{1}{x}\,dx           & \ln|x| \\[6pt]
+  \int e^{ax}\,dx                 & \dfrac{1}{a}\,e^{ax} \\[6pt]
+  \int a^x\,dx                    & \dfrac{a^x}{\ln a} \\[6pt]
+  \int \sin x\,dx                 & -\cos x \\[3pt]
+  \int \cos x\,dx                 & \sin x \\[3pt]
+  \int \tan x\,dx                 & -\ln|\cos x| \\[3pt]
+  \int \cot x\,dx                 & \ln|\sin x| \\[3pt]
+  \int \sec x\,dx                 & \ln|\sec x + \tan x| \\[3pt]
+  \int \csc x\,dx                 & \ln|\csc x - \cot x| \\[3pt]
+  \int \sec^2 x\,dx               & \tan x \\[3pt]
+  \int \csc^2 x\,dx               & -\cot x \\[3pt]
+  \int \sec x\tan x\,dx           & \sec x \\[3pt]
+  \int \csc x\cot x\,dx           & -\csc x \\[6pt]
+  \int \dfrac{dx}{x^2+a^2}        & \dfrac{1}{a}\arctan\dfrac{x}{a} \\[8pt]
+  \int \dfrac{dx}{\sqrt{a^2-x^2}} & \arcsin\dfrac{x}{a} \\[8pt]
+  \int \dfrac{dx}{x^2-a^2}        & \dfrac{1}{2a}\ln\!\left|\dfrac{x-a}{x+a}\right| \\[6pt]
+  \int \ln x\,dx                  & x\ln x - x \\[6pt]
+  \int x\,e^{ax}\,dx              & \dfrac{e^{ax}}{a}\!\left(x - \dfrac{1}{a}\right) \\[6pt]
+  \int \sinh x\,dx                & \cosh x \\[3pt]
+  \int \cosh x\,dx                & \sinh x \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\end{multicols}
+
+\end{document}
