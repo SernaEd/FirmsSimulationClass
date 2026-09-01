@@ -112,21 +112,17 @@ export default function SesionDetallePage() {
             />
           )}
 
-          <section className={`${CARD_SM} p-6`}>
-            {session.descripcion ? (
+          {session.descripcion && (
+            <section className={`${CARD_SM} p-6`}>
               <p className="text-sm text-neutral-300 whitespace-pre-wrap">
                 {session.descripcion}
               </p>
-            ) : (
-              <p className="text-sm text-neutral-500">Esta sesión aún no tiene descripción.</p>
-            )}
-          </section>
+            </section>
+          )}
 
-          <section className={`${CARD_SM} p-6 space-y-3`}>
-            <h2 className="text-sm font-semibold text-neutral-300">Material de la clase</h2>
-            {session.attachments.length === 0 ? (
-              <p className="text-sm text-neutral-500">Todavía no hay archivos adjuntos.</p>
-            ) : (
+          {session.attachments.length > 0 && (
+            <section className={`${CARD_SM} p-6 space-y-3`}>
+              <h2 className="text-sm font-semibold text-neutral-300">Material de la clase</h2>
               <ul className="grid sm:grid-cols-2 gap-3">
                 {session.attachments.map((a) => (
                   <AttachmentRow
@@ -139,8 +135,8 @@ export default function SesionDetallePage() {
                   />
                 ))}
               </ul>
-            )}
-          </section>
+            </section>
+          )}
 
           <section className="rounded-md border border-dashed border-surface-border p-6 text-center">
             <p className="text-sm text-neutral-500">Comentarios — próximamente.</p>

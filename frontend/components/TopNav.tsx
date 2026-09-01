@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { auth } from "@/lib/api";
 import { useAuthContext } from "@/lib/AuthContext";
 import { useFeatureFlag } from "@/lib/useFeatureFlag";
@@ -21,7 +21,6 @@ function isGroup(entry: NavEntry): entry is NavGroup {
 const STUDENT_ENTRIES: NavEntry[] = [
   { href: "/inicio", label: "Inicio" },
   { href: "/clases", label: "Clases" },
-  { href: "/calendario", label: "Calendario" },
   { href: "/mi-equipo", label: "Mi equipo" },
   { href: "/licitaciones", label: "Licitaciones" },
   { href: "/privilegios", label: "Privilegios" },
@@ -158,6 +157,7 @@ export function TopNav() {
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set(groupsContaining(pathname)));
   const home = authState.status === "authenticated" ? "/inicio" : "/";
   const showMenu = authState.status === "authenticated" || authState.status === "error";
@@ -178,6 +178,23 @@ export function TopNav() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
+
+  // Cierra el menú al hacer click fuera de él. Un backdrop fijo `inset-0`
+  // no sirve aquí: este header tiene `backdrop-blur`, y un `filter`/
+  // `backdrop-filter` en un ancestro crea un containing block para
+  // `position: fixed`, así que ese backdrop quedaría acotado al alto del
+  // header en vez de cubrir toda la pantalla. Un listener en `document` no
+  // depende de esa geometría.
+  useEffect(() => {
+    if (!open) return;
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
 
   function handleLogout() {
     setOpen(false);
@@ -207,7 +224,7 @@ export function TopNav() {
         </Link>
 
         {showMenu && (
-          <div className="relative">
+          <div className="relative" ref={menuRef}>
             <button
               type="button"
               onClick={() => setOpen((v) => !v)}
@@ -235,43 +252,34 @@ export function TopNav() {
             </button>
 
             {open && (
-              <>
-                {/* Backdrop invisible: cierra el menú al hacer click fuera. */}
+              <div
+                role="menu"
+                className="absolute right-0 z-50 mt-2 w-64 rounded-lg border border-surface-border bg-surface-raised shadow-lg py-2"
+              >
+                {entries.length > 0 && (
+                  <div className="py-1">
+                    {entries.map((entry) => (
+                      <NavMenuEntry
+                        key={isGroup(entry) ? entry.label : entry.href}
+                        entry={entry}
+                        pathname={pathname}
+                        expanded={isGroup(entry) && expandedGroups.has(entry.label)}
+                        onToggleGroup={(label) => toggleSet(expandedGroups, setExpandedGroups, label)}
+                        onNavigate={() => setOpen(false)}
+                      />
+                    ))}
+                    <div className="my-1 border-t border-surface-border" />
+                  </div>
+                )}
                 <button
-                  aria-hidden="true"
-                  tabIndex={-1}
-                  onClick={() => setOpen(false)}
-                  className="fixed inset-0 z-40 cursor-default"
-                />
-                <div
-                  role="menu"
-                  className="absolute right-0 z-50 mt-2 w-64 rounded-lg border border-surface-border bg-surface-raised shadow-lg py-2"
+                  type="button"
+                  role="menuitem"
+                  onClick={handleLogout}
+                  className="block w-full text-left px-4 py-2 text-sm text-neutral-400 hover:text-white hover:bg-surface transition-colors"
                 >
-                  {entries.length > 0 && (
-                    <div className="py-1">
-                      {entries.map((entry) => (
-                        <NavMenuEntry
-                          key={isGroup(entry) ? entry.label : entry.href}
-                          entry={entry}
-                          pathname={pathname}
-                          expanded={isGroup(entry) && expandedGroups.has(entry.label)}
-                          onToggleGroup={(label) => toggleSet(expandedGroups, setExpandedGroups, label)}
-                          onNavigate={() => setOpen(false)}
-                        />
-                      ))}
-                      <div className="my-1 border-t border-surface-border" />
-                    </div>
-                  )}
-                  <button
-                    type="button"
-                    role="menuitem"
-                    onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-sm text-neutral-400 hover:text-white hover:bg-surface transition-colors"
-                  >
-                    Cerrar sesión
-                  </button>
-                </div>
-              </>
+                  Cerrar sesión
+                </button>
+              </div>
             )}
           </div>
         )}
