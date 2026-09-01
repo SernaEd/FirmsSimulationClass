@@ -69,7 +69,7 @@ export default function Registro() {
           <Field label="Nombre(s)" name="nombre" required minLength={1} maxLength={100} />
           <Field label="Apellidos" name="apellidos" required minLength={1} maxLength={100} />
         </div>
-        <Field label="Número de cuenta (Sin Digito)" name="numero_cuenta" required minLength={4} maxLength={20} />
+        <Field label="Número de cuenta (Sin Dígito)" name="numero_cuenta" required minLength={4} maxLength={20} />
         <Field
           label="Nickname"
           name="nickname"

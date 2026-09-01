@@ -111,7 +111,7 @@ export default function TestPerfil() {
         <h1 className="text-3xl font-semibold">Test de perfil de trabajo en equipo</h1>
         <p className="text-neutral-400 text-sm max-w-2xl">
           Responde cómo tiendes a actuar en cada escenario. No hay respuestas
-          correctas o incorrectas: el resultado ayuda a formar equipos
+          correctas ni incorrectas: el resultado ayuda a formar equipos
           balanceados y no es editable una vez enviado (el profesor puede
           reasignarlo manualmente en casos justificados).
         </p>
@@ -245,7 +245,7 @@ function ProfileResultScreen({ user }: { user: UserOut }) {
         onClick={() => router.push("/inicio")}
         className="w-full rounded-lg border border-accent-500 text-accent-300 hover:bg-accent-500/10 transition-colors px-6 py-3 font-medium"
       >
-        Ir a mi dashboard
+        Ir a mi inicio
       </button>
     </div>
   );

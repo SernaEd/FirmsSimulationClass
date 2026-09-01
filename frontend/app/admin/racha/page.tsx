@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { api, StreakEvidenceOut } from "@/lib/api";
 import { useAuth } from "@/lib/useAuth";
@@ -57,9 +58,12 @@ export default function AdminRachaSpotCheck() {
 
   return (
     <main className="max-w-5xl mx-auto px-4 py-8">
-      <header className="mb-8">
-        <h1 className="text-2xl font-bold text-neutral-100">Verificación Puntual (Racha)</h1>
-        <p className="text-sm text-neutral-400 mt-1">
+      <header className="mb-8 space-y-1">
+        <Link href="/inicio" className="text-sm text-neutral-400 hover:text-white">
+          ← Volver al inicio
+        </Link>
+        <h1 className="text-2xl font-bold text-neutral-100 pt-4">Verificación Puntual (Racha)</h1>
+        <p className="text-sm text-neutral-400">
           Aquí puedes revisar las soluciones subidas por los alumnos en caso de auditoría o disputas.
         </p>
       </header>
