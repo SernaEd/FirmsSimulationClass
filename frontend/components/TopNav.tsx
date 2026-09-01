@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { auth } from "@/lib/api";
 import { useAuthContext } from "@/lib/AuthContext";
 import { useFeatureFlag } from "@/lib/useFeatureFlag";
+import { useLicitacionActiva } from "@/lib/useLicitacionActiva";
 import { toggleSet } from "@/lib/toggleSet";
 
 type NavLink = { href: string; label: string };
@@ -163,6 +164,10 @@ export function TopNav() {
   // Décimas solo está disponible las últimas semanas del semestre (§5.4) —
   // el profesor lo enciende manualmente vía el flag "decimas_enabled".
   const decimasEnabled = useFeatureFlag("decimas_enabled");
+  // Licitaciones solo se muestra en el menú cuando el profesor tiene una
+  // abierta — de otro modo el alumno entra a una pantalla de "no hay
+  // ninguna licitación abierta ahora mismo" por defecto.
+  const licitacionActiva = useLicitacionActiva();
 
   // Al navegar a una página dentro de un grupo, ese grupo se abre solo (sin
   // cerrar los demás) para no esconder la sección donde la persona está parada.
@@ -183,7 +188,12 @@ export function TopNav() {
   const entries: NavEntry[] =
     authState.status === "authenticated" && authState.user.estado === "active"
       ? [
-          ...STUDENT_ENTRIES.filter((e) => decimasEnabled || (isGroup(e) ? true : e.href !== "/decimas")),
+          ...STUDENT_ENTRIES.filter((e) => {
+            if (isGroup(e)) return true;
+            if (e.href === "/decimas") return decimasEnabled;
+            if (e.href === "/licitaciones") return licitacionActiva;
+            return true;
+          }),
           ...(authState.user.is_admin ? [ADMIN_GROUP] : []),
         ]
       : [];

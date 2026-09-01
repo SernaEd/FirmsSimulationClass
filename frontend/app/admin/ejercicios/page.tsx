@@ -80,9 +80,12 @@ export default function AdminEjercicios() {
 
   return (
     <main className="max-w-5xl mx-auto px-4 py-8">
-      <header className="mb-8">
-        <h1 className="text-2xl font-bold text-neutral-100">Banco de Ejercicios Diarios</h1>
-        <p className="text-sm text-neutral-400 mt-1">
+      <header className="mb-8 space-y-1">
+        <Link href="/inicio" className="text-sm text-neutral-400 hover:text-white">
+          ← Volver al inicio
+        </Link>
+        <h1 className="text-2xl font-bold text-neutral-100 pt-4">Banco de Ejercicios Diarios</h1>
+        <p className="text-sm text-neutral-400">
           Programa los problemas del día para la racha. Puedes usar texto, LaTeX o adjuntar una imagen.
         </p>
       </header>

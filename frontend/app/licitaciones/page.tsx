@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState, FormEvent, ReactNode } from "react";
 import {
   ApiError,
@@ -95,6 +96,9 @@ export default function LicitacionesPage() {
   return (
     <main className="min-h-screen max-w-5xl mx-auto px-4 sm:px-8 py-8 space-y-8">
       <header className="space-y-2">
+        <Link href="/inicio" className="text-sm text-neutral-500 hover:text-neutral-300">
+          ← Regresar al inicio
+        </Link>
         <p className="text-accent-400 text-xs uppercase tracking-[0.12em]">Licitaciones</p>
         <h1 className="text-3xl font-semibold">Sala de licitación</h1>
         <p className="text-neutral-400 text-sm max-w-2xl">

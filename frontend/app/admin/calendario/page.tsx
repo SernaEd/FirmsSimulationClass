@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import {
   ApiError,
@@ -88,9 +89,12 @@ export default function AdminCalendario() {
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-8">
-      <header className="mb-8">
-        <h1 className="text-2xl font-bold text-neutral-100">Calendario académico</h1>
-        <p className="text-sm text-neutral-400 mt-1">
+      <header className="mb-8 space-y-1">
+        <Link href="/inicio" className="text-sm text-neutral-400 hover:text-white">
+          ← Volver al inicio
+        </Link>
+        <h1 className="text-2xl font-bold text-neutral-100 pt-4">Calendario académico</h1>
+        <p className="text-sm text-neutral-400">
           Exámenes, entregas, licitaciones, descansos y excepciones (§11.5). Los eventos cuya categoría
           está marcada "cuenta como día neutro para la racha" hacen que ese día no rompa ni exija
           evidencia a nadie — lunes-jueves cuentan por diseño, viernes-domingo ya son neutros sin

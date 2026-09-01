@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { HomeLink } from "@/components/HomeLink";
 
 export const metadata = {
   title: "Reglas y políticas · Plataforma Cálculo 3",
@@ -15,9 +15,7 @@ export default function Reglas() {
   return (
     <main className="min-h-screen max-w-5xl mx-auto px-4 sm:px-8 py-8">
       <header className="space-y-2 mb-10">
-        <Link href="/" className="text-sm text-neutral-500 hover:text-neutral-300">
-          ← Regresar
-        </Link>
+        <HomeLink className="text-sm text-neutral-500 hover:text-neutral-300" />
         <h1 className="text-4xl font-semibold">Reglas y políticas</h1>
         <p className="text-neutral-400">
           Léelas antes de registrarte. Al hacerlo declaras conocerlas y aceptarlas.
@@ -86,8 +84,8 @@ export default function Reglas() {
                 privilegio que altere su formato o contenido.
               </li>
               <li>
-                El foro admite publicar con nickname o de forma anónima para pares. El
-                profesor siempre ve el autor real.
+                El foro permite publicar con nickname o de forma anónima para pares. El
+                profesor siempre ve al autor real.
               </li>
               <li>
                 Los kudos cuestan puntos al emisor (10 pts). Solo circulan al interior
@@ -109,7 +107,7 @@ export default function Reglas() {
             <p className="text-neutral-300">
               Puedes abrir una disputa por: privilegio no consumido correctamente,
               ajuste discrecional considerado injusto, racha marcada como fallida
-              por error, o evaluación de retroalimentación.
+              por error, o retroalimentación de un compañero que consideres injusta.
             </p>
             <ul className="list-disc pl-5 space-y-2 text-neutral-300">
               <li>
@@ -119,11 +117,6 @@ export default function Reglas() {
               <li>
                 <strong className="text-white">Plazo de respuesta:</strong> 5 días
                 hábiles.
-              </li>
-              <li>
-                <strong className="text-white">Escalamiento:</strong> si la respuesta
-                del profesor no es satisfactoria, puedes acudir a la coordinación
-                académica del programa.
               </li>
             </ul>
           </section>

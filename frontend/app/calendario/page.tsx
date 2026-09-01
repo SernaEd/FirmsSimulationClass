@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { ApiError, CalendarEventOut, api } from "@/lib/api";
 import { useAuth } from "@/lib/useAuth";
@@ -58,7 +59,10 @@ export default function Calendario() {
   return (
     <main className="max-w-5xl mx-auto px-4 py-8">
       <header className="mb-6">
-        <p className="text-accent-400 text-xs uppercase tracking-[0.12em] mb-1">Cálculo 3</p>
+        <Link href="/inicio" className="text-sm text-neutral-500 hover:text-neutral-300">
+          ← Regresar al inicio
+        </Link>
+        <p className="text-accent-400 text-xs uppercase tracking-[0.12em] mb-1 mt-3">Cálculo 3</p>
         <h1 className="text-2xl font-medium text-neutral-100">Calendario</h1>
         <p className="text-sm text-neutral-500 mt-1">
           Exámenes, entregas, licitaciones y descansos del curso, más cualquier excepción que tu

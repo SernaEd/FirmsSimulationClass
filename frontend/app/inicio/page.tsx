@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ActionBanner } from "@/components/ActionBanner";
 import { BalanceWidget } from "@/components/BalanceWidget";
+import { CalendarWidget } from "@/components/CalendarWidget";
 import { StreakWidget } from "@/components/StreakWidget";
 import { IconRings, RoleIcon } from "@/components/icons";
 import { TeamOut, UserStatus, api, pickByPronoun } from "@/lib/api";
@@ -101,6 +102,10 @@ export default function Inicio() {
           <div className="grid md:grid-cols-[1.1fr_.9fr] gap-5 mb-5">
             <StreakWidget token={authState.token} />
             <BalanceWidget token={authState.token} />
+          </div>
+
+          <div className="mb-5">
+            <CalendarWidget token={authState.token} />
           </div>
 
           <ActionBanner
