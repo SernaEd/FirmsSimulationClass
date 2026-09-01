@@ -73,6 +73,14 @@ server {
     listen 80;
     server_name $API_DOMAIN;
 
+    # Nginx por defecto corta cualquier body arriba de 1 MB (client_max_body_size)
+    # ANTES de que la request llegue a FastAPI — así rechaza con 413 y nunca
+    # corre CORSMiddleware, por lo que el navegador lo reporta como error de
+    # CORS en vez de 413. El límite real de adjuntos lo pone el backend
+    # (MAX_ATTACHMENT_SIZE_MB, ver backend/app/config.py); este valor solo
+    # necesita ser mayor a ese tope (con margen por el overhead de multipart).
+    client_max_body_size 55m;
+
     location / {
         proxy_pass http://127.0.0.1:8001;
         proxy_http_version 1.1;
