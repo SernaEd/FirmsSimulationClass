@@ -7,6 +7,7 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
 import { DailyExerciseOut, StreakDayOut, api } from "@/lib/api";
+import { todayMxStr } from "@/lib/date";
 
 /** Widget de racha diaria (§14.2, Fila 1; UiDesign/README.md §2 "Streak
  *  card"). Se pega en cualquier página autenticada; carga /me/streak (mes
@@ -64,7 +65,7 @@ export function StreakWidget({ token }: { token: string }) {
     }
   };
 
-  const todayStr = new Date().toLocaleDateString("en-CA", { timeZone: "America/Mexico_City" });
+  const todayStr = todayMxStr();
   const todayStreak = streakDays.find((d) => d.fecha === todayStr);
   const daysInRow = streakDays.filter((d) => d.estado === "completado" || d.estado === "pase_aplicado").length;
 
