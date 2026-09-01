@@ -157,12 +157,17 @@ async function request<T>(
 }
 
 // Subida de archivos (multipart/form-data) — sin Content-Type manual: el
-// navegador arma el boundary solo. Solo se usa para adjuntos de sesión.
-async function requestUpload<T>(path: string, formData: FormData, token: string): Promise<T> {
+// navegador arma el boundary solo.
+async function requestUpload<T>(
+  path: string,
+  formData: FormData,
+  token: string,
+  method: "POST" | "PATCH" = "POST",
+): Promise<T> {
   let res: Response;
   try {
     res = await fetch(`${API_URL}${path}`, {
-      method: "POST",
+      method,
       headers: { Authorization: `Bearer ${token}` },
       body: formData,
     });
@@ -543,6 +548,7 @@ export type StreakDayOut = {
 export type DailyExerciseOut = {
   id: number;
   fecha: string;
+  course_session_id: number | null;
   course_session?: {
     id: number;
     module_id: number;
@@ -1006,6 +1012,8 @@ export const api = {
     request<DailyExerciseOut[]>("/admin/daily-exercises", {}, token),
   adminCreateExercise: (token: string, formData: FormData) =>
     requestUpload<DailyExerciseOut>("/admin/daily-exercises", formData, token),
+  adminUpdateExercise: (token: string, exerciseId: number, formData: FormData) =>
+    requestUpload<DailyExerciseOut>(`/admin/daily-exercises/${exerciseId}`, formData, token, "PATCH"),
 
   // ---- Racha (Streak) ----
   submitStreakEvidence: (token: string, formData: FormData) =>
