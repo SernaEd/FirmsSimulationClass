@@ -1,0 +1,441 @@
+% ============================================================
+%  SOLUCIONARIO — GUÍA DE ESTUDIO, PRIMER PARCIAL
+%  Cálculo III: Ecuaciones Diferenciales en Ingeniería (MT024)
+%  Universidad Iberoamericana
+%
+%  Documento hermano de guia_estudio_primer_parcial.tex — mismos
+%  números de problema (1a, 1b, 2a, ...) y puntos de referencia.
+% ============================================================
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,mexico]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{mdframed}
+\usepackage{parskip}
+\usepackage{enumitem}
+
+\geometry{letterpaper, top=1.6cm, bottom=1.8cm, left=2cm, right=2cm}
+
+\newcommand{\categoria}[3]{%
+  \bigskip\bigskip\noindent
+  \rule{\linewidth}{0.8pt}\\[2pt]
+  {\Large\bfseries Categoría #1 --- #2}\hfill\textbf{[#3 pts]}\\[2pt]
+  \rule{\linewidth}{0.8pt}\vspace{4pt}
+}
+
+\newcommand{\problema}[3]{%
+  \bigskip\noindent
+  {\large\textbf{Problema #1}}\hfill\textbf{[#2 pts]}\\[3pt]
+  {\small\itshape #3}\par
+  \vspace{2pt}\hrule\vspace{8pt}
+}
+
+\newcommand{\subparte}[2]{%
+  \medskip\noindent\textbf{(#1}\ #2\par\smallskip
+}
+
+\newenvironment{resultado}
+  {\begin{mdframed}[linecolor=black,linewidth=0.6pt,
+    innerleftmargin=6pt,innerrightmargin=6pt,innertopmargin=4pt,innerbottommargin=4pt]
+   \bfseries}
+  {\end{mdframed}}
+
+\newenvironment{rubrica}{%
+  \begin{mdframed}[linecolor=black,linewidth=0.6pt,
+    innerleftmargin=8pt,innerrightmargin=8pt,innertopmargin=5pt,innerbottommargin=5pt]
+  \small\textbf{Rúbrica de este problema.}\par\smallskip
+}{\end{mdframed}}
+
+\setlength{\parindent}{0pt}
+\renewcommand{\arraystretch}{1.3}
+
+\begin{document}
+
+\begin{center}
+{\Large\bfseries SOLUCIONARIO — GUÍA DE ESTUDIO, PRIMER PARCIAL}\\[2pt]
+{\small Cálculo III (MT024) · Univ.\ Iberoamericana}
+\end{center}
+
+\vspace{4pt}\hrule
+
+% ============================================================
+\categoria{1}{Clasificación de ecuaciones diferenciales}{10}
+
+\problema{1a}{10}{Clasifica cada ecuación}
+
+\begin{enumerate}[label=\textbf{\alph*)}, itemsep=8pt]
+  \item $y''''+x^2y''-\sin(x)y=0$: \textbf{EDO}, \textbf{orden 4}. \textbf{Lineal}: $y,y'',y''''$ a la primera potencia, coeficientes $(1,x^2,-\sin x)$ dependen solo de $x$.
+  \item $(y')^4+y=x$: \textbf{EDO}, \textbf{orden 1} (la derivada de mayor orden presente es $y'$; el exponente 4 es el grado del término, no cambia el orden de la ecuación). \textbf{No lineal}: $y'$ aparece elevada a la cuarta potencia, y la linealidad exige potencia 1 en cada derivada.
+  \item $u_t = \alpha u_{xx}$: \textbf{EDP} (variables independientes $x,t$), \textbf{orden 2} (ecuación de calor). \textbf{Lineal}.
+  \item $y''+yy'=e^x$: \textbf{EDO}, \textbf{orden 2}. \textbf{No lineal}: el término $y\,y'$ es un producto de la variable dependiente por su propia derivada, lo cual viola la condición de linealidad.
+\end{enumerate}
+
+\begin{rubrica}
+2 pts por inciso: 0.5 por Tipo+Orden, 1.5 por linealidad \emph{justificada} citando la condición específica (potencia de la derivada, o dependencia del coeficiente). En b), 0 pts de linealidad si el alumno confunde el exponente 4 con el orden real de la ecuación (1).
+\end{rubrica}
+
+\problema{1b}{10}{Clasifica cada ecuación}
+
+\begin{enumerate}[label=\textbf{\alph*)}, itemsep=8pt]
+  \item $y''+4xy'-7y=\ln x$: \textbf{EDO}, \textbf{orden 2}. \textbf{Lineal}: $y,y',y''$ a la primera potencia, coeficientes $(1,4x,-7)$ dependen solo de $x$.
+  \item $(y')^2+x^3y=\sin x$: \textbf{EDO}, \textbf{orden 1} (la derivada de mayor orden presente es $y'$; el exponente 2 es el grado, no el orden). \textbf{No lineal}: $y'$ aparece elevada al cuadrado.
+  \item $v_{rr}+\dfrac{1}{r}v_r=v_t$: \textbf{EDP} (variables independientes $r,t$), \textbf{orden 2}. \textbf{Lineal}: todos los términos son derivadas de $v$ a la primera potencia, con coeficientes ($1$, $1/r$) que dependen solo de $r$.
+  \item $y''-yy'+x=0$: \textbf{EDO}, \textbf{orden 2}. \textbf{No lineal}: el término $y\,y'$ es un producto de la variable dependiente por su propia derivada.
+\end{enumerate}
+
+\begin{rubrica}
+2 pts por inciso: 0.5 por Tipo+Orden, 1.5 por linealidad \emph{justificada}. En b), 0 pts de linealidad si el alumno confunde el exponente 2 con el orden real de la ecuación (1). En c), el alumno debe notar que $1/r$ depende solo de la variable independiente $r$, no de $v$.
+\end{rubrica}
+
+\newpage
+% ============================================================
+\categoria{2}{PVI, Existencia-Unicidad y Separables}{18}
+
+\problema{2a}{18}{PVI y falla de unicidad}
+
+\[
+\frac{dy}{dx}=\sqrt{y}, \qquad y(0)=0.
+\]
+
+\subparte{a)}{$f(x,y)=\sqrt{y}$ es continua para $y\ge0$, pero $\dfrac{\partial f}{\partial y}=\dfrac{1}{2\sqrt y}$ \textbf{no} es continua en $y=0$ (se indefine). Como la condición inicial es exactamente $y_0=0$, las hipótesis del teorema \textbf{fallan} en el punto de interés: el teorema \textbf{no} garantiza unicidad aquí (aunque tampoco la prohíbe).}
+
+\subparte{b)}{Una solución evidente es la constante
+\[
+y_1(x) = 0 \quad \text{para todo } x
+\]
+(pues $dy/dx=0=\sqrt0$). Otra solución, separando variables para $y>0$: $\dfrac{dy}{\sqrt y}=dx \Rightarrow 2\sqrt y = x+C$; para que pase por el origen con $x\ge0$, $C=0$, así que $y=x^2/4$. Definiendo
+\[
+y_2(x) = \begin{cases} 0, & x<0 \\ \dfrac{x^2}{4}, & x\ge0, \end{cases}
+\]
+se verifica que $y_2$ es diferenciable (con $y_2'(0)=0$ desde ambos lados) y satisface la ecuación y el PVI. Como $y_1\neq y_2$ para $x>0$ pero ambas resuelven el mismo PVI,
+\begin{resultado}
+se confirma la falla de unicidad anticipada en (a).
+\end{resultado}}
+
+\begin{rubrica}
+(a) 8 pts: 3 por $f$ continua, 3 por identificar que $\partial f/\partial y$ no es continua en $y=0$, 2 por concluir explícitamente que el teorema no garantiza unicidad ahí. (b) 10 pts: 4 por $y\equiv0$, 5 por construir la segunda solución (3 si solo da $y=x^2/4$ sin verificar que también satisface el PVI en $x=0$), 1 por la conclusión que conecta ambas soluciones con la falla de unicidad de (a).
+\end{rubrica}
+
+\problema{2b}{18}{Separable con solución perdida}
+
+\[
+\frac{dy}{dx}=1-y^2, \qquad y(0)=0.
+\]
+
+\subparte{a)}{$f(x,y)=1-y^2$ y $\dfrac{\partial f}{\partial y}=-2y$ son polinomios, continuos en todo $\mathbb{R}^2$. El teorema garantiza entonces una solución única en algún intervalo abierto alrededor de $x_0=0$.}
+
+\subparte{b)}{$h(y)=1-y^2=0 \Rightarrow y=1$ y $y=-1$ son las soluciones constantes (de equilibrio).}
+
+\subparte{c)}{Como $y_0=0$ no es una de las soluciones constantes, separamos con seguridad:
+\[
+\int \frac{dy}{1-y^2} = \int dx.
+\]
+Por fracciones parciales, $\dfrac{1}{1-y^2}=\dfrac12\left(\dfrac{1}{1-y}+\dfrac{1}{1+y}\right)$, así que
+\[
+\frac12\ln\left|\frac{1+y}{1-y}\right| = x+C.
+\]
+Con $y(0)=0$: $\frac12\ln(1)=0=C$. Entonces $\ln\!\left(\dfrac{1+y}{1-y}\right)=2x \Rightarrow \dfrac{1+y}{1-y}=e^{2x}$. Despejando $y$:
+\[
+1+y = e^{2x}-e^{2x}y \;\Rightarrow\; y(1+e^{2x}) = e^{2x}-1
+\]
+\begin{resultado}
+\[
+y(x) = \frac{e^{2x}-1}{e^{2x}+1} = \tanh(x), \qquad I = (-\infty,\infty).
+\]
+\end{resultado}
+El denominador $e^{2x}+1$ nunca se anula, así que la solución está definida en todo $\mathbb R$ (consistente: nunca toca $y=\pm1$, las soluciones constantes que delimitan esta familia).}
+
+\begin{rubrica}
+(a) 4 pts: crédito completo solo si se menciona la continuidad de \emph{ambas}, $f$ y $\partial f/\partial y$. (b) 4 pts: 2 por cada solución constante correctamente identificada. (c) 10 pts: 3 por separar y usar fracciones parciales correctamente, 3 por integrar y aplicar la condición inicial, 3 por despejar $y$ explícitamente (crédito parcial si se deja en forma implícita: 2/3), 1 por el intervalo de definición con su justificación.
+\end{rubrica}
+
+\newpage
+\problema{2c}{18}{Separable con integral no elemental}
+
+\[
+\frac{dy}{dx}=e^{-x^2}, \qquad y(0)=2.
+\]
+
+\subparte{a)}{$f(x,y)=e^{-x^2}$ no depende de $y$, y $\dfrac{\partial f}{\partial y}=0$: ambas son continuas en todo $\mathbb{R}^2$. Además, esta ecuación es lineal ($P(x)=0$, $f(x)=e^{-x^2}$), así que por el teorema del caso lineal la solución es única en \textbf{todo} $\mathbb{R}$, no solo en algún intervalo alrededor de $x_0$.}
+
+\subparte{b)}{Integrando directamente (la ecuación ya está separada: $dy = e^{-x^2}dx$):
+\[
+y(x) = y(0) + \int_0^x e^{-t^2}\,dt = 2+\int_0^x e^{-t^2}\,dt.
+\]
+Usando $\text{erf}(x)=\dfrac{2}{\sqrt\pi}\displaystyle\int_0^x e^{-t^2}dt$:
+\begin{resultado}
+\[
+y(x) = 2 + \frac{\sqrt\pi}{2}\,\text{erf}(x).
+\]
+\end{resultado}
+Verificación: por el Teorema Fundamental del Cálculo, $\dfrac{d}{dx}\displaystyle\int_0^x e^{-t^2}dt = e^{-x^2}$, así que $y'(x)=e^{-x^2}$, exactamente la ecuación original; y $y(0)=2+0=2$ \checkmark.}
+
+\begin{rubrica}
+(a) 4 pts: 2 por la continuidad de $f$ y $\partial f/\partial y$, 2 por identificar que además es lineal y por lo tanto la validez es en todo $\mathbb{R}$ (no solo local). (b) 14 pts: 6 por plantear la solución como una integral definida con límite variable, 4 por la reescritura en términos de $\text{erf}$ (o dejarla como integral: crédito completo igual), 4 por la verificación explícita con el Teorema Fundamental del Cálculo.
+\end{rubrica}
+
+\newpage
+% ============================================================
+\categoria{3}{Ecuación Lineal}{18}
+
+\problema{3a}{18}{Lineal con coeficiente variable}
+
+\[
+x^2y'+2xy=\cos x, \qquad y(\pi)=0.
+\]
+
+\subparte{a)}{Dividiendo entre $x^2$: forma estándar $y'+\dfrac2x y = \dfrac{\cos x}{x^2}$, con $P(x)=2/x$ y $f(x)=\cos x/x^2$, continuas en $(0,\infty)$ y en $(-\infty,0)$. Como $x_0=\pi>0$, el intervalo relevante es $(0,\infty)$.}
+
+\subparte{b)}{Factor integrante $\mu(x)=e^{\int 2/x\,dx}=x^2$. Nota que $x^2y'+2xy$ ya es exactamente $\dfrac{d}{dx}[x^2y]$, así que la ecuación original se reescribe directamente como
+\[
+\frac{d}{dx}\left[x^2y\right] = \cos x \;\Longrightarrow\; x^2y=\sin x+C.
+\]
+Con $y(\pi)=0$: $\pi^2(0)=\sin\pi+C=0+C \Rightarrow C=0$.
+\begin{resultado}
+\[
+y(x) = \frac{\sin x}{x^2}.
+\]
+\end{resultado}}
+
+\subparte{c)}{Por el teorema del caso lineal, como $P$ y $f$ son continuas en $(0,\infty)$ y $x_0=\pi\in(0,\infty)$, la solución es válida en \textbf{todo} ese intervalo: $I=(0,\infty)$.}
+
+\begin{rubrica}
+(a) 4 pts. (b) 10 pts: 4 por identificar que el lado izquierdo ya es $\frac{d}{dx}[x^2y]$ (o llegar a lo mismo vía el factor integrante estándar), 4 por integrar correctamente, 2 por aplicar la condición inicial. (c) 4 pts: debe citar el teorema explícitamente, no solo repetir el intervalo de (a).
+\end{rubrica}
+
+\problema{3b}{18}{Lineal con entrada a trozos}
+
+\[
+y'+y=f(x), \quad y(0)=0, \quad f(x)=\begin{cases}2, & 0\le x\le1\\0,&x>1.\end{cases}
+\]
+
+\subparte{a)}{\textbf{Tramo $0\le x\le1$}: $y'+y=2$. Con $\mu=e^x$: $(e^xy)'=2e^x \Rightarrow e^xy=2e^x+C_1 \Rightarrow y=2+C_1e^{-x}$. Con $y(0)=0$: $C_1=-2$.
+\[
+y_1(x) = 2-2e^{-x}, \qquad 0\le x\le1, \qquad y_1(1)=2-\frac2e.
+\]
+\textbf{Tramo $x>1$}: ecuación homogénea $y'+y=0 \Rightarrow y=C_2e^{-x}$. Por continuidad en $x=1$: $C_2e^{-1}=2-\frac2e \Rightarrow C_2=2e-2$.
+\begin{resultado}
+\[
+y(x)=\begin{cases}2-2e^{-x}, & 0\le x\le1\\ (2e-2)e^{-x}, & x>1.\end{cases}
+\]
+\end{resultado}}
+
+\subparte{b)}{$y_1'(x)=2e^{-x} \Rightarrow y_1'(1)=2/e\approx0.736$. $y_2'(x)=-(2e-2)e^{-x} \Rightarrow y_2'(1)=-(2e-2)/e = -2+2/e\approx-1.264$. Como $y_1'(1)\neq y_2'(1)$, \textbf{$y$ no es diferenciable en $x=1$}: tiene un pico ahí. Esto ocurre porque la función forzante $f(x)$ misma es discontinua en $x=1$, y esa discontinuidad se traslada directamente a la derivada de la solución (aunque $y$ sí es continua).}
+
+\begin{rubrica}
+(a) 12 pts: 5 por el primer tramo completo, 5 por el segundo tramo (ecuación homogénea) planteado correctamente, 2 por usar la continuidad en $x=1$ para hallar $C_2$ (no la derivada — ese es el inciso b). (b) 6 pts: 3 por calcular ambas derivadas laterales correctamente, 3 por la conclusión y explicación de la causa (discontinuidad de $f$).
+\end{rubrica}
+
+\newpage
+\problema{3c}{18}{Lineal con solución no elemental}
+
+\[
+\frac{dy}{dx}-2xy=4, \qquad y(0)=1.
+\]
+
+\subparte{a)}{Ya está en forma estándar: $P(x)=-2x$, $f(x)=4$, ambas continuas en \textbf{todo} $\mathbb{R}$. Por el teorema del caso lineal, la solución será válida en todo $\mathbb{R}$, sin importar qué tan complicada resulte la fórmula.}
+
+\subparte{b)}{Factor integrante: $\mu(x)=e^{\int -2x\,dx}=e^{-x^2}$.
+\[
+\frac{d}{dx}\left[e^{-x^2}y\right] = 4e^{-x^2}.
+\]
+Integrando de $0$ a $x$ y usando $y(0)=1$:
+\[
+e^{-x^2}y(x) - 1 = 4\int_0^x e^{-t^2}\,dt = 4\cdot\frac{\sqrt\pi}{2}\,\text{erf}(x) = 2\sqrt\pi\,\text{erf}(x).
+\]
+\begin{resultado}
+\[
+y(x) = e^{x^2}\Big[1+2\sqrt\pi\,\text{erf}(x)\Big].
+\]
+\end{resultado}
+Verificación: $y'=2xe^{x^2}[1+2\sqrt\pi\,\text{erf}(x)] + e^{x^2}\cdot2\sqrt\pi\cdot\text{erf}'(x)$. Como $\text{erf}'(x)=\frac{2}{\sqrt\pi}e^{-x^2}$, el segundo término es $e^{x^2}\cdot2\sqrt\pi\cdot\frac{2}{\sqrt\pi}e^{-x^2}=4$. Entonces $y'=2xy+4$, es decir $y'-2xy=4$ \checkmark.}
+
+\begin{rubrica}
+(a) 4 pts: crédito completo solo si identifica $P$ y $f$ y justifica la validez global citando el teorema (no basta con decir ``ya está en forma estándar''). (b) 14 pts: 4 por el factor integrante, 4 por integrar correctamente (reconociendo que la integral no es elemental), 3 por aplicar la condición inicial, 3 por la verificación final.
+\end{rubrica}
+
+\newpage
+% ============================================================
+\categoria{4}{Ecuación Exacta}{18}
+
+\problema{4a}{18}{Exacta con factor integrante $\mu(x)$}
+
+\[
+(y^2+3xy)\,dx+(x^2+xy)\,dy=0, \qquad y(1)=1.
+\]
+
+\subparte{a)}{$M=y^2+3xy$, $N=x^2+xy$. $M_y=2y+3x$, $N_x=2x+y$. Como $M_y\neq N_x$, no es exacta.}
+
+\subparte{b)}{
+\[
+\frac{M_y-N_x}{N} = \frac{(2y+3x)-(2x+y)}{x^2+xy} = \frac{x+y}{x(x+y)} = \frac1x,
+\]
+que depende solo de $x$, así que
+\[
+\mu(x) = e^{\int (1/x)\,dx} = x.
+\]}
+
+\subparte{c)}{Multiplicando por $x$: $(xy^2+3x^2y)\,dx+(x^3+x^2y)\,dy=0$. Verificación: $M^*_y=2xy+3x^2=N^*_x$ \checkmark. Integrando $M^*$ respecto a $x$: $F=\dfrac{x^2y^2}{2}+x^3y+g(y)$. Derivando e igualando a $N^*$: $x^2y+x^3+g'(y)=x^3+x^2y \Rightarrow g'(y)=0$. Entonces
+\[
+F(x,y) = \frac{x^2y^2}{2}+x^3y = C.
+\]
+Con $(1,1)$: $\frac12+1=\frac32=C$.
+\begin{resultado}
+\[
+x^2y^2+2x^3y = 3.
+\]
+\end{resultado}}
+
+\begin{rubrica}
+(a) 4 pts. (b) 6 pts: 2 por plantear el cociente correcto, 2 por verificar que depende solo de $x$, 2 por el factor integrante final. (c) 8 pts: 2 por verificar exactitud tras multiplicar, 4 por reconstruir $F(x,y)$ correctamente, 2 por aplicar el PVI.
+\end{rubrica}
+
+\problema{4b}{18}{Exacta con factor integrante $\mu(y)$}
+
+\[
+y\,dx+\left(2x+\frac1y\right)dy=0, \qquad y(1)=2.
+\]
+
+\subparte{a)}{$M=y$, $N=2x+\dfrac1y$. $M_y=1$, $N_x=2$. Como $M_y\neq N_x$, no es exacta.}
+
+\subparte{b)}{
+\[
+\frac{N_x-M_y}{M} = \frac{2-1}{y} = \frac1y,
+\]
+que depende solo de $y$, así que
+\[
+\mu(y) = e^{\int (1/y)\,dy} = y \quad (y>0, \text{ consistente con } y_0=2>0).
+\]}
+
+\subparte{c)}{Multiplicando por $y$: $y^2\,dx+(2xy+1)\,dy=0$. Verificación: $M^*_y=2y=N^*_x$ \checkmark. Integrando $M^*$ respecto a $x$: $F=xy^2+g(y)$. Derivando e igualando a $N^*$: $2xy+g'(y)=2xy+1 \Rightarrow g'(y)=1 \Rightarrow g(y)=y$. Entonces
+\[
+F(x,y) = xy^2+y = C.
+\]
+Con $(1,2)$: $1(4)+2=6=C$.
+\begin{resultado}
+\[
+xy^2+y = 6.
+\]
+\end{resultado}}
+
+\begin{rubrica}
+(a) 4 pts. (b) 6 pts: 2 por plantear el cociente correcto, 2 por verificar que depende solo de $y$, 2 por el factor integrante final. (c) 8 pts: 2 por verificar exactitud tras multiplicar, 4 por reconstruir $F(x,y)$ correctamente, 2 por aplicar el PVI.
+\end{rubrica}
+
+\newpage
+% ============================================================
+\categoria{5}{Modelado Integrador}{21}
+
+\problema{5a}{21}{Circuito RC}
+
+\subparte{a) Formular}{$R\dfrac{dq}{dt}+\dfrac{q}{C}=E \;\Rightarrow\; 200\dfrac{dq}{dt}+\dfrac{q}{0.01}=12$, es decir
+\[
+\frac{dq}{dt}+0.5\,q = 0.06, \qquad q(0)=0.
+\]}
+
+\subparte{b) Clasificar}{EDO de primer orden, \textbf{lineal}, con coeficientes constantes.}
+
+\subparte{c) Verificar}{$P(t)=0.5$ y $f(t)=0.06$ son continuas en todo $\mathbb{R}$, así que el teorema garantiza solución única para todo $t\ge0$ (sin sorpresas de intervalo, por ser lineal).}
+
+\subparte{d) Resolver}{$\mu=e^{0.5t}$: $(e^{0.5t}q)'=0.06e^{0.5t} \Rightarrow e^{0.5t}q = 0.12e^{0.5t}+C \Rightarrow q=0.12+Ce^{-0.5t}$. Con $q(0)=0$: $C=-0.12$.
+\begin{resultado}
+\[
+q(t) = 0.12\left(1-e^{-0.5t}\right).
+\]
+\end{resultado}}
+
+\subparte{e) Interpretar}{Cuando $t\to\infty$, $e^{-0.5t}\to0$, así que $q(t)\to 0.12$ C. Esto coincide exactamente con $E\cdot C = 12\ \text{V}\times0.01\ \text{F}=0.12$ C: en estado estacionario, el capacitor se carga hasta el voltaje de la batería, tal como predice la física del circuito.}
+
+\begin{rubrica}
+3 pts por inciso, salvo (d) 6 pts y (e) 5 pts. En (a), 0 pts si la sustitución numérica es incorrecta aunque la ecuación general esté bien. En (e), crédito completo solo si se compara explícitamente el límite con $E\cdot C$ (no basta con calcular el límite).
+\end{rubrica}
+
+\problema{5b}{21}{Enfriamiento de una taza de café}
+
+\subparte{a) Formular}{Sea $T(t)$ la temperatura del café. La razón de cambio es proporcional a $T-22$ (temperatura ambiente), y decrece porque el café se enfría:
+\[
+\frac{dT}{dt} = -0.08\,(T-22), \qquad T(0)=90.
+\]}
+
+\subparte{b) Clasificar}{EDO de primer orden, \textbf{lineal} (equivalentemente, forma estándar $T'+0.08T=1.76$), y también \textbf{separable} (autónoma).}
+
+\subparte{c) Verificar}{$f(t,T)=-0.08(T-22)$ y $\dfrac{\partial f}{\partial T}=-0.08$ son continuas en todo $\mathbb{R}^2$; por el teorema del caso lineal, la solución es única para todo $t$ (sin restricción de intervalo).}
+
+\subparte{d) Resolver}{Separando: $\dfrac{dT}{T-22}=-0.08\,dt \Rightarrow \ln|T-22|=-0.08t+C_1 \Rightarrow T-22=Ce^{-0.08t}$. Con $T(0)=90$: $C=68$.
+\begin{resultado}
+\[
+T(t) = 22+68\,e^{-0.08t}.
+\]
+\end{resultado}
+A los 15 minutos: $T(15)=22+68\,e^{-1.2}\approx 22+68(0.3012)\approx 42.5\,^\circ\text{C}$.}
+
+\subparte{e) Interpretar}{Cuando $t\to\infty$, $e^{-0.08t}\to0$, así que $T(t)\to22\,^\circ\text{C}$, la temperatura ambiente —consistente con la física del enfriamiento. Sin embargo, $T(t)=22$ exactamente solo se alcanzaría si $e^{-0.08t}=0$, lo cual nunca ocurre para $t$ finito: la exponencial se acerca a cero pero nunca lo toca. En la práctica, la diferencia se vuelve tan pequeña (fracciones de grado) que resulta indistinguible de $22\,^\circ\text{C}$ para cualquier instrumento real.}
+
+\begin{rubrica}
+3 pts por inciso, salvo (d) 6 pts y (e) 5 pts. En (a), 0 pts si el signo es incorrecto sin justificar. En (d), 2 de los 6 pts son por evaluar correctamente $T(15)$. En (e), crédito completo solo si explica por qué la fórmula nunca alcanza exactamente $22\,^\circ\text{C}$, no solo que ``se acerca''.
+\end{rubrica}
+
+\newpage
+% ============================================================
+\categoria{6}{Diagnóstico Conceptual}{15}
+
+\problema{6a}{15}{Segunda opinión: factor integrante}
+
+\[
+2y\,dx+(3x+4y)\,dy=0, \qquad y(0)=1.
+\]
+
+\subparte{a)}{El error del compañero es forzar el caso $\mu(x)$ sin verificar que el cociente $\dfrac{M_y-N_x}{N}=\dfrac{-1}{3x+4y}$ sea realmente una función de $x$ \emph{solamente}. Ese cociente todavía contiene a $y$ en el denominador, así que \textbf{no depende únicamente de $x$}: el Caso A no aplica aquí. Al ``integrar'' respecto a $x$ tratando a $y$ como si fuera constante, el resultado $(3x+4y)^{-1/3}$ sigue conteniendo a $y$ — y eso es justamente la contradicción que revela el error: un $\mu(x)$ válido, por definición, no puede depender de $y$.}
+
+\subparte{b)}{Probando el otro caso:
+\[
+\frac{N_x-M_y}{M} = \frac{3-2}{2y} = \frac{1}{2y},
+\]
+que sí depende solo de $y$, así que $\mu(y)=e^{\int (1/(2y))\,dy}=y^{1/2}=\sqrt y$.
+
+Multiplicando la ecuación original por $\sqrt y$:
+\[
+2y^{3/2}\,dx + \left(3xy^{1/2}+4y^{3/2}\right) dy = 0.
+\]
+Verificación: $M^*_y = 3y^{1/2} = N^*_x$ \checkmark. Integrando $M^*$ respecto a $x$: $F=2xy^{3/2}+g(y)$. Derivando e igualando a $N^*$: $3xy^{1/2}+g'(y)=3xy^{1/2}+4y^{3/2} \Rightarrow g'(y)=4y^{3/2} \Rightarrow g(y)=\dfrac85y^{5/2}$. Entonces
+\[
+F(x,y)=2xy^{3/2}+\frac85y^{5/2}=C.
+\]
+Con $(0,1)$: $0+\frac85=\frac85=C$.
+\begin{resultado}
+\[
+10xy^{3/2}+8y^{5/2} = 8.
+\]
+\end{resultado}}
+
+\begin{rubrica}
+(a) 5 pts: crédito completo solo si explica explícitamente que el cociente para $\mu(x)$ debe depender \emph{únicamente} de $x$ y que aquí no lo hace (2 pts por notar que $(3x+4y)^{-1/3}$ contiene $y$, 3 pts por conectar esto con la condición de validez de $\mu(x)$). 0 pts si el alumno solo dice ``se equivocó en la integral'' sin identificar la causa raíz. (b) 10 pts: 3 por encontrar el cociente correcto y $\mu(y)=\sqrt y$, 4 por reconstruir $F(x,y)$ correctamente, 3 por aplicar el PVI y presentar la solución final.
+\end{rubrica}
+
+\problema{6b}{15}{Segunda opinión: intervalo de validez}
+
+\[
+x^2y'+2xy=5, \qquad y(-1)=3.
+\]
+
+\subparte{a)}{El álgebra del compañero es correcta —$y=\dfrac{5x+8}{x^2}$ es la fórmula correcta—, pero su intervalo está mal. El teorema del caso lineal exige que el intervalo de validez sea la componente conexa donde $P(x)=2/x$ es continua \textbf{y que además contenga a $x_0$}. Aquí $x_0=-1$, que \textbf{no} pertenece a $(0,\infty)$: da igual que $P$ sea continua ahí, esa componente ni siquiera contiene el punto inicial. El compañero probablemente copió ``$(0,\infty)$'' de memoria de un problema anterior sin revisar en qué lado de la discontinuidad ($x=0$) cae su propio $x_0$.}
+
+\subparte{b)}{Como $x_0=-1<0$, la componente correcta es
+\begin{resultado}
+\[
+I = (-\infty, 0).
+\]
+\end{resultado}
+En esa componente, $P(x)=2/x$ y $f(x)=5/x^2$ son continuas, y contiene a $x_0=-1$, así que el teorema garantiza que la solución $y=(5x+8)/x^2$ es válida en \textbf{todo} ese intervalo —no solo ``cerca'' de $x=-1$, sino hasta la frontera en $x=0$ (sin cruzarla) y hasta $-\infty$.}
+
+\begin{rubrica}
+(a) 5 pts: crédito completo solo si identifica que el error es no verificar que $x_0$ pertenezca a la componente elegida (no basta con decir ``el intervalo está mal''). (b) 10 pts: 6 por dar el intervalo correcto $(-\infty,0)$, 4 por la justificación completa citando el teorema del caso lineal y mencionando explícitamente que $x_0=-1$ pertenece a esa componente.
+\end{rubrica}
+
+\end{document}

@@ -1,0 +1,222 @@
+% ============================================================
+%  EXAMEN — PRIMER EXAMEN PARCIAL
+%  Cálculo III: Ecuaciones Diferenciales en Ingeniería (MT024)
+%  Universidad Iberoamericana · Sesiones 1–6
+%
+%  NOTA PARA EL PROFESOR (no se imprime, es un comentario LaTeX):
+%  - Diseño calibrado con la "regla de 3x" de tiempo de examen:
+%    tiempo del profesor (experto) ~ 30 min; tiempo del alumno ~ 90 min.
+%    Referencia: Harvard Bok Center / CMU Eberly Center, "final exam
+%    length" guidance — el estudiante promedio tarda 3 a 4 veces más
+%    que un profesor experimentado en resolver el mismo examen.
+%  - Balance conceptual/procedimental: cada problema mezcla cálculo
+%    (fluidez procedimental) con al menos un paso de clasificar,
+%    verificar o interpretar (comprensión conceptual), siguiendo el
+%    "Pipeline de Modelado" de la Sesión 6 (Formular-Clasificar-
+%    Verificar-Resolver-Interpretar). Ningún reactivo nombra la
+%    técnica a usar: el alumno debe decidir, como se les entrenó en
+%    la Sesión 6 ("ustedes deciden qué herramienta usar, no nosotros").
+%  - Puntaje repartido por dificultad/profundidad conceptual, no de
+%    forma uniforme (10/18/18/18/21/15 = 100 pts).
+%  - Política de procedimiento obligatorio ya es política oficial del
+%    curso (ver guion Sesión 1): "resultado sin procedimiento
+%    justificado, vale cero. Esto aplica ... hasta opción múltiple o
+%    falso/verdadero." Por eso este examen es 100% de desarrollo.
+% ============================================================
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,mexico]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{parskip}
+\usepackage{enumitem}
+
+\geometry{letterpaper, top=1.6cm, bottom=1.8cm, left=2cm, right=2cm}
+
+\newcommand{\problema}[3]{%
+  \bigskip\bigskip\noindent
+  {\Large\textbf{Problema #1}}\hfill\textbf{[#2 pts]}\\[3pt]
+  {\small\itshape #3}\par
+  \vspace{2pt}\hrule\vspace{8pt}
+}
+
+\newcommand{\subparte}[2]{%
+  \medskip\noindent\textbf{(#1}\ #2\par
+}
+
+\newenvironment{aviso}{%
+  \par\vspace{2pt}\hrule\vspace{6pt}
+}{%
+  \par\vspace{6pt}\hrule\vspace{2pt}
+}
+
+\setlength{\parindent}{0pt}
+\renewcommand{\arraystretch}{1.3}
+
+\begin{document}
+
+% ---------- Encabezado ----------
+\begin{center}
+{\Large\bfseries PRIMER EXAMEN PARCIAL}\\[2pt]
+{\small Cálculo III: Ecuaciones Diferenciales en Ingeniería (MT024) · Universidad Iberoamericana}\\[1pt]
+{\small Duración: 90 minutos \; $\cdot$ \; Puntaje total: 100 pts}
+\end{center}
+
+\vspace{4pt}\hrule\vspace{10pt}
+
+\noindent
+\begin{tabular}{@{}p{0.55\linewidth}p{0.45\linewidth}@{}}
+Nombre: \dotfill & Matrícula: \dotfill \\[10pt]
+Fecha: \dotfill & \\[10pt]
+\end{tabular}
+
+\vspace{6pt}
+
+\begin{aviso}
+\textbf{Instrucciones — léelas con cuidado antes de empezar.}
+\begin{itemize}[leftmargin=1.4em, itemsep=2pt, topsep=4pt]
+  \item \textbf{Todo resultado debe llevar procedimiento completo y justificado.} Una respuesta correcta sin el desarrollo matemático que la sustenta \textbf{no recibirá ningún punto} y se considerará incorrecta, sin excepción (aplica a cada inciso de cada problema).
+  \item Ningún problema indica qué técnica usar. Parte de lo que se evalúa es que \emph{tú} decidas, con base en la clasificación de la ecuación, cuál herramienta vista en clase aplica.
+  \item Si una ecuación admite más de una técnica válida, puedes usar cualquiera de ellas; la calificación depende de la corrección y justificación del procedimiento, no de qué camino elegiste.
+  \item Simplifica algebraicamente todo lo posible antes de usar la calculadora. La calculadora solo debe usarse para aritmética, nunca para resolver simbólicamente una ecuación diferencial.
+  \item Material permitido: tu formulario oficial del Primer Parcial, calculadora científica, lápiz o pluma.
+  \item Encierra en un recuadro tu resultado final en cada inciso que lo pida.
+\end{itemize}
+\end{aviso}
+
+\vspace{8pt}
+
+\noindent{\bfseries Hoja de calificación (uso exclusivo del evaluador)}\\[4pt]
+\begin{tabular}{lcc}
+\toprule
+Problema & Puntos posibles & Puntos obtenidos \\
+\midrule
+1 & 10 & \\
+2 & 18 & \\
+3 & 18 & \\
+4 & 18 & \\
+5 & 21 & \\
+6 & 15 & \\
+\midrule
+\textbf{Total} & \textbf{100} & \\
+\bottomrule
+\end{tabular}
+
+
+% ============================================================
+\problema{1}{10}{Clasificación de ecuaciones diferenciales}
+
+Para cada una de las siguientes ecuaciones, indica en la tabla: (i) el \textbf{tipo} (EDO o EDP), (ii) el \textbf{orden}, y (iii) si es \textbf{lineal o no lineal}. En la columna de justificación, explica en una frase el criterio que usaste (no basta con la respuesta sola).
+
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=2em, itemsep=10pt]
+  \item $\displaystyle x^2\,\frac{d^3y}{dx^3} - x\,\frac{dy}{dx} + 5y = e^x$
+  \item $\displaystyle \left(\frac{d^2y}{dx^2}\right)^{3} + x\,\frac{dy}{dx} - y = \cos x$
+  \item $\displaystyle \frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial t^2} = 0$
+  \item $\displaystyle t\,s'' + s\,s' - 2s = t^2 \qquad (s \text{ es función de } t)$
+\end{enumerate}
+
+\renewcommand{\arraystretch}{2.6}
+\noindent\begin{tabular}{|c|>{\centering\arraybackslash}p{1.6cm}|>{\centering\arraybackslash}p{1.6cm}|>{\centering\arraybackslash}p{2cm}|>{\arraybackslash}p{6.3cm}|}
+\hline
+\textbf{Ec.} & \textbf{Tipo} & \textbf{Orden} & \textbf{¿Lineal?} & \textbf{Justificación} \\
+\hline
+a) & & & & \\
+\hline
+b) & & & & \\
+\hline
+c) & & & & \\
+\hline
+d) & & & & \\
+\hline
+\end{tabular}
+\renewcommand{\arraystretch}{1.3}
+
+% ============================================================
+\problema{2}{18}{Problema de Valor Inicial y Teorema de Existencia y Unicidad}
+
+Considera el PVI
+\[
+\frac{dy}{dx} = -\frac{x}{4y}, \qquad y(0) = -3.
+\]
+
+\subparte{a) [6 pts]}{Antes de resolver, usa el Teorema de Existencia y Unicidad para determinar una región del plano $xy$ donde el PVI garantiza tener una única solución. Cita explícitamente qué hipótesis del teorema estás verificando y en qué región se cumplen.}
+
+\subparte{b) [8 pts]}{Resuelve el PVI. Obtén la solución explícita $y(x)$ y determina su intervalo de definición $I$.}
+
+\subparte{c) [4 pts]}{Compara la región que obtuviste en (a) con el intervalo real que obtuviste en (b). ¿Son consistentes entre sí? Explica por qué.}
+
+
+% ============================================================
+\problema{3}{18}{Ecuación de primer orden — factor integrante}
+
+Considera el PVI
+\[
+x\,\frac{dy}{dx} - 3y = x^4 e^x, \qquad y(1) = 3e.
+\]
+
+\subparte{a) [4 pts]}{Escribe la ecuación en su forma estándar e indica el intervalo más grande que contiene a $x_0=1$ donde los coeficientes de esa forma estándar son continuos.}
+
+\subparte{b) [10 pts]}{Resuelve el PVI.}
+
+\subparte{c) [4 pts]}{Sin repetir el cálculo, justifica cuál es el intervalo de definición $I$ de la solución que encontraste, citando el teorema correspondiente.}
+
+% ============================================================
+\problema{4}{18}{Ecuación exacta con factor integrante}
+
+Considera el PVI
+\[
+dx + \left(\frac{x}{y} - \cos y\right) dy = 0, \qquad y(0) = \pi.
+\]
+
+\subparte{a) [4 pts]}{Verifica que, tal como está escrita, la ecuación no cumple el criterio de exactitud.}
+
+\subparte{b) [6 pts]}{Encuentra un factor integrante adecuado y transforma la ecuación en una exacta.}
+
+\subparte{c) [8 pts]}{Resuelve el PVI. Puedes dejar la solución en forma implícita.}
+
+
+% ============================================================
+\problema{5}{21}{Taller de modelado integrador}
+
+Una planta de tratamiento de agua usa un tanque cilíndrico que se vacía por un orificio en el fondo. Estudios de mecánica de fluidos para este tanque indican que la razón de cambio de la altura del agua $h(t)$ (en cm, con $t$ en minutos) es proporcional a la raíz cuadrada de la altura instantánea, con constante de proporcionalidad $k = 0.5 \text{ cm}^{1/2}/\text{min}$. Al iniciar la medición ($t=0$) el tanque contiene agua hasta una altura de $16$ cm.
+
+Sigue el proceso completo de modelado en los incisos siguientes: formular, clasificar, verificar, resolver e interpretar.
+
+\subparte{a) Formular [3 pts]}{Plantea el PVI que modela $h(t)$. Presta atención al signo: ¿la altura crece o decrece?}
+
+\subparte{b) Clasificar [3 pts]}{Clasifica la ecuación (tipo, orden, linealidad) e indica si es separable.}
+
+\subparte{c) Verificar [4 pts]}{Aplica el Teorema de Existencia y Unicidad en el punto inicial. ¿Hay algún valor de $h$ donde las hipótesis del teorema dejen de cumplirse? ¿Qué podría significar eso físicamente?}
+
+\subparte{d) Resolver [6 pts]}{Encuentra $h(t)$ y determina en qué instante $t$ se vacía el tanque (según tu modelo).}
+
+\subparte{e) Interpretar [5 pts]}{¿Es válida la fórmula que obtuviste en (d) para \emph{todo} $t \geq 0$? Explica qué le pasa físicamente al tanque después de vaciarse, y relaciona tu respuesta con lo que encontraste en el inciso (c).}
+
+
+% ============================================================
+\problema{6}{15}{Segunda opinión (diagnóstico conceptual)}
+
+Un compañero te muestra su solución del siguiente PVI y te pide una segunda opinión antes de entregarla:
+\[
+\frac{dy}{dx} = y^2 - 4, \qquad y(0) = 2.
+\]
+
+\textit{Trabajo del colega:}
+\begin{quote}
+\small
+``Separando variables: $\displaystyle\int \frac{dy}{y^2-4} = \int dx$. Por fracciones parciales, $\displaystyle \frac{1}{4}\ln\left|\frac{y-2}{y+2}\right| = x + C$. Al aplicar $y(0)=2$ no puedo evaluar el logaritmo porque el argumento es cero, así que tomo $y(0) \approx 2$ y obtengo $C \approx -7$ (un número muy grande y negativo), por lo que la solución aproximada es $\displaystyle\frac{1}{4}\ln\left|\frac{y-2}{y+2}\right| = x - 7$.''
+\end{quote}
+
+\subparte{a) [5 pts]}{Identifica con precisión en qué paso está el error \textbf{conceptual} del colega (no es un error aritmético). Explica, citando el concepto o teorema correspondiente, por qué ese paso es inválido.}
+
+\subparte{b) [10 pts]}{Resuelve tú el PVI correctamente. Presenta la solución final y justifica por qué es la única posible.}
+
+\vfill
+\begin{center}\small\textit{Fin del examen. Revisa que cada resultado esté encerrado en un recuadro y que el procedimiento sea legible.}\end{center}
+
+\end{document}

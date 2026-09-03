@@ -1,0 +1,249 @@
+% ============================================================
+%  SOLUCIONARIO — PRIMER EXAMEN PARCIAL
+%  Cálculo III: Ecuaciones Diferenciales en Ingeniería (MT024)
+%  Universidad Iberoamericana · Sesiones 1–6
+%
+%  Uso exclusivo del profesor. Documento hermano de
+%  examen_primer_parcial.tex — mismos números de problema y puntos.
+%  Cada problema incluye, al final, una rúbrica de reparto de puntos
+%  por paso de razonamiento (no solo por el resultado final), como
+%  recomienda la literatura de evaluación: la claridad del
+%  razonamiento —no solo la respuesta— es lo que separa el crédito
+%  parcial del crédito completo.
+% ============================================================
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,mexico]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{mdframed}
+\usepackage{parskip}
+\usepackage{enumitem}
+
+\geometry{letterpaper, top=1.6cm, bottom=1.8cm, left=2cm, right=2cm}
+
+\newcommand{\problema}[3]{%
+  \bigskip\bigskip\noindent
+  {\Large\textbf{Problema #1}}\hfill\textbf{[#2 pts]}\\[3pt]
+  {\small\itshape #3}\par
+  \vspace{2pt}\hrule\vspace{8pt}
+}
+
+\newcommand{\subparte}[2]{%
+  \medskip\noindent\textbf{(#1}\ #2\par\smallskip
+}
+
+\newenvironment{resultado}
+  {\begin{mdframed}[linecolor=black,linewidth=0.6pt,
+    innerleftmargin=6pt,innerrightmargin=6pt,innertopmargin=4pt,innerbottommargin=4pt]
+   \bfseries}
+  {\end{mdframed}}
+
+\newenvironment{rubrica}{%
+  \begin{mdframed}[linecolor=black,linewidth=0.6pt,
+    innerleftmargin=8pt,innerrightmargin=8pt,innertopmargin=5pt,innerbottommargin=5pt]
+  \small\textbf{Rúbrica de este problema.}\par\smallskip
+}{\end{mdframed}}
+
+\setlength{\parindent}{0pt}
+\renewcommand{\arraystretch}{1.3}
+
+\begin{document}
+
+\begin{center}
+{\Large\bfseries SOLUCIONARIO — PRIMER EXAMEN PARCIAL}\\[2pt]
+{\small Cálculo III (MT024) · Univ.\ Iberoamericana · Uso exclusivo del profesor}
+\end{center}
+
+\vspace{4pt}\hrule
+
+\vspace{10pt}
+
+% ============================================================
+\problema{1}{10}{Clasificación de ecuaciones diferenciales}
+
+\begin{enumerate}[label=\textbf{\alph*)}, itemsep=8pt]
+  \item $x^2 y''' - x y' + 5y = e^x$: \textbf{EDO}, \textbf{orden 3} (la derivada de mayor orden que aparece es $y'''$). \textbf{Lineal}: $y$, $y'$, $y'''$ aparecen a la primera potencia y los coeficientes ($x^2$, $-x$, $5$) dependen solo de la variable independiente $x$.
+  \item $(y'')^3 + x y' - y = \cos x$: \textbf{EDO}, \textbf{orden 2} (la derivada de mayor orden presente es $y''$; el exponente 3 es el \emph{grado} del término, no el orden de la ecuación — no deben confundirse). \textbf{No lineal}: $y''$ aparece elevada a la potencia 3, y la condición de linealidad exige que \emph{cada} derivada (no solo $y$) aparezca a la primera potencia.
+  \item $u_{xx}+u_{tt}=0$: \textbf{EDP} (dos variables independientes, $x$ y $t$). \textbf{Orden 2}. \textbf{Lineal} (ecuación de Laplace: todos los términos son derivadas de $u$ a la primera potencia con coeficientes constantes).
+  \item $t\,s'' + s\,s' - 2s = t^2$: \textbf{EDO}, \textbf{orden 2}. \textbf{No lineal}: el término $s\,s'$ es un producto de la variable dependiente por su propia derivada; además el \emph{coeficiente} de $s'$ es $s$ mismo, y la condición de linealidad exige que los coeficientes dependan únicamente de la variable independiente $t$, nunca de $s$.
+\end{enumerate}
+
+\begin{rubrica}
+2.5 pts por inciso: 1 pt por Tipo+Orden correctos, 1.5 pts por la clasificación de linealidad \emph{con} justificación explícita citando la condición violada o cumplida (no basta con un \emph{sí} o \emph{no} sueltos). En b) y d), 0 pts en linealidad si el alumno confunde orden con grado o no explica la condición de linealidad.
+\end{rubrica}
+
+\newpage
+% ============================================================
+\problema{2}{18}{PVI y Teorema de Existencia y Unicidad}
+
+\[
+\frac{dy}{dx} = -\frac{x}{4y}, \qquad y(0)=-3.
+\]
+
+\subparte{a)}{$f(x,y) = -\dfrac{x}{4y}$ y $\dfrac{\partial f}{\partial y} = \dfrac{x}{4y^2}$ son continuas siempre que $y \neq 0$. Como $y_0 = -3 < 0$, tomamos la región
+\[
+R = \{(x,y) : y < 0\},
+\]
+que contiene a $(0,-3)$ y donde ambas hipótesis del Teorema de Existencia y Unicidad se cumplen. El teorema garantiza entonces una solución única en \emph{algún} intervalo abierto alrededor de $x_0=0$.}
+
+\subparte{b)}{Separando variables: $4y\,dy = -x\,dx$. Integrando: $2y^2 = -\dfrac{x^2}{2} + C$. Con $y(0)=-3$: $2(9) = 18 = C$. Entonces
+\[
+2y^2 = -\frac{x^2}{2} + 18 \;\Longrightarrow\; x^2 + 4y^2 = 36.
+\]
+Despejando la rama que pasa por $(0,-3)$ (rama negativa, pues $y_0<0$):
+\begin{resultado}
+\[
+y(x) = -\frac{1}{2}\sqrt{36-x^2}, \qquad I = (-6,6).
+\]
+\end{resultado}
+El intervalo es abierto porque en $x=\pm 6$ se tiene $y=0$, donde la ecuación original se indefine (división entre $y$).}
+
+\subparte{c)}{Sí son consistentes: la región $R=\{y<0\}$ del inciso (a) es exactamente donde vive la solución para $x\in(-6,6)$ (la rama negativa nunca toca $y=0$ en ese intervalo abierto). El teorema no predice el tamaño exacto del intervalo —solo garantiza que existe uno—, y aquí ese intervalo termina justo donde la solución sale de la región $R$ (en $y=0$), que es también donde la ecuación deja de tener sentido.}
+
+\begin{rubrica}
+(a) 6 pts: 2 por identificar $f$ y $\partial f/\partial y$ correctamente, 2 por notar que ambas requieren $y\neq0$, 2 por elegir una región concreta que contenga $(0,-3)$ (acepta $y<0$ o cualquier región abierta válida). (b) 8 pts: 3 por separar e integrar correctamente, 2 por usar la condición inicial para obtener $C$, 2 por la solución explícita con el signo correcto, 1 por identificar el intervalo abierto $(-6,6)$ con su justificación. (c) 4 pts: crédito completo solo si conecta explícitamente la región de (a) con el intervalo de (b); 2 pts si solo afirma que coinciden, sin explicar por qué.
+\end{rubrica}
+
+% ============================================================
+\problema{3}{18}{Ecuación de primer orden — factor integrante}
+
+\[
+x\,y' - 3y = x^4 e^x, \qquad y(1) = 3e.
+\]
+
+\subparte{a)}{Dividiendo entre $x$ (válido para $x\neq0$): forma estándar
+\[
+y' - \frac{3}{x}\,y = x^3 e^x, \qquad P(x) = -\frac{3}{x}, \quad f(x)=x^3e^x.
+\]
+Ambas son continuas en $(-\infty,0)$ y en $(0,\infty)$. Como $x_0=1>0$, el intervalo relevante es $(0,\infty)$.}
+
+\subparte{b)}{Factor integrante: $\mu(x) = e^{\int -3/x\,dx} = e^{-3\ln x} = x^{-3}$ (para $x>0$).
+Multiplicando la forma estándar por $\mu$:
+\[
+\frac{d}{dx}\left[x^{-3}y\right] = e^x \;\Longrightarrow\; x^{-3}y = e^x + C \;\Longrightarrow\; y = x^3e^x + Cx^3.
+\]
+Con $y(1)=3e$: $e + C = 3e \Rightarrow C = 2e$.
+\begin{resultado}
+\[
+y(x) = x^3 e^x + 2e\,x^3 = x^3\!\left(e^x+2e\right).
+\]
+\end{resultado}
+Verificación: $y' = 3x^2(e^x+2e)+x^3e^x$, y $xy'-3y = 3x^3e^x+6ex^3+x^4e^x-3x^3e^x-6ex^3 = x^4e^x$ \checkmark.}
+
+\subparte{c)}{Por el Teorema de Existencia y Unicidad para ecuaciones lineales, si $P$ y $f$ son continuas en un intervalo abierto $I$ que contiene a $x_0$, la solución existe y es única en \textbf{todo} ese intervalo (a diferencia del caso no lineal, aquí no hay sorpresas de intervalo). Como $P$ y $f$ son continuas en $(0,\infty)$ y $x_0=1 \in (0,\infty)$, el intervalo de definición es
+\[
+I = (0,\infty).
+\]}
+
+\begin{rubrica}
+(a) 4 pts: 2 por la forma estándar correcta, 2 por identificar el intervalo de continuidad de $P$ y $f$. (b) 10 pts: 3 por el factor integrante, 3 por reconocer/integrar la derivada del producto, 2 por aplicar la condición inicial, 2 por la solución final correcta y verificada. (c) 4 pts: crédito completo solo si cita el teorema del caso lineal explícitamente (no basta con repetir el intervalo de (a) sin justificar por qué ahora es también el intervalo de la \emph{solución}).
+\end{rubrica}
+
+\newpage
+% ============================================================
+\problema{4}{18}{Ecuación exacta con factor integrante}
+
+\[
+dx + \left(\frac{x}{y}-\cos y\right) dy = 0, \qquad y(0)=\pi.
+\]
+
+\subparte{a)}{Con $M=1$, $N=\dfrac{x}{y}-\cos y$: $M_y = 0$ y $N_x = \dfrac{1}{y}$. Como $M_y \neq N_x$ (por ejemplo, en $y=\pi$: $0 \neq 1/\pi$), la ecuación \textbf{no es exacta} tal como está escrita.}
+
+\subparte{b)}{Probamos $\mu=\mu(y)$:
+\[
+\frac{N_x-M_y}{M} = \frac{1/y - 0}{1} = \frac{1}{y},
+\]
+que depende solo de $y$, así que el Caso B del factor integrante aplica:
+\[
+\mu(y) = e^{\int (1/y)\,dy} = y \quad (y>0, \text{ consistente con } y_0=\pi>0).
+\]
+Multiplicando la ecuación original por $y$:
+\[
+y\,dx + \left(x - y\cos y\right) dy = 0,
+\]
+y ahora $M^*_y = 1 = N^*_x$: \checkmark ya es exacta.}
+
+\subparte{c)}{Integrando $M^*=y$ respecto a $x$: $F = xy + g(y)$. Derivando respecto a $y$ e igualando a $N^*$:
+\[
+x + g'(y) = x - y\cos y \;\Longrightarrow\; g'(y) = -y\cos y.
+\]
+Por partes, $\int y\cos y\,dy = y\sin y + \cos y$, así que $g(y) = -y\sin y - \cos y$. Entonces
+\[
+F(x,y) = xy - y\sin y - \cos y = C.
+\]
+Con $(x,y)=(0,\pi)$: $0 - \pi\sin\pi - \cos\pi = 0-0-(-1) = 1 = C$.
+\begin{resultado}
+\[
+xy - y\sin y - \cos y = 1.
+\]
+\end{resultado}}
+
+\begin{rubrica}
+(a) 4 pts: 2 por calcular $M_y$ y $N_x$ correctamente, 2 por concluir explícitamente que no es exacta. (b) 6 pts: 2 por probar el cociente correcto ($\mu(x)$ o $\mu(y)$, según lo que el alumno intente), 2 por verificar que depende de una sola variable, 2 por el factor integrante correcto $\mu(y)=y$. (c) 8 pts: 3 por integrar $M^*$ y plantear $g(y)$, 3 por resolver $g'(y)$ correctamente (incluye el manejo correcto de la integración por partes), 2 por aplicar el PVI y obtener la constante. Si el alumno usa $\mu(x)$ y llega a un callejón sin salida, puede recibir crédito parcial en (b) por el intento correcto de verificación, pero 0 pts en (c) si no logra una ecuación exacta.
+\end{rubrica}
+
+% ============================================================
+\problema{5}{21}{Taller de modelado integrador}
+
+PVI: $\dfrac{dh}{dt} = -0.5\sqrt{h}$, $h(0)=16$ (el signo negativo porque la altura decrece al vaciarse el tanque).
+
+\subparte{a) Formular}{
+\[
+\frac{dh}{dt} = -0.5\sqrt{h}, \qquad h(0)=16.
+\]
+}
+
+\subparte{b) Clasificar}{EDO, orden 1. \textbf{No lineal} (el término $\sqrt{h}$ no es lineal en $h$), pero sí es \textbf{separable}: $\dfrac{dh}{\sqrt{h}} = -0.5\,dt$.}
+
+\subparte{c) Verificar}{$f(t,h)=-0.5\sqrt{h}$ y $\dfrac{\partial f}{\partial h} = -\dfrac{0.25}{\sqrt{h}}$ son continuas para $h>0$. Como $h_0=16>0$, el teorema garantiza solución única en algún intervalo alrededor de $t=0$. Sin embargo, $\partial f/\partial h$ \textbf{no} es continua en $h=0$ (se indefine): ahí las hipótesis del teorema fallan, y podría perderse la unicidad —físicamente, esto anticipa que el modelo necesitará una interpretación especial en el instante en que el tanque se vacía.}
+
+\subparte{d) Resolver}{Separando: $\dfrac{dh}{\sqrt h} = -0.5\,dt \Rightarrow 2\sqrt h = -0.5t + C$. Con $h(0)=16$: $2(4)=8=C$.
+\[
+2\sqrt{h} = -0.5t + 8 \;\Longrightarrow\; \sqrt{h} = 4-0.25t \;\Longrightarrow\; h(t) = (4-0.25t)^2,
+\]
+válida mientras $4-0.25t \geq 0$, es decir, $0\le t\le 16$.
+\begin{resultado}
+El tanque se vacía en $t=16$ minutos.
+\end{resultado}}
+
+\subparte{e) Interpretar}{La fórmula $h(t)=(4-0.25t)^2$ \textbf{no} es válida para $t>16$: algebraicamente el cuadrado empezaría a crecer de nuevo, lo cual es físicamente imposible (un tanque vacío no puede rellenarse solo). La solución físicamente correcta es
+\[
+h(t) = \begin{cases} (4-0.25t)^2, & 0 \le t \le 16 \\ 0, & t > 16. \end{cases}
+\]
+Esto es consistente con el inciso (c): al llegar a $h=0$ se pierden las hipótesis del teorema de unicidad, así que la ecuación diferencial por sí sola ya no distingue entre \emph{quedarse en cero} y otras continuaciones matemáticas posibles; es el razonamiento físico —no el álgebra— el que selecciona $h\equiv0$ como la única continuación con sentido.}
+
+\begin{rubrica}
+3 pts en (a) si el signo es correcto (0 pts si el alumno escribe $+0.5\sqrt h$ sin justificar). 3 pts en (b): 1.5 por justificar \emph{no lineal}, 1.5 por justificar \emph{separable}. 4 pts en (c): 2 por identificar la discontinuidad de $\partial f/\partial h$ en $h=0$, 2 por conectar esto —aunque sea brevemente— con una posible falla de unicidad. 6 pts en (d): 3 por la separación e integración, 2 por aplicar la condición inicial, 1 por encontrar $t=16$ con su restricción de dominio. 5 pts en (e): el punto central de este problema; \textbf{no se debe dar crédito completo} si el alumno solo reporta $h(t)=(4-0.25t)^2$ sin restringir el dominio ni explicar qué pasa después de $t=16$, incluso si el resto del problema está correcto.
+\end{rubrica}
+
+\newpage
+% ============================================================
+\problema{6}{15}{Segunda opinión (diagnóstico conceptual)}
+
+\[
+\frac{dy}{dx} = y^2-4, \qquad y(0)=2.
+\]
+
+\subparte{a)}{El error del colega no es aritmético: es haber intentado sustituir $y(0)=2$ \emph{en la fórmula general obtenida al separar variables}, cuando $y=2$ es precisamente uno de los valores donde $h(y)=y^2-4=0$. Al dividir entre $y^2-4$ para separar, se pierden las \textbf{soluciones constantes} donde $h(y)=0$ (es decir, $y=2$ y $y=-2$); la aparición de $\ln(0)$ no es un obstáculo técnico que se deba \emph{aproximar}, es la señal de que la condición inicial cae exactamente en una solución constante excluida del proceso de separación. Aproximar la constante $C$ no tiene sentido en un PVI bien planteado: el PVI tiene una solución exacta, no una aproximada.}
+
+\subparte{b)}{Como $h(2)=2^2-4=0$, la función constante $y\equiv 2$ es en sí misma una solución de la ecuación: $\dfrac{dy}{dx}=0$ y $y^2-4=4-4=0$ \checkmark. Además satisface $y(0)=2$.
+
+Para garantizar que es la \emph{única}, verificamos el teorema: $f(x,y)=y^2-4$ y $\dfrac{\partial f}{\partial y}=2y$ son continuas en \textbf{todo} $\mathbb{R}^2$ (son polinomios), así que por cada punto del plano pasa una única solución. En particular, por $(0,2)$ pasa una única solución, y ya exhibimos una: $y\equiv2$.
+\begin{resultado}
+\[
+y(x) = 2 \quad \text{para todo } x \in \mathbb{R}.
+\]
+\end{resultado}
+Es la única solución posible; no existe ninguna otra curva (ni la familia obtenida por fracciones parciales) que también pase por $(0,2)$.}
+
+\begin{rubrica}
+(a) 5 pts: 3 por identificar que $y=2$ es una solución constante perdida al dividir entre $h(y)$, 2 por explicar correctamente por qué aproximar el logaritmo es matemáticamente inválido en un PVI. 0 pts si el alumno solo señala un error aritmético sin mencionar la solución constante perdida. (b) 10 pts: 4 por verificar que $y\equiv2$ satisface la ecuación y la condición inicial, 4 por invocar correctamente el Teorema de Existencia y Unicidad (continuidad de $f$ y $\partial f/\partial y$ en todo $\mathbb{R}^2$) para justificar unicidad, 2 por la conclusión final clara. Si el alumno solo da $y=2$ sin justificar unicidad con el teorema, máximo 6/10.
+\end{rubrica}
+
+\end{document}

@@ -1,0 +1,205 @@
+% ============================================================
+%  RÚBRICA DE CALIFICACIÓN — PRIMER EXAMEN PARCIAL
+%  Cálculo III: Ecuaciones Diferenciales en Ingeniería (MT024)
+%  Universidad Iberoamericana
+%
+%  NOTA PARA EL PROFESOR (comentario LaTeX, no se imprime):
+%  Documento hermano de examen_primer_parcial.tex y de su
+%  solucionario (examen_primer_parcial_solucionario.tex). El
+%  solucionario explica el razonamiento completo de cada rúbrica en
+%  prosa; este documento extrae esos mismos criterios en formato de
+%  lista de cotejo, pensado para calificar rápido y de forma
+%  consistente entre exámenes (rúbrica analítica: puntos por
+%  evidencia de razonamiento, no solo por el resultado final).
+%  Pensado para imprimirse una vez por alumno y grapar al examen, o
+%  para usarse como referencia única al calificar todo el grupo.
+% ============================================================
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,mexico]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{parskip}
+\usepackage{enumitem}
+
+\geometry{letterpaper, top=1.6cm, bottom=1.8cm, left=2cm, right=2cm}
+
+\newcommand{\problema}[3]{%
+  \bigskip\bigskip\noindent
+  {\Large\textbf{Problema #1}}\hfill\textbf{[#2 pts]}\\[3pt]
+  {\small\itshape #3}\par
+  \vspace{2pt}\hrule\vspace{8pt}
+}
+
+\setlength{\parindent}{0pt}
+\renewcommand{\arraystretch}{1.35}
+
+% Tabla de rúbrica: columnas Inciso | Criterio | Pts | Otorgado
+\newcolumntype{L}{>{\raggedright\arraybackslash}p{12.2cm}}
+\newenvironment{tablarubrica}{%
+  \begin{tabular}{@{}p{1.1cm}Lcc@{}}
+  \toprule
+  \textbf{Inciso} & \textbf{Criterio} & \textbf{Pts} & \textbf{Otorg.} \\
+  \midrule
+}{%
+  \bottomrule
+  \end{tabular}
+}
+
+\begin{document}
+
+% ---------- Encabezado ----------
+\begin{center}
+{\Large\bfseries RÚBRICA DE CALIFICACIÓN — PRIMER EXAMEN PARCIAL}\\[2pt]
+{\small Cálculo III: Ecuaciones Diferenciales en Ingeniería (MT024) · Universidad Iberoamericana}\\[1pt]
+{\small Documento hermano de \textit{examen\_primer\_parcial.tex} y su solucionario · Uso exclusivo del profesor}
+\end{center}
+
+\vspace{4pt}\hrule\vspace{10pt}
+
+\noindent
+\begin{tabular}{@{}p{0.5\linewidth}p{0.5\linewidth}@{}}
+Nombre del alumno: \dotfill & Matrícula: \dotfill \\[10pt]
+\end{tabular}
+
+\vspace{10pt}
+
+\noindent{\bfseries Cómo usar esta rúbrica.} Cada criterio otorga puntos por evidencia de razonamiento correcto, no por el resultado final aislado. Un resultado correcto sin el procedimiento que lo sustenta \textbf{no recibe el punto de ese criterio}, sin excepción (política del curso). Cuando un criterio dice ``crédito completo solo si...'', no se debe prorratear: se otorga todo o nada. El desglose completo, con el razonamiento detrás de cada criterio, está en el solucionario.
+
+% ============================================================
+\problema{1}{10}{Clasificación de ecuaciones diferenciales}
+
+\begin{tablarubrica}
+a) & Tipo y orden correctos & 1 & \\
+a) & Linealidad clasificada \emph{y} justificada citando la condición cumplida/violada & 1.5 & \\
+b) & Tipo y orden correctos (\emph{orden} = 2; no confundir con el grado del término, que es 3) & 1 & \\
+b) & Linealidad justificada (potencia de $y''$ rompe la linealidad) & 1.5 & \\
+c) & Tipo y orden correctos (EDP, orden 2) & 1 & \\
+c) & Linealidad justificada & 1.5 & \\
+d) & Tipo y orden correctos & 1 & \\
+d) & Linealidad justificada (identifica el producto $s\,s'$ o el coeficiente dependiente de $s$) & 1.5 & \\
+\end{tablarubrica}
+
+\textit{Nota: en cualquier inciso, 0 pts en linealidad si el alumno confunde orden con grado o no explica la condición violada/cumplida — no basta un ``sí'' o ``no'' sueltos.}
+
+\medskip
+\noindent\textbf{Subtotal Problema 1:\ } \underline{\hspace{2.5cm}} / 10
+
+\newpage
+% ============================================================
+\problema{2}{18}{PVI y Teorema de Existencia y Unicidad}
+
+\begin{tablarubrica}
+a) & Identifica $f(x,y)$ y $\partial f/\partial y$ correctamente & 2 & \\
+a) & Nota que ambas requieren $y\neq0$ & 2 & \\
+a) & Elige una región concreta que contenga $(0,-3)$ (acepta $y<0$ u otra región abierta válida) & 2 & \\
+b) & Separa e integra correctamente & 3 & \\
+b) & Usa la condición inicial para obtener $C$ & 2 & \\
+b) & Solución explícita con el signo correcto (rama negativa) & 2 & \\
+b) & Identifica el intervalo abierto $(-6,6)$ con su justificación & 1 & \\
+c) & Conecta explícitamente la región de (a) con el intervalo de (b) y explica por qué coinciden (2 pts si solo afirma que coinciden, sin explicar) & 4 & \\
+\end{tablarubrica}
+
+\medskip
+\noindent\textbf{Subtotal Problema 2:\ } \underline{\hspace{2.5cm}} / 18
+
+% ============================================================
+\problema{3}{18}{Ecuación de primer orden --- factor integrante}
+
+\begin{tablarubrica}
+a) & Forma estándar correcta & 2 & \\
+a) & Identifica el intervalo de continuidad de $P(x)$ y $f(x)$ & 2 & \\
+b) & Factor integrante $\mu(x)=x^{-3}$ correcto & 3 & \\
+b) & Reconoce/integra el lado izquierdo como derivada de un producto & 3 & \\
+b) & Aplica la condición inicial correctamente & 2 & \\
+b) & Solución final correcta (y verificada, si el alumno lo hace) & 2 & \\
+c) & Cita el teorema del caso lineal explícitamente para justificar $I=(0,\infty)$ (no basta con repetir el intervalo de (a) sin conectar por qué es también el de la solución) & 4 & \\
+\end{tablarubrica}
+
+\medskip
+\noindent\textbf{Subtotal Problema 3:\ } \underline{\hspace{2.5cm}} / 18
+
+\newpage
+% ============================================================
+\problema{4}{18}{Ecuación exacta con factor integrante}
+
+\begin{tablarubrica}
+a) & Calcula $M_y$ y $N_x$ correctamente & 2 & \\
+a) & Concluye explícitamente que la ecuación no es exacta & 2 & \\
+b) & Plantea el cociente correcto ($\mu(x)$ o $\mu(y)$, según lo que el alumno intente) & 2 & \\
+b) & Verifica que el cociente depende de una sola variable & 2 & \\
+b) & Factor integrante correcto, $\mu(y)=y$ & 2 & \\
+c) & Integra $M^*$ y plantea $g(y)$ correctamente & 3 & \\
+c) & Resuelve $g'(y)$ correctamente (incluye el manejo correcto de la integración por partes) & 3 & \\
+c) & Aplica el PVI y obtiene la constante & 2 & \\
+\end{tablarubrica}
+
+\textit{Nota: si el alumno prueba $\mu(x)$ primero y llega a un callejón sin salida, puede recibir crédito parcial en (b) por el intento correcto de verificación, pero 0 pts en (c) si no logra una ecuación exacta.}
+
+\medskip
+\noindent\textbf{Subtotal Problema 4:\ } \underline{\hspace{2.5cm}} / 18
+
+% ============================================================
+\problema{5}{21}{Taller de modelado integrador}
+
+\begin{tablarubrica}
+a) & Formular: signo correcto ($-0.5\sqrt h$, no $+0.5\sqrt h$); 0 pts si el signo está mal sin justificar & 3 & \\
+b) & Clasificar: justifica \emph{no lineal} & 1.5 & \\
+b) & Clasificar: justifica \emph{separable} & 1.5 & \\
+c) & Identifica la discontinuidad de $\partial f/\partial h$ en $h=0$ & 2 & \\
+c) & Conecta esto con una posible falla de unicidad (aunque sea brevemente) & 2 & \\
+d) & Separación e integración correctas & 3 & \\
+d) & Aplica la condición inicial ($h(0)=16$) & 2 & \\
+d) & Encuentra $t=16$ con su restricción de dominio ($0\le t\le16$) & 1 & \\
+e) & \textbf{Restringe el dominio de la fórmula y explica qué pasa físicamente para $t>16$} — punto central del problema & 5 & \\
+\end{tablarubrica}
+
+\textit{Nota crítica en (e): no dar crédito completo si el alumno solo reporta $h(t)=(4-0.25t)^2$ sin restringir el dominio ni explicar la continuación física, incluso si el resto del problema está correcto.}
+
+\medskip
+\noindent\textbf{Subtotal Problema 5:\ } \underline{\hspace{2.5cm}} / 21
+
+\newpage
+% ============================================================
+\problema{6}{15}{Segunda opinión (diagnóstico conceptual)}
+
+\begin{tablarubrica}
+a) & Identifica que $y=2$ es una solución constante perdida al dividir entre $h(y)=y^2-4$ & 3 & \\
+a) & Explica correctamente por qué ``aproximar'' el logaritmo es matemáticamente inválido en un PVI & 2 & \\
+b) & Verifica que $y\equiv2$ satisface la ecuación y la condición inicial & 4 & \\
+b) & Invoca correctamente el Teorema de Existencia y Unicidad (continuidad de $f$ y $\partial f/\partial y$ en todo $\mathbb{R}^2$) para justificar unicidad & 4 & \\
+b) & Conclusión final clara ($y(x)=2$ para todo $x$) & 2 & \\
+\end{tablarubrica}
+
+\textit{Notas: en (a), 0 pts si el alumno solo señala un error aritmético sin mencionar la solución constante perdida. En (b), máximo 6/10 si el alumno da $y=2$ sin justificar la unicidad con el teorema.}
+
+\medskip
+\noindent\textbf{Subtotal Problema 6:\ } \underline{\hspace{2.5cm}} / 15
+
+\vspace{14pt}\hrule\vspace{10pt}
+
+\noindent{\bfseries Resumen final}\\[4pt]
+\begin{tabular}{lcc}
+\toprule
+Problema & Puntos posibles & Puntos obtenidos \\
+\midrule
+1 --- Clasificación & 10 & \\
+2 --- PVI y Existencia-Unicidad & 18 & \\
+3 --- Ecuación lineal & 18 & \\
+4 --- Ecuación exacta & 18 & \\
+5 --- Modelado integrador & 21 & \\
+6 --- Diagnóstico conceptual & 15 & \\
+\midrule
+\textbf{Total} & \textbf{100} & \\
+\bottomrule
+\end{tabular}
+
+\vspace{10pt}
+\noindent Calificación final (si se usa escala 0--10, dividir el total entre 10): \underline{\hspace{3cm}}
+
+\end{document}
