@@ -1,0 +1,357 @@
+% ============================================================
+%  GUÍA DE ESTUDIO — PRIMER EXAMEN PARCIAL
+%  Cálculo III: Ecuaciones Diferenciales en Ingeniería (MT024)
+%  Universidad Iberoamericana
+%
+%  NOTA PARA EL PROFESOR (comentario LaTeX, no se imprime):
+%  Documento HERMANO del examen real (examen_primer_parcial.tex),
+%  no una copia: ninguna variante es idéntica a un problema del
+%  examen. Reorganizado como BANCO DE REACTIVOS en las mismas 6
+%  categorías del examen real, cada una con 2-3 variantes de
+%  dificultad equivalente y el MISMO puntaje que esa categoría
+%  tendría en el examen (10/18/18/18/21/15 = 100). Esto permite que
+%  el alumno arme su propio examen de práctica (una variante por
+%  categoría, al azar o en orden) y lo resuelva en condiciones
+%  reales (90 min, formulario oficial, procedimiento obligatorio).
+%  Con 2×3×3×2×2×2 = 144 combinaciones posibles, la práctica
+%  repetida no cae en memorizar un único set fijo de problemas.
+% ============================================================
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,mexico]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{parskip}
+\usepackage{enumitem}
+
+\geometry{letterpaper, top=1.6cm, bottom=1.8cm, left=2cm, right=2cm}
+
+\newcommand{\categoria}[3]{%
+  \bigskip\bigskip\noindent
+  \rule{\linewidth}{0.8pt}\\[2pt]
+  {\Large\bfseries Categoría #1 --- #2}\hfill\textbf{[#3 pts]}\\[2pt]
+  \rule{\linewidth}{0.8pt}\vspace{4pt}
+}
+
+\newcommand{\problema}[3]{%
+  \bigskip\noindent
+  {\large\textbf{Problema #1}}\hfill\textbf{[#2 pts]}\\[3pt]
+  {\small\itshape #3}\par
+  \vspace{2pt}\hrule\vspace{8pt}
+}
+
+\newcommand{\subparte}[2]{%
+  \medskip\noindent\textbf{(#1}\ #2\par
+}
+
+\newenvironment{aviso}{%
+  \par\vspace{2pt}\hrule\vspace{6pt}
+}{%
+  \par\vspace{6pt}\hrule\vspace{2pt}
+}
+
+\setlength{\parindent}{0pt}
+\renewcommand{\arraystretch}{1.3}
+
+\begin{document}
+
+% ---------- Encabezado ----------
+\begin{center}
+{\Large\bfseries GUÍA DE ESTUDIO — PRIMER PARCIAL}\\[2pt]
+{\small Cálculo III: Ecuaciones Diferenciales en Ingeniería (MT024) · Universidad Iberoamericana}\\[1pt]
+{\small Banco de reactivos de práctica, sin límite estricto de tiempo}
+\end{center}
+
+\vspace{4pt}\hrule\vspace{10pt}
+
+\begin{aviso}
+\textbf{Cómo usar esta guía.}
+\begin{itemize}[leftmargin=1.4em, itemsep=2pt, topsep=4pt]
+  \item Esta guía tiene el mismo formato, nivel de dificultad y política de evaluación que el examen real, pero \textbf{ninguna de las variantes es idéntica a un problema del examen}: practicarla te prepara, no te da las respuestas del parcial.
+  \item Está organizada como un \textbf{banco de reactivos}: 6 categorías (las mismas del examen real), cada una con 2 o 3 variantes de dificultad equivalente y el mismo puntaje. Más abajo se explica cómo usarlas para armar tu propio examen de práctica.
+  \item \textbf{Todo resultado debe llevar procedimiento completo y justificado.} Como en el examen real, una respuesta correcta sin desarrollo no cuenta como dominio del tema, aunque aquí nadie te vaya a calificar en cero por ello: el punto de esta guía es que te autoevalúes con honestidad.
+  \item Ningún problema te dice qué técnica usar. Antes de resolver, clasifica la ecuación y decide tú qué herramienta vista en clase aplica.
+  \item El solucionario de esta guía tiene una rúbrica de puntos por paso: úsala para diagnosticar \emph{en qué parte} del procedimiento fallas, no solo si obtuviste el resultado correcto o no.
+\end{itemize}
+\end{aviso}
+
+\begin{aviso}
+\textbf{Cómo armar tu propio examen de práctica.}
+\begin{enumerate}[leftmargin=1.6em, itemsep=3pt, topsep=4pt]
+  \item Para cada una de las 6 categorías de la tabla de abajo, elige exactamente \textbf{una} variante:
+  \begin{itemize}[leftmargin=1.4em, itemsep=1pt, topsep=2pt]
+    \item \emph{En orden:} la primera vez, resuelve siempre la variante ``a'' de cada categoría.
+    \item \emph{Al azar:} numera las variantes de cada categoría (a=1, b=2, c=3) y usa un dado, una app de números aleatorios, o pide a alguien más que elija un número por ti.
+  \end{itemize}
+  \item Junta los 6 problemas elegidos, uno por categoría, en orden (Categoría 1 a la 6): ese es tu examen de práctica, y siempre sumará 100 puntos sin importar qué variantes hayas elegido.
+  \item Resuélvelo bajo las mismas condiciones del examen real: 90 minutos, sin apuntes de clase (solo tu formulario oficial), calculadora científica, procedimiento completo obligatorio.
+  \item Al terminar, revisa cada problema contra el solucionario de esta guía, problema por problema, usando su rúbrica.
+  \item Repite con una combinación distinta de variantes en tu siguiente sesión de práctica: con 2 o 3 variantes por categoría hay más de 140 exámenes distintos posibles, así que puedes practicar varias veces sin repetir el mismo set de problemas.
+\end{enumerate}
+\end{aviso}
+
+\noindent{\bfseries Banco de reactivos (uso solo diagnóstico, no es una calificación oficial)}\\[4pt]
+\begin{tabular}{lll}
+\toprule
+Categoría & Variantes disponibles & Puntos \\
+\midrule
+1 --- Clasificación & 1a, 1b & 10 \\
+2 --- PVI, Existencia-Unicidad y Separables & 2a, 2b, 2c & 18 \\
+3 --- Ecuación Lineal & 3a, 3b, 3c & 18 \\
+4 --- Ecuación Exacta & 4a, 4b & 18 \\
+5 --- Modelado Integrador & 5a, 5b & 21 \\
+6 --- Diagnóstico Conceptual & 6a, 6b & 15 \\
+\midrule
+\textbf{Total (una variante por categoría)} & & \textbf{100} \\
+\bottomrule
+\end{tabular}
+
+\newpage
+
+% ============================================================
+\categoria{1}{Clasificación de ecuaciones diferenciales}{10}
+
+\problema{1a}{10}{Clasifica cada ecuación: tipo, orden, linealidad}
+
+Para cada ecuación, indica tipo (EDO/EDP), orden, y si es lineal o no lineal, justificando en una frase.
+
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=2em, itemsep=10pt]
+  \item $\displaystyle \frac{d^4y}{dx^4} + x^2\,\frac{d^2y}{dx^2} - \sin(x)\,y = 0$
+  \item $\displaystyle \left(\frac{dy}{dx}\right)^{4} + y = x$
+  \item $\displaystyle \frac{\partial u}{\partial t} = \alpha\,\frac{\partial^2 u}{\partial x^2}$
+  \item $\displaystyle y'' + y\,y' = e^x$
+\end{enumerate}
+
+\renewcommand{\arraystretch}{2.6}
+\noindent\begin{tabular}{|c|>{\centering\arraybackslash}p{1.6cm}|>{\centering\arraybackslash}p{1.6cm}|>{\centering\arraybackslash}p{2cm}|>{\arraybackslash}p{6.3cm}|}
+\hline
+\textbf{Ec.} & \textbf{Tipo} & \textbf{Orden} & \textbf{¿Lineal?} & \textbf{Justificación} \\
+\hline
+a) & & & & \\
+\hline
+b) & & & & \\
+\hline
+c) & & & & \\
+\hline
+d) & & & & \\
+\hline
+\end{tabular}
+\renewcommand{\arraystretch}{1.3}
+
+\problema{1b}{10}{Clasifica cada ecuación: tipo, orden, linealidad}
+
+Para cada ecuación, indica tipo (EDO/EDP), orden, y si es lineal o no lineal, justificando en una frase.
+
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=2em, itemsep=10pt]
+  \item $\displaystyle y'' + 4x\,y' - 7y = \ln x$
+  \item $\displaystyle \left(\frac{dy}{dx}\right)^{2} + x^3 y = \sin x$
+  \item $\displaystyle \frac{\partial^2 v}{\partial r^2} + \frac{1}{r}\frac{\partial v}{\partial r} = \frac{\partial v}{\partial t}$
+  \item $\displaystyle y'' - y\,y' + x = 0$
+\end{enumerate}
+
+\renewcommand{\arraystretch}{2.6}
+\noindent\begin{tabular}{|c|>{\centering\arraybackslash}p{1.6cm}|>{\centering\arraybackslash}p{1.6cm}|>{\centering\arraybackslash}p{2cm}|>{\arraybackslash}p{6.3cm}|}
+\hline
+\textbf{Ec.} & \textbf{Tipo} & \textbf{Orden} & \textbf{¿Lineal?} & \textbf{Justificación} \\
+\hline
+a) & & & & \\
+\hline
+b) & & & & \\
+\hline
+c) & & & & \\
+\hline
+d) & & & & \\
+\hline
+\end{tabular}
+\renewcommand{\arraystretch}{1.3}
+
+% ============================================================
+\categoria{2}{PVI, Existencia-Unicidad y Separables}{18}
+
+\problema{2a}{18}{PVI y falla de unicidad}
+
+Considera el PVI
+\[
+\frac{dy}{dx} = \sqrt{y}, \qquad y(0)=0.
+\]
+
+\subparte{a) [8 pts]}{Verifica si el Teorema de Existencia y Unicidad garantiza una solución única para este PVI. Identifica con precisión qué hipótesis se cumple o falla, y en qué punto.}
+
+\subparte{b) [10 pts]}{Encuentra al menos \textbf{dos} soluciones distintas que satisfagan el PVI, confirmando (o refutando) lo que predijiste en (a).}
+
+\problema{2b}{18}{Separable con solución perdida}
+
+Considera el PVI
+\[
+\frac{dy}{dx} = 1-y^2, \qquad y(0)=0.
+\]
+
+\subparte{a) [4 pts]}{Verifica que el Teorema de Existencia y Unicidad garantiza una solución única en algún intervalo alrededor de $x=0$.}
+
+\subparte{b) [4 pts]}{Antes de integrar, identifica las soluciones constantes (de equilibrio) de la ecuación.}
+
+\subparte{c) [10 pts]}{Resuelve el PVI por separación de variables y obtén la solución explícita $y(x)$. Indica su intervalo de definición.}
+
+\problema{2c}{18}{Separable con integral no elemental}
+
+Considera el PVI
+\[
+\frac{dy}{dx} = e^{-x^2}, \qquad y(0)=2.
+\]
+
+\subparte{a) [4 pts]}{Verifica que el PVI tiene solución única en todo $\mathbb{R}$.}
+
+\subparte{b) [14 pts]}{Expresa la solución del PVI en términos de una integral (puedes usar la función error). Confirma, usando el Teorema Fundamental del Cálculo, que tu respuesta sí satisface la ecuación diferencial original.}
+
+\newpage
+% ============================================================
+\categoria{3}{Ecuación Lineal}{18}
+
+\problema{3a}{18}{Lineal con coeficiente variable}
+
+Considera el PVI
+\[
+x^2\,\frac{dy}{dx} + 2xy = \cos x, \qquad y(\pi)=0.
+\]
+
+\subparte{a) [4 pts]}{Escribe la ecuación en forma estándar e identifica el intervalo más grande, que contenga a $x_0=\pi$, donde sus coeficientes son continuos.}
+
+\subparte{b) [10 pts]}{Resuelve el PVI.}
+
+\subparte{c) [4 pts]}{Justifica, citando el teorema correspondiente, el intervalo de definición de tu solución.}
+
+\problema{3b}{18}{Lineal con entrada a trozos}
+
+Resuelve el PVI
+\[
+\frac{dy}{dx} + y = f(x), \qquad y(0)=0, \qquad
+f(x) = \begin{cases} 2, & 0 \le x \le 1 \\ 0, & x > 1. \end{cases}
+\]
+
+\subparte{a) [12 pts]}{Resuelve la ecuación en cada tramo. Usa la continuidad de $y$ en $x=1$ para determinar la constante del segundo tramo.}
+
+\subparte{b) [6 pts]}{¿Es $y$ diferenciable en $x=1$? Justifica comparando las derivadas laterales, y explica a qué se debe tu resultado.}
+
+\problema{3c}{18}{Lineal con solución no elemental}
+
+Considera el PVI
+\[
+\frac{dy}{dx} - 2xy = 4, \qquad y(0)=1.
+\]
+
+\subparte{a) [4 pts]}{Identifica $P(x)$ y $f(x)$ en la forma estándar, y justifica el intervalo de validez de la solución antes de resolver.}
+
+\subparte{b) [14 pts]}{Resuelve el PVI (vas a necesitar la función error).}
+
+% ============================================================
+\categoria{4}{Ecuación Exacta}{18}
+
+\problema{4a}{18}{Exacta con factor integrante $\mu(x)$}
+
+Considera el PVI
+\[
+(y^2+3xy)\,dx + (x^2+xy)\,dy = 0, \qquad y(1)=1.
+\]
+
+\subparte{a) [4 pts]}{Verifica que la ecuación, tal como está escrita, no es exacta.}
+
+\subparte{b) [6 pts]}{Encuentra un factor integrante adecuado.}
+
+\subparte{c) [8 pts]}{Resuelve el PVI.}
+
+\problema{4b}{18}{Exacta con factor integrante $\mu(y)$}
+
+Considera el PVI
+\[
+y\,dx + \left(2x+\frac{1}{y}\right) dy = 0, \qquad y(1)=2.
+\]
+
+\subparte{a) [4 pts]}{Verifica que la ecuación, tal como está escrita, no es exacta.}
+
+\subparte{b) [6 pts]}{Encuentra un factor integrante adecuado.}
+
+\subparte{c) [8 pts]}{Resuelve el PVI.}
+
+\newpage
+% ============================================================
+\categoria{5}{Modelado Integrador}{21}
+
+\problema{5a}{21}{Circuito RC}
+
+Un circuito en serie tiene una resistencia de $200\ \Omega$ y un capacitor de $0.01\ \text{F}$, conectados a una batería de $12\ \text{V}$ en $t=0$, con carga inicial nula en el capacitor. La Ley de Voltajes de Kirchhoff da $R\dfrac{dq}{dt} + \dfrac{q}{C} = E$ para la carga $q(t)$.
+
+Sigue el proceso completo de modelado en los incisos siguientes.
+
+\subparte{a) Formular [3 pts]}{Sustituye los valores dados y escribe el PVI para $q(t)$.}
+
+\subparte{b) Clasificar [3 pts]}{Clasifica la ecuación resultante.}
+
+\subparte{c) Verificar [4 pts]}{Confirma que el PVI tiene solución única para todo $t\ge0$.}
+
+\subparte{d) Resolver [6 pts]}{Encuentra $q(t)$.}
+
+\subparte{e) Interpretar [5 pts]}{¿A qué valor tiende $q(t)$ cuando $t\to\infty$? Verifica que ese valor coincide con lo que predice físicamente $E \cdot C$.}
+
+\problema{5b}{21}{Enfriamiento de una taza de café}
+
+Una taza de café se sirve a $90\,^\circ\text{C}$ en una oficina cuya temperatura ambiente es constante de $22\,^\circ\text{C}$. La razón de cambio de la temperatura del café es proporcional a la diferencia entre su temperatura y la del ambiente, con constante de proporcionalidad $k = 0.08\ \text{min}^{-1}$.
+
+Sigue el proceso completo de modelado en los incisos siguientes.
+
+\subparte{a) Formular [3 pts]}{Plantea el PVI que modela la temperatura $T(t)$ del café.}
+
+\subparte{b) Clasificar [3 pts]}{Clasifica la ecuación (tipo, orden, linealidad) e indica si también es separable.}
+
+\subparte{c) Verificar [4 pts]}{Confirma que el PVI tiene solución única para todo $t\ge0$.}
+
+\subparte{d) Resolver [6 pts]}{Encuentra $T(t)$ y evalúa la temperatura del café a los 15 minutos.}
+
+\subparte{e) Interpretar [5 pts]}{¿A qué valor tiende $T(t)$ cuando $t\to\infty$? Explica por qué, según la fórmula, el café nunca llega a estar a \emph{exactamente} $22\,^\circ\text{C}$, aunque en la práctica la diferencia se vuelva imperceptible.}
+
+\newpage
+% ============================================================
+\categoria{6}{Diagnóstico Conceptual}{15}
+
+\problema{6a}{15}{Segunda opinión: factor integrante}
+
+Un compañero te muestra su solución del siguiente PVI:
+\[
+2y\,dx + (3x+4y)\,dy = 0, \qquad y(0)=1.
+\]
+
+\textit{Trabajo del compañero:}
+\begin{quote}
+\small
+``No es exacta: $M_y=2$, $N_x=3$. Pruebo con $\mu(x)$: $\dfrac{M_y-N_x}{N} = \dfrac{-1}{3x+4y}$, así que $\mu(x) = e^{\int \frac{-1}{3x+4y}\,dx} = (3x+4y)^{-1/3}$. Multiplico la ecuación por este factor y continúo desde ahí.''
+\end{quote}
+
+\subparte{a) [5 pts]}{Identifica con precisión el error \textbf{conceptual} del compañero (no sigas su método más allá de donde se equivocó). Explica por qué $(3x+4y)^{-1/3}$ no puede ser un factor integrante válido de la forma $\mu(x)$.}
+
+\subparte{b) [10 pts]}{Encuentra el factor integrante correcto y resuelve el PVI.}
+
+\problema{6b}{15}{Segunda opinión: intervalo de validez}
+
+Un compañero te muestra su solución del siguiente PVI:
+\[
+x^2\,\frac{dy}{dx} + 2xy = 5, \qquad y(-1)=3.
+\]
+
+\textit{Trabajo del compañero:}
+\begin{quote}
+\small
+``La ecuación en forma estándar es $y' + \frac{2}{x}y = \frac{5}{x^2}$. Resolviendo con el factor integrante $\mu(x)=x^2$, obtengo $x^2y = 5x+C$. Con $y(-1)=3$: $C=8$. Entonces $y = \dfrac{5x+8}{x^2}$, válida para $x \in (0,\infty)$ porque ahí $P(x)=2/x$ es continua.''
+\end{quote}
+
+\subparte{a) [5 pts]}{Identifica con precisión el error \textbf{conceptual} del compañero (su álgebra es correcta). Explica, citando el teorema del caso lineal, por qué su intervalo de validez está mal.}
+
+\subparte{b) [10 pts]}{Indica el intervalo de validez correcto y justifica tu respuesta completamente.}
+
+\vfill
+\begin{center}\small\textit{Fin del banco de reactivos. Compara tu procedimiento —no solo tus respuestas— contra el solucionario.}\end{center}
+
+\end{document}
