@@ -20,6 +20,8 @@ from app.routers import (
     calendar,
     content,
     economy,
+    forum,
+    admin_forum,
     health,
     licitaciones,
     profile_test,
@@ -68,6 +70,8 @@ app.include_router(admin_system.router)
 app.include_router(system.router)
 app.include_router(content.router)
 app.include_router(admin_content.router)
+app.include_router(forum.router)
+app.include_router(admin_forum.router)
 app.include_router(licitaciones.router)
 app.include_router(admin_licitaciones.router)
 app.include_router(streak.router)

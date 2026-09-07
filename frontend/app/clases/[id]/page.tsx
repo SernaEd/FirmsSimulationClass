@@ -14,6 +14,7 @@ import {
 import { formatBytes } from "@/lib/format";
 import { useAuth } from "@/lib/useAuth";
 import { CARD_SM } from "@/lib/ui";
+import { SessionComments } from "@/components/SessionComments";
 
 export default function SesionDetallePage() {
   const params = useParams<{ id: string }>();
@@ -138,9 +139,7 @@ export default function SesionDetallePage() {
             </section>
           )}
 
-          <section className="rounded-md border border-dashed border-surface-border p-6 text-center">
-            <p className="text-sm text-neutral-500">Comentarios — próximamente.</p>
-          </section>
+          <SessionComments sessionId={sessionId} token={token!} currentUser={authState.user} />
         </>
       )}
     </main>
