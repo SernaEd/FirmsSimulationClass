@@ -10,6 +10,7 @@ sincronía sin importar si el profesor actúa desde la vista específica
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from typing import List, Optional, Union
 
 from fastapi import HTTPException, status
 from sqlalchemy import and_, or_, select
@@ -26,9 +27,9 @@ from app.models.user import User
 def create_inbox_item(
     db: Session,
     tipo: InboxItemType,
-    referencia_id: int | None,
+    referencia_id: Optional[int],
     prioridad: InboxPriority = InboxPriority.media,
-    payload: dict | None = None,
+    payload: Optional[dict] = None,
 ) -> InboxItem:
     item = InboxItem(
         tipo=tipo,
@@ -46,8 +47,8 @@ def resolve_inbox_items(
     db: Session,
     tipo: InboxItemType,
     referencia_id: int,
-    admin_id: int | None = None,
-    nota: str | None = None,
+    admin_id: Optional[int] = None,
+    nota: Optional[str] = None,
 ) -> int:
     """Marca como `atendido` todos los items pendientes/pospuestos que
     apunten a esta referencia. Se usa cuando la acción real ocurrió por
@@ -76,9 +77,9 @@ def resolve_inbox_items(
 
 def list_inbox(
     db: Session,
-    tipos: list[InboxItemType] | None = None,
-    prioridades: list[InboxPriority] | None = None,
-    estados: list[InboxItemStatus] | None = None,
+    tipos: Union[List[InboxItemType], None] = None,
+    prioridades: Union[List[InboxPriority], None] = None,
+    estados: Union[List[InboxItemStatus], None] = None,
 ) -> list[InboxItem]:
     """Por defecto muestra 'pendiente' + 'pospuesto' cuyo snooze ya venció
     (vuelven a aparecer automáticamente, sin necesidad de un job). Si se
@@ -123,7 +124,7 @@ def _get_item_or_404(db: Session, item_id: int) -> InboxItem:
     return item
 
 
-def resolve_item(db: Session, item_id: int, admin: User, nota: str | None = None) -> InboxItem:
+def resolve_item(db: Session, item_id: int, admin: User, nota: Optional[str] = None) -> InboxItem:
     item = _get_item_or_404(db, item_id)
     item.estado = InboxItemStatus.atendido
     item.resuelto_at = datetime.now(timezone.utc)

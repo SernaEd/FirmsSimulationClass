@@ -2,7 +2,17 @@ version: "1.0"
 
 # Community — gratuito, no requiere QODANA_TOKEN ni licencia. (El linter de
 # Qodana para JS/TS es de pago, por eso el frontend no se analiza aquí.)
-linter: jetbrains/qodana-python-community:latest
+#
+# Versión fijada (no `:latest`): `:latest` resolvió durante un tiempo a
+# "Qodana for Python 2026.2 RC" (build QDPY-262.10074), que tiene un bug
+# propio de esa RC no presente en 2025.3 -- "Invalid type argument" sobre
+# combinaciones de genérico parametrizado + `Optional`/`Union` (ej.
+# `Union[List[int], None]`), confirmado corriendo ambas versiones vía
+# Docker local sobre el mismo código: 2026.2 RC marca esas líneas como
+# error/Critical, 2025.3 no las marca en absoluto. Fijar la versión evita
+# heredar regresiones de un canal RC; hay que subir el pin a mano de vez en
+# cuando en vez de recibirlo automático.
+linter: jetbrains/qodana-python-community:2025.3
 
 # Instala las dependencias antes de analizar para que el linter resuelva
 # los imports de FastAPI/SQLAlchemy/Pydantic en vez de marcarlos como error.
@@ -22,10 +32,37 @@ bootstrap: pip install -r backend/requirements.txt
 # (Qodana for Python 2026.2 RC vía el tag `:latest`, sin pin de versión).
 # Se resolvió en la raíz: esos dos archivos volvieron a `Optional[X]`/
 # `List[X]` de `typing` en vez de la sintaxis moderna, que Qodana sí
-# reconoce sin ambigüedad. El resto del backend sigue usando `X | None`/
-# `list[X]` (Python 3.11, ver backend/Dockerfile) — son ~110 warnings
-# preexistentes fuera del diff de cualquier PR, así que nunca generan
-# comentarios inline; no hace falta tocarlos.
+# reconoce sin ambigüedad.
+#
+# Ese mismo cambio (`X | None` -> `Optional[X]`/`Union[X, None]` de
+# `typing`) se aplicó luego a todo el backend -- incluidos los genéricos
+# parametrizados unidos con `None` (`list[X] | None`, `dict[K, V] | None`,
+# `Iterable[X] | None`, `tuple[X, Y] | None`), que bajo la RC 2026.2 a la
+# que `:latest` resolvía en su momento empeoraban de "Invalid type
+# annotation" (warning) a "Invalid type argument" (error) al convertirlos
+# -- confirmado que ese empeoramiento era un bug propio de esa RC, no de
+# Qodana en general, y desaparece por completo al fijar la versión arriba
+# a 2025.3 (estable).
+#
+# Verificado corriendo el linter localmente vía Docker
+# (`jetbrains/qodana-python-community`) antes y después de cada cambio:
+# de 122 a 7 problemas totales en backend/. Los 7 que quedan son falsos
+# positivos confirmados o comportamiento exigido por una librería externa,
+# sin arreglo de sintaxis posible:
+#   - `Literal[...]` (aunque sea de ints/bools válidos, ej.
+#     `Literal[3, 4]`) -- Qodana lo marca inválido pase lo que pase, en
+#     toda versión probada (RC y estable); ver schemas/team.py y
+#     schemas/calendar.py.
+#   - Un `@dataclass` marcado "Class has no __init__ method" -- los
+#     dataclasses SÍ generan `__init__`, Qodana Community no lo reconoce.
+#   - El import de `_rate_limit_exceeded_handler` de slowapi en main.py --
+#     es el nombre público que esa librería expone para importar
+#     (confirmado en su código fuente), aunque lleve guion bajo.
+#   - Dos parámetros `request: Request` en app/routers/auth.py marcados
+#     como no usados por `@limiter.limit(...)` de slowapi -- confirmado en
+#     el código fuente de slowapi que busca ese parámetro *por nombre*
+#     ("request" o "websocket") vía introspección; renombrarlo rompería el
+#     rate limiting en tiempo de ejecución.
 exclude:
   - name: All
     paths:

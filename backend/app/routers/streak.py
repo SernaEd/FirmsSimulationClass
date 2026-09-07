@@ -4,6 +4,7 @@ from datetime import date, datetime
 from zoneinfo import ZoneInfo
 from pathlib import Path
 from uuid import uuid4
+from typing import Optional
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from sqlalchemy import select
@@ -84,8 +85,8 @@ async def submit_streak_evidence(
 
 @router.get("", response_model=list[StreakDayOut])
 def get_my_streak(
-    year: int | None = None,
-    month: int | None = None,
+    year: Optional[int] = None,
+    month: Optional[int] = None,
     db: Session = Depends(get_db),
     user: User = Depends(get_current_active_user),
 ):

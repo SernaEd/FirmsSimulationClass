@@ -1,5 +1,7 @@
 """Endpoints admin de Dominio 3."""
 
+from typing import List, Optional, Union
+
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
@@ -150,7 +152,7 @@ def admin_seed_defaults(
 def admin_list_tickets(
     db: Session = Depends(get_db),
     _admin: User = Depends(get_current_admin),
-    estado: list[TicketStatus] | None = Query(default=None),
+    estado: Union[List[TicketStatus], None] = Query(default=None),
     limit: int = Query(200, ge=1, le=1000),
 ) -> list[PrivilegeTicket]:
     stmt = (
@@ -224,7 +226,7 @@ def admin_list_pending_decimals(
 @router.post("/decimal-redemption/{request_id}/approve", response_model=DecimalRedemptionOut)
 def admin_approve_decimal(
     request_id: int,
-    payload: ResolveDecimalIn | None = None,
+    payload: Optional[ResolveDecimalIn] = None,
     admin: User = Depends(get_current_admin),
     db: Session = Depends(get_db),
 ) -> DecimalRedemptionRequest:
@@ -235,7 +237,7 @@ def admin_approve_decimal(
 @router.post("/decimal-redemption/{request_id}/reject", response_model=DecimalRedemptionOut)
 def admin_reject_decimal(
     request_id: int,
-    payload: ResolveDecimalIn | None = None,
+    payload: Optional[ResolveDecimalIn] = None,
     admin: User = Depends(get_current_admin),
     db: Session = Depends(get_db),
 ) -> DecimalRedemptionRequest:

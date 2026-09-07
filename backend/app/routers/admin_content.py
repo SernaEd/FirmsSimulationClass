@@ -2,6 +2,7 @@
 
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Optional
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from sqlalchemy import select
@@ -32,7 +33,7 @@ router = APIRouter(prefix="/admin", tags=["admin:content"])
 
 
 # ---- Módulos ----
-def _check_numero_modulo_unique(db: Session, numero: int, exclude_id: int | None = None) -> None:
+def _check_numero_modulo_unique(db: Session, numero: int, exclude_id: Optional[int] = None) -> None:
     stmt = select(Module).where(Module.numero == numero)
     if exclude_id is not None:
         stmt = stmt.where(Module.id != exclude_id)
@@ -114,7 +115,7 @@ def lock_module(
 
 
 # ---- Sesiones ----
-def _check_numero_sesion_unique(db: Session, module_id: int, numero_sesion: int, exclude_id: int | None = None) -> None:
+def _check_numero_sesion_unique(db: Session, module_id: int, numero_sesion: int, exclude_id: Optional[int] = None) -> None:
     stmt = select(CourseSession).where(
         CourseSession.module_id == module_id, CourseSession.numero_sesion == numero_sesion
     )

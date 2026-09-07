@@ -1,5 +1,7 @@
 """Endpoints de Dominio 3 accesibles a integrantes activos."""
 
+from typing import List, Union
+
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -61,7 +63,7 @@ def my_movements(
     db: Session = Depends(get_db),
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
-    fuente: list[TokenSource] | None = Query(default=None),
+    fuente: Union[List[TokenSource], None] = Query(default=None),
 ) -> list[LedgerEntryOut]:
     entries = get_movements(db, user.id, limit=limit, offset=offset, fuentes=fuente)
     return [LedgerEntryOut.model_validate(e) for e in entries]
@@ -122,7 +124,7 @@ def split_bill_init(
 def my_tickets(
     user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
-    estado: list[TicketStatus] | None = Query(default=None),
+    estado: Union[List[TicketStatus], None] = Query(default=None),
 ) -> list[PrivilegeTicket]:
     return get_user_tickets(db, user.id, estados=estado)
 

@@ -1,5 +1,7 @@
 """Endpoints de Dominio 2 (Teams) accesibles a integrantes."""
 
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -9,7 +11,7 @@ from app.deps import get_current_active_user
 from app.models.system import InboxItemType, InboxPriority
 from app.models.team import ProposalStatus, TeamNameProposal, TeamNameStatus
 from app.models.user import User
-from app.routers.admin_teams import _team_to_out
+from app.routers.admin_teams import team_to_out
 from app.schemas.team import ProposalOut, ProposeNameIn, TeamOut
 from app.services.inbox import create_inbox_item, resolve_inbox_items
 from app.services.teams import get_active_team_of_user, user_is_member_of_team
@@ -17,15 +19,15 @@ from app.services.teams import get_active_team_of_user, user_is_member_of_team
 router = APIRouter(tags=["teams"])
 
 
-@router.get("/me/team", response_model=TeamOut | None)
+@router.get("/me/team", response_model=Optional[TeamOut])
 def my_team(
     user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
-) -> TeamOut | None:
+) -> Optional[TeamOut]:
     team = get_active_team_of_user(db, user.id)
     if team is None:
         return None
-    return _team_to_out(db, team)
+    return team_to_out(db, team)
 
 
 @router.post("/teams/{team_id}/propose-name", response_model=ProposalOut, status_code=status.HTTP_201_CREATED)

@@ -34,7 +34,7 @@ from app.routers import (
 )
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(_app: FastAPI):
     start_scheduler()
     yield
     stop_scheduler()

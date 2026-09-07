@@ -1,6 +1,7 @@
 """Schemas de Comentarios por Clase (foro por sesión) — Iteración 1."""
 
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -8,7 +9,7 @@ from pydantic import BaseModel, Field
 class ForumPostIn(BaseModel):
     cuerpo: str = Field(min_length=1, max_length=4000)
     es_anonimo_para_pares: bool = False
-    parent_post_id: int | None = None  # None = comentario de primer nivel
+    parent_post_id: Optional[int] = None  # None = comentario de primer nivel
 
 
 class ForumPostOut(BaseModel):
@@ -20,7 +21,7 @@ class ForumPostOut(BaseModel):
 
     id: int
     session_id: int
-    parent_post_id: int | None
+    parent_post_id: Optional[int]
     cuerpo: str
     es_anonimo_para_pares: bool
     destacado: bool

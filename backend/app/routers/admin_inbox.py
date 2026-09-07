@@ -1,5 +1,7 @@
 """Endpoints admin del Inbox de Aprobaciones (§11.0, Dominio 4)."""
 
+from typing import List, Optional, Union
+
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
@@ -17,9 +19,9 @@ router = APIRouter(prefix="/admin/inbox", tags=["admin:inbox"])
 def get_inbox(
     db: Session = Depends(get_db),
     _admin: User = Depends(get_current_admin),
-    tipo: list[InboxItemType] | None = Query(default=None),
-    prioridad: list[InboxPriority] | None = Query(default=None),
-    estado: list[InboxItemStatus] | None = Query(
+    tipo: Union[List[InboxItemType], None] = Query(default=None),
+    prioridad: Union[List[InboxPriority], None] = Query(default=None),
+    estado: Union[List[InboxItemStatus], None] = Query(
         default=None,
         description=(
             "Si se omite, muestra pendientes + pospuestos ya vencidos "
@@ -33,7 +35,7 @@ def get_inbox(
 @router.post("/{item_id}/resolve", response_model=InboxItemOut)
 def resolve(
     item_id: int,
-    payload: ResolveIn | None = None,
+    payload: Optional[ResolveIn] = None,
     admin: User = Depends(get_current_admin),
     db: Session = Depends(get_db),
 ):

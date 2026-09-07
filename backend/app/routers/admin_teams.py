@@ -1,6 +1,7 @@
 """Endpoints admin de Dominio 2 (Teams)."""
 
 from datetime import datetime, timezone
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
@@ -36,7 +37,7 @@ router = APIRouter(prefix="/admin", tags=["admin:teams"])
 
 
 # ---- Serializador auxiliar (evita queries N+1 al armar TeamOut) ----
-def _team_to_out(db: Session, team: Team) -> TeamOut:
+def team_to_out(db: Session, team: Team) -> TeamOut:
     user_ids = [m.user_id for m in team.members if m.left_at is None]
     users_map: dict[int, User] = {}
     if user_ids:
@@ -83,7 +84,7 @@ def generate_teams(
         total_alumnos_disponibles=sum(len([m for m in t.members if m.left_at is None]) for t in teams),
         equipos_generados=len(teams),
         tamanos=[len([m for m in t.members if m.left_at is None]) for t in teams],
-        teams=[_team_to_out(db, t) for t in teams] if teams else None,
+        teams=[team_to_out(db, t) for t in teams] if teams else None,
         warnings=warnings,
     )
     return result
@@ -97,7 +98,7 @@ def list_teams(
     teams = db.scalars(
         select(Team).options(selectinload(Team.members)).order_by(Team.created_at.asc())
     ).all()
-    return [_team_to_out(db, t) for t in teams]
+    return [team_to_out(db, t) for t in teams]
 
 
 @router.delete("/teams/{team_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -118,7 +119,7 @@ def _set_team_name(
     team: Team,
     nombre: str,
     nuevo_estado: TeamNameStatus,
-    admin_id: int | None = None,
+    admin_id: Optional[int] = None,
 ) -> None:
     """Aplica un nombre a un equipo, valida unicidad y superseda propuestas
     pendientes (resolviendo también sus items del Inbox). NO hace commit —
@@ -159,7 +160,7 @@ def rename_team(
     _set_team_name(db, team, payload.nombre, TeamNameStatus.aprobado, admin_id=admin.id)
     db.commit()
     db.refresh(team)
-    return _team_to_out(db, team)
+    return team_to_out(db, team)
 
 
 @router.post("/teams/{team_id}/assign-default-name", response_model=TeamOut)
@@ -178,7 +179,7 @@ def assign_default_name(
     _set_team_name(db, team, nombre, TeamNameStatus.asignado_por_sistema, admin_id=admin.id)
     db.commit()
     db.refresh(team)
-    return _team_to_out(db, team)
+    return team_to_out(db, team)
 
 
 # ---- Propuestas de nombre ----
@@ -252,7 +253,7 @@ def approve_proposal(
 
     db.commit()
     db.refresh(team)
-    return _team_to_out(db, team)
+    return team_to_out(db, team)
 
 
 @router.post("/team-name-proposals/{proposal_id}/reject", response_model=ProposalOut)

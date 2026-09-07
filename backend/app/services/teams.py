@@ -12,7 +12,7 @@ import string
 from collections import defaultdict
 from datetime import datetime, timezone
 from itertools import product
-from typing import Optional
+from typing import Optional, Tuple, Union
 
 from fastapi import HTTPException, status
 from sqlalchemy import and_, select
@@ -40,7 +40,7 @@ def compute_team_sizes(total: int, tamano_preferido: int = 4) -> list[int]:
 
     # Buscar combinación (a, b) con 3*a + 4*b = total, minimizando |a-b| y
     # priorizando b (equipos de 4). Espacio pequeño: iteramos.
-    best: tuple[int, int] | None = None
+    best: Union[Tuple[int, int], None] = None
     for b in range(total // 4, -1, -1):
         remainder = total - 4 * b
         if remainder < 0 or remainder % 3 != 0:
@@ -210,7 +210,7 @@ def next_default_firma_name(db: Session) -> str:
 
 
 # ---- Utilidades varias ----
-def get_active_team_of_user(db: Session, user_id: int) -> Team | None:
+def get_active_team_of_user(db: Session, user_id: int) -> Optional[Team]:
     stmt = (
         select(Team)
         .join(TeamMember, TeamMember.team_id == Team.id)

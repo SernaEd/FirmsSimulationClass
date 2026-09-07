@@ -8,6 +8,7 @@ simples (`{"enabled": true}`) como estructuras más ricas si hiciera falta.
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from typing import Optional
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -77,7 +78,7 @@ def set_flag(
     key: str,
     enabled: bool,
     admin: User,
-    description: str | None = None,
+    description: Optional[str] = None,
 ) -> SystemFlag:
     flag = db.get(SystemFlag, key)
     if flag is None:

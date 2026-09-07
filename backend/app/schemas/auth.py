@@ -12,7 +12,7 @@ class RegisterIn(BaseModel):
     numero_cuenta: str = Field(min_length=4, max_length=20)
     nickname: str = Field(min_length=3, max_length=40)
     pin: str = Field(min_length=4, max_length=32)
-    correo_institucional: EmailStr | None = None
+    correo_institucional: Optional[EmailStr] = None
     pronombres: UserPronouns = UserPronouns.prefiero_no_decir
     acepta_reglas: bool
 
@@ -58,9 +58,9 @@ class UserOut(BaseModel):
     apellidos: str
     numero_cuenta: str
     nickname: str
-    correo_institucional: str | None
+    correo_institucional: Optional[str]
     estado: UserStatus
-    perfil: UserProfile | None
+    perfil: Optional[UserProfile]
     pronombres: UserPronouns
     is_admin: bool
     terms_accepted_at: datetime
