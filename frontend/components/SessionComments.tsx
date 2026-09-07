@@ -197,7 +197,7 @@ function CommentRow({
           {!isReply && (
             <button
               onClick={() => setReplyOpen((v) => !v)}
-              className="text-xs text-neutral-400 hover:text-neutral-200"
+              className="rounded-md border border-surface-border hover:bg-neutral-800 px-3 py-1.5 text-xs font-medium text-neutral-300 transition-colors"
             >
               {replyOpen ? "Cancelar respuesta" : "Responder"}
             </button>
@@ -205,20 +205,25 @@ function CommentRow({
 
           {currentUser.is_admin && !post.destacado && (
             <div className="flex items-center gap-1.5">
-              <input
-                type="number"
-                min={1}
-                max={1000}
-                value={montoDestacar}
-                onChange={(e) => setMontoDestacar(Number(e.target.value) || DEFAULT_DESTACAR_MONTO)}
-                className="w-16 rounded-md border border-surface-border bg-surface-raised px-2 py-1 text-xs text-white focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500"
-              />
+              <label className="flex items-center gap-1.5 text-[11px] text-neutral-400">
+                <span>Bono para {post.autor_nombre}:</span>
+                <input
+                  type="number"
+                  min={1}
+                  max={1000}
+                  value={montoDestacar}
+                  onChange={(e) => setMontoDestacar(Number(e.target.value) || DEFAULT_DESTACAR_MONTO)}
+                  className="w-16 rounded-md border border-surface-border bg-surface-raised px-2 py-1 text-xs text-white focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500"
+                />
+                <span>Tks</span>
+              </label>
               <button
                 onClick={destacar}
                 disabled={destacando}
-                className="rounded-md border border-accent-500 text-accent-300 hover:bg-accent-500/10 disabled:opacity-50 px-2.5 py-1 text-xs font-medium transition-colors"
+                title={`Marca este comentario como destacado y acredita ${montoDestacar} Tks al banco de ${post.autor_nombre}.`}
+                className="rounded-md border border-accent-500 text-accent-300 hover:bg-accent-500/10 disabled:opacity-50 px-2.5 py-1.5 text-xs font-medium transition-colors"
               >
-                {destacando ? "Destacando…" : `Destacar (+${montoDestacar} Tks)`}
+                {destacando ? "Destacando…" : "Destacar"}
               </button>
             </div>
           )}
