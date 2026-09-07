@@ -638,6 +638,30 @@ export type ModuleOut = {
   sessions: CourseSessionListOut[];
 };
 
+// ---- Foro (Comentarios por Clase) — Iteración 1 ----
+export type ForumPostOut = {
+  id: number;
+  session_id: number;
+  parent_post_id: number | null;
+  cuerpo: string;
+  es_anonimo_para_pares: boolean;
+  destacado: boolean;
+  created_at: string;
+  autor_nombre: string;
+  es_mio: boolean;
+  replies: ForumPostOut[];
+};
+
+export type ForumPostIn = {
+  cuerpo: string;
+  es_anonimo_para_pares?: boolean;
+  parent_post_id?: number | null;
+};
+
+export type MarkDestacadoIn = {
+  monto_tokens: number;
+};
+
 // ---- Tipos Licitaciones (§10) ----
 export type EstadoLicitacion = "abierta" | "cerrada";
 
@@ -1150,6 +1174,24 @@ export const api = {
   },
   adminDeleteAttachment: (token: string, attachmentId: number) =>
     request<void>(`/admin/attachments/${attachmentId}`, { method: "DELETE" }, token),
+
+  // Foro — alumno
+  listForumPosts: (token: string, sessionId: number) =>
+    request<ForumPostOut[]>(`/sessions/${sessionId}/posts`, {}, token),
+  createForumPost: (token: string, sessionId: number, body: ForumPostIn) =>
+    request<ForumPostOut>(
+      `/sessions/${sessionId}/posts`,
+      { method: "POST", body: JSON.stringify(body) },
+      token,
+    ),
+
+  // Foro — admin
+  adminMarkPostDestacado: (token: string, sessionId: number, postId: number, body: MarkDestacadoIn) =>
+    request<ForumPostOut>(
+      `/admin/sessions/${sessionId}/posts/${postId}/destacar`,
+      { method: "POST", body: JSON.stringify(body) },
+      token,
+    ),
 
   // Licitaciones — alumno (§10)
   licitacionActiva: (token: string) =>

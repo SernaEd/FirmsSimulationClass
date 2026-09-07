@@ -16,7 +16,7 @@ Convenciones:
 """
 
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import (
     Boolean,
@@ -31,6 +31,9 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
+
+if TYPE_CHECKING:
+    from app.models.user import User
 
 # Content-types que LibreOffice puede convertir a PDF para vista previa (ver
 # app.services.content.get_preview_source). PDF nativo no necesita
@@ -157,6 +160,9 @@ class ForumPost(Base):
     )
 
     session: Mapped[CourseSession] = relationship(back_populates="posts")
+    # Unidireccional (sin back_populates en User): solo lo necesitamos para
+    # resolver el nickname del autor al armar ForumPostOut.
+    user: Mapped["User"] = relationship(foreign_keys=[user_id])
 
     def __repr__(self) -> str:
         return f"<ForumPost #{self.id} en session {self.session_id}>"
