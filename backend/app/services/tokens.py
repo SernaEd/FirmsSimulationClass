@@ -15,7 +15,7 @@ import secrets
 import string
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Iterable
+from typing import Iterable, List, Optional, Union
 
 from fastapi import HTTPException, status
 from sqlalchemy import and_, func, select
@@ -70,7 +70,7 @@ def get_movements(
     user_id: int,
     limit: int = 50,
     offset: int = 0,
-    fuentes: list[TokenSource] | None = None,
+    fuentes: Union[List[TokenSource], None] = None,
 ) -> list[TokenLedger]:
     stmt = select(TokenLedger).where(TokenLedger.user_id == user_id)
     if fuentes:
@@ -85,10 +85,10 @@ def add_ledger_entry(
     user_id: int,
     delta: int,
     fuente: TokenSource,
-    referencia_tipo: str | None = None,
-    referencia_id: int | None = None,
-    nota: str | None = None,
-    admin_id: int | None = None,
+    referencia_tipo: Optional[str] = None,
+    referencia_id: Optional[int] = None,
+    nota: Optional[str] = None,
+    admin_id: Optional[int] = None,
 ) -> TokenLedger:
     entry = TokenLedger(
         user_id=user_id,
@@ -546,7 +546,7 @@ def request_decimal_redemption(
     user: User,
     entrega_descripcion: str,
     decimas_solicitadas: int,
-    entrega_ref: str | None = None,
+    entrega_ref: Optional[str] = None,
 ) -> DecimalRedemptionRequest:
     # TODO(d4): verificar que semester_state == "canje_abierto".
     from app.services.system_config import get_flag  # import perezoso: evita ciclo
@@ -605,7 +605,7 @@ def resolve_decimal_request(
     request_id: int,
     admin: User,
     aprobar: bool,
-    nota: str | None = None,
+    nota: Optional[str] = None,
 ) -> DecimalRedemptionRequest:
     req = db.get(DecimalRedemptionRequest, request_id)
     if req is None:
@@ -751,7 +751,7 @@ def user_owns_or_shares_ticket(db: Session, user_id: int, ticket: PrivilegeTicke
 
 
 def get_user_tickets(
-    db: Session, user_id: int, estados: Iterable[TicketStatus] | None = None
+    db: Session, user_id: int, estados: Union[Iterable[TicketStatus], None] = None
 ) -> list[PrivilegeTicket]:
     """Tickets donde el usuario es iniciador o donde aportó."""
     contrib_ticket_ids = select(SplitBillContribution.ticket_id).where(

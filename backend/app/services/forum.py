@@ -10,6 +10,8 @@ ancla al inicio del hilo.
 
 from __future__ import annotations
 
+from typing import Optional
+
 from fastapi import HTTPException, status
 from sqlalchemy import func, select, text
 from sqlalchemy.orm import Session, selectinload
@@ -86,7 +88,7 @@ def create_post(db: Session, session: CourseSession, user: User, payload: ForumP
     if not cuerpo:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="El comentario no puede estar vacío.")
 
-    parent: ForumPost | None = None
+    parent: Optional[ForumPost] = None
     if payload.parent_post_id is not None:
         parent = db.get(ForumPost, payload.parent_post_id)
         if parent is None or parent.session_id != session.id:

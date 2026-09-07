@@ -15,11 +15,18 @@ from app.models.calendar import CalendarEventScope
 # schemas/content.py y services/content.py -- ver backend/qodana.yaml). El
 # `Literal[...]` de color se repite inline en vez de vivir en un alias de
 # tipo con nombre a nivel de módulo -- ese patrón específico ("Literal' may
-# be parameterized with... type aliases to other literal types") seguía
-# marcándose como inválido incluso con `TypeAlias` explícito; solo se
-# reprodujo la sintaxis por la que Qodana sí pasa. Igual con `Optional[List[X]]`
-# anidado (marcado "Invalid type argument"): `Union[List[X], None]` es el
-# equivalente que no dispara esa combinación específica.
+# be parameterized with... type aliases to other literal types") sigue
+# marcándose como inválido incluso con `TypeAlias` explícito, en cualquier
+# versión del linter probada; no tiene solución de sintaxis.
+#
+# Nota histórica: `Optional[List[X]]` anidado llegó a marcarse además como
+# "Invalid type argument" (severidad error) -- pero era un bug propio de la
+# RC 2026.2 a la que `:latest` resolvía en ese momento, no de Qodana en
+# general. Al fijar la versión en backend/qodana.yaml a 2025.3 (estable) el
+# error desapareció por completo, confirmado corriendo ambas versiones vía
+# Docker local sobre este mismo archivo. `Union[List[X], None]` se mantiene
+# aquí por ser el estilo ya establecido en el resto del backend, no porque
+# `Optional[List[X]]` siga fallando.
 
 
 class CalendarEventTypeCreate(BaseModel):

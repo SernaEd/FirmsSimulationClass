@@ -1,6 +1,7 @@
 import os
 import shutil
 from datetime import date
+from typing import Optional
 from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile, status, File
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session, selectinload
@@ -18,7 +19,7 @@ UPLOAD_DIR = "uploads/exercises"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 
-def _next_numero(db: Session, course_session_id: int | None) -> int:
+def _next_numero(db: Session, course_session_id: Optional[int]) -> int:
     """Siguiente número de ejercicio disponible dentro de una clase (o de
     los ejercicios "generales", sin clase, si course_session_id es None)."""
     if course_session_id:
@@ -46,7 +47,7 @@ def _get_with_session(db: Session, exercise_id: int) -> DailyExercise:
 @router.get("", response_model=list[DailyExerciseOut])
 def list_exercises(
     db: Session = Depends(get_db),
-    admin: User = Depends(get_current_admin),
+    _admin: User = Depends(get_current_admin),
 ):
     """Obtiene todos los ejercicios programados."""
     stmt = select(DailyExercise).options(selectinload(DailyExercise.course_session)).order_by(DailyExercise.fecha.desc())
@@ -55,11 +56,11 @@ def list_exercises(
 @router.post("", response_model=DailyExerciseOut)
 def create_exercise(
     fecha: date = Form(...),
-    course_session_id: int | None = Form(None),
+    course_session_id: Optional[int] = Form(None),
     enunciado: str = Form(...),
-    imagen: UploadFile | None = File(None),
+    imagen: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db),
-    admin: User = Depends(get_current_admin),
+    _admin: User = Depends(get_current_admin),
 ):
     """Crea un nuevo ejercicio para un día específico."""
     # Verificar que no exista uno para la fecha
@@ -82,11 +83,11 @@ def create_exercise(
 def update_exercise(
     exercise_id: int,
     fecha: date = Form(...),
-    course_session_id: int | None = Form(None),
+    course_session_id: Optional[int] = Form(None),
     enunciado: str = Form(...),
-    imagen: UploadFile | None = File(None),
+    imagen: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db),
-    admin: User = Depends(get_current_admin),
+    _admin: User = Depends(get_current_admin),
 ):
     """Edita un ejercicio programado. Solo se permite para ejercicios cuya
     fecha sea igual o posterior a hoy (los de fechas pasadas ya se

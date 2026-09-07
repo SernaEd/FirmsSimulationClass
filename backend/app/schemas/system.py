@@ -5,6 +5,7 @@ los anuncios se publican en Brightspace. Ver plan_de_tareas_mvp.md.
 """
 
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -20,19 +21,19 @@ class InboxItemOut(BaseModel):
 
     id: int
     tipo: InboxItemType
-    referencia_id: int | None
-    payload_json: dict | None
+    referencia_id: Optional[int]
+    payload_json: Optional[dict]
     prioridad: InboxPriority
     estado: InboxItemStatus
-    snoozed_until: datetime | None
+    snoozed_until: Optional[datetime]
     created_at: datetime
-    resuelto_at: datetime | None
-    resuelto_por: int | None
-    nota_resolucion: str | None
+    resuelto_at: Optional[datetime]
+    resuelto_por: Optional[int]
+    nota_resolucion: Optional[str]
 
 
 class ResolveIn(BaseModel):
-    nota: str | None = Field(default=None, max_length=500)
+    nota: Optional[str] = Field(default=None, max_length=500)
 
 
 class SnoozeIn(BaseModel):
@@ -51,14 +52,14 @@ class DismissIn(BaseModel):
 class SystemFlagOut(BaseModel):
     key: str
     enabled: bool
-    description: str | None
+    description: Optional[str]
     updated_at: datetime
-    updated_by: int | None
+    updated_by: Optional[int]
 
 
 class SetFlagIn(BaseModel):
     enabled: bool
-    description: str | None = Field(default=None, max_length=300)
+    description: Optional[str] = Field(default=None, max_length=300)
 
 
 class FlagStatusOut(BaseModel):
@@ -76,4 +77,4 @@ class KnownFlagOut(BaseModel):
     qué hace antes de crearlo."""
 
     key: str
-    description: str | None
+    description: Optional[str]

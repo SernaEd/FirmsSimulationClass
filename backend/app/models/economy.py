@@ -15,7 +15,7 @@ Convenciones:
 
 from datetime import datetime
 from enum import Enum
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import (
     BigInteger,
@@ -173,11 +173,11 @@ class PrivilegeTicket(Base):
     initiator: Mapped["User"] = relationship(foreign_keys=[initiator_user_id])
 
     @property
-    def initiator_name(self) -> str | None:
+    def initiator_name(self) -> Optional[str]:
         return self.initiator.nickname if getattr(self, "initiator", None) else None
 
     @property
-    def catalog_name(self) -> str | None:
+    def catalog_name(self) -> Optional[str]:
         return self.catalog.nombre if getattr(self, "catalog", None) else None
 
 
@@ -292,5 +292,5 @@ class DecimalRedemptionRequest(Base):
     user: Mapped["User"] = relationship(foreign_keys=[user_id])
 
     @property
-    def user_name(self) -> str | None:
+    def user_name(self) -> Optional[str]:
         return self.user.nickname if getattr(self, "user", None) else None

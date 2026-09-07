@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Literal
+from typing import List, Literal, Optional, Union
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -34,7 +34,7 @@ class TeamMemberOut(BaseModel):
     nombre: str
     apellidos: str
     nickname: str
-    perfil: str | None
+    perfil: Optional[str]
     joined_at: datetime
 
 
@@ -43,7 +43,7 @@ class TeamOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    nombre_firma: str | None
+    nombre_firma: Optional[str]
     estado_nombre: TeamNameStatus
     created_at: datetime
     members: list[TeamMemberOut]
@@ -51,6 +51,9 @@ class TeamOut(BaseModel):
 
 # ---- Generación de equipos ----
 class GenerateTeamsIn(BaseModel):
+    # Nota: `Literal[3, 4]` dispara un falso positivo confirmado en Qodana
+    # Community ("'Literal' may be parameterized with...") incluso con ints
+    # válidos — ver backend/qodana.yaml. No tiene solución de sintaxis.
     tamano_preferido: Literal[3, 4] = 4  # default 4 (§6 mezcla 3 y 4)
     incluir_admin: bool = False           # normalmente el profesor no forma parte
 
@@ -61,7 +64,7 @@ class GenerateTeamsResult(BaseModel):
     total_alumnos_disponibles: int
     equipos_generados: int
     tamanos: list[int]
-    teams: list[TeamOut] | None = None
+    teams: Union[List[TeamOut], None] = None
     warnings: list[str] = []
 
 
@@ -83,25 +86,25 @@ class ProposalOut(BaseModel):
     propuesta: str
     propuesto_por: int
     estado: ProposalStatus
-    nota_moderacion: str | None
+    nota_moderacion: Optional[str]
     created_at: datetime
-    resolved_at: datetime | None
-    resolved_by: int | None
+    resolved_at: Optional[datetime]
+    resolved_by: Optional[int]
 
 
 class RejectProposalIn(BaseModel):
-    nota_moderacion: str | None = Field(default=None, max_length=500)
+    nota_moderacion: Optional[str] = Field(default=None, max_length=500)
 
 
 class AssignDefaultNameIn(BaseModel):
     """Fallback tras 7 días o cuando el admin decide asignar 'Firma A/B/…'."""
 
     # opcional: si se omite, el sistema calcula "Firma A", "Firma B", ...
-    nombre: str | None = None
+    nombre: Optional[str] = None
 
     @field_validator("nombre")
     @classmethod
-    def _validate(cls, v: str | None) -> str | None:
+    def _validate(cls, v: Optional[str]) -> Optional[str]:
         if v is None:
             return None
         return validate_firma_name(v)

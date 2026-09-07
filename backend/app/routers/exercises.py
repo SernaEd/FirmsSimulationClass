@@ -17,7 +17,7 @@ router = APIRouter(prefix="/daily-exercises", tags=["Exercises"])
 @router.get("/today", response_model=DailyExerciseOut | None)
 def get_today_exercise(
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_active_user),
+    _user: User = Depends(get_current_active_user),
 ):
     """Obtiene el ejercicio del día actual, si existe."""
     today = datetime.now(ZoneInfo("America/Mexico_City")).date()
@@ -29,7 +29,7 @@ def get_today_exercise(
 def get_exercise_image(
     id: int,
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_active_user),
+    _user: User = Depends(get_current_active_user),
 ):
     """Devuelve la imagen del ejercicio."""
     exercise = db.get(DailyExercise, id)

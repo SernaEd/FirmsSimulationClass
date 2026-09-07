@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from typing import Optional
 from pydantic import BaseModel, ConfigDict, Field
 from app.models.streak import StreakDayStatus
 
@@ -14,7 +15,7 @@ class StreakEvidenceOut(BaseModel):
     streak_day_id: int
     user_id: int
     user: SimpleUserOut
-    daily_exercise_id: int | None = None
+    daily_exercise_id: Optional[int] = None
     solucion_path: str
     submitted_at: datetime
 
@@ -26,4 +27,4 @@ class StreakDayOut(BaseModel):
     user_id: int
     fecha: date
     estado: StreakDayStatus
-    evidence: StreakEvidenceOut | None = None
+    evidence: Optional[StreakEvidenceOut] = None

@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from fastapi.responses import FileResponse
+from typing import Optional
 import os
 
 from app.database import get_db
@@ -19,9 +20,9 @@ from sqlalchemy.orm import Session, selectinload
 def get_streak_evidence(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
-    user_id: int | None = None,
+    user_id: Optional[int] = None,
     db: Session = Depends(get_db),
-    admin: User = Depends(get_current_admin),
+    _admin: User = Depends(get_current_admin),
 ):
     """Obtiene las evidencias subidas para verificación puntual."""
     stmt = select(StreakEvidence).options(selectinload(StreakEvidence.user)).order_by(StreakEvidence.submitted_at.desc())
@@ -40,7 +41,7 @@ from fastapi import HTTPException, status
 def download_streak_evidence(
     id: int,
     db: Session = Depends(get_db),
-    admin: User = Depends(get_current_admin),
+    _admin: User = Depends(get_current_admin),
 ):
     """Descarga la captura de evidencia para verificación."""
     evidence = db.get(StreakEvidence, id)
@@ -63,7 +64,7 @@ def resolve_streak_day(
     id: int,
     payload: ResolveStreakDayIn,
     db: Session = Depends(get_db),
-    admin: User = Depends(get_current_admin),
+    _admin: User = Depends(get_current_admin),
 ):
     """Resuelve un día pendiente de revisión a fallido o neutro."""
     day = db.get(StreakDay, id)

@@ -1,7 +1,7 @@
 """Utilidades de seguridad: hash de PIN + firma y verificación de JWT."""
 
 from datetime import datetime, timedelta, timezone
-from typing import Any
+from typing import Any, Dict, Union
 
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -24,7 +24,7 @@ def verify_pin(pin: str, pin_hash: str) -> bool:
 
 
 # ---- JWT ----
-def create_access_token(subject: str | int, extra_claims: dict[str, Any] | None = None) -> str:
+def create_access_token(subject: Union[str, int], extra_claims: Union[Dict[str, Any], None] = None) -> str:
     now = datetime.now(timezone.utc)
     payload: dict[str, Any] = {
         "sub": str(subject),
