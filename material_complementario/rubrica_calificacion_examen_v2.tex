@@ -1,18 +1,14 @@
 % ============================================================
-%  RÚBRICA DE CALIFICACIÓN — PRIMER EXAMEN PARCIAL
+%  RÚBRICA DE CALIFICACIÓN — PRIMER EXAMEN PARCIAL — VERSIÓN B
 %  Cálculo III: Ecuaciones Diferenciales en Ingeniería (MT024)
 %  Universidad Iberoamericana
 %
 %  NOTA PARA EL PROFESOR (comentario LaTeX, no se imprime):
-%  Documento hermano de examen_primer_parcial.tex y de su
-%  solucionario (examen_primer_parcial_solucionario.tex). El
+%  Documento hermano de examen_primer_parcial_v2.tex y de su
+%  solucionario (examen_primer_parcial_v2_solucionario.tex). El
 %  solucionario explica el razonamiento completo de cada rúbrica en
 %  prosa; este documento extrae esos mismos criterios en formato de
-%  lista de cotejo, pensado para calificar rápido y de forma
-%  consistente entre exámenes (rúbrica analítica: puntos por
-%  evidencia de razonamiento, no solo por el resultado final).
-%  Pensado para imprimirse una vez por alumno y grapar al examen, o
-%  para usarse como referencia única al calificar todo el grupo.
+%  lista de cotejo, igual que la Versión A.
 % ============================================================
 \documentclass[11pt,letterpaper]{article}
 
@@ -55,9 +51,9 @@
 
 % ---------- Encabezado ----------
 \begin{center}
-{\Large\bfseries RÚBRICA DE CALIFICACIÓN — PRIMER EXAMEN PARCIAL --- Versión A}\\[2pt]
+{\Large\bfseries RÚBRICA DE CALIFICACIÓN — PRIMER EXAMEN PARCIAL --- Versión B}\\[2pt]
 {\small Cálculo III: Ecuaciones Diferenciales en Ingeniería (MT024) · Universidad Iberoamericana}\\[1pt]
-{\small Documento hermano de \textit{examen\_primer\_parcial.tex} y su solucionario · Uso exclusivo del profesor}
+{\small Documento hermano de \textit{examen\_primer\_parcial\_v2.tex} y su solucionario · Uso exclusivo del profesor}
 \end{center}
 
 \vspace{4pt}\hrule\vspace{10pt}
@@ -77,12 +73,12 @@ Nombre del alumno: \dotfill & Matrícula: \dotfill \\[10pt]
 \begin{tablarubrica}
 a) & Tipo y orden correctos & 1 & \\
 a) & Linealidad clasificada \emph{y} justificada citando la condición cumplida/violada & 1.5 & \\
-b) & Tipo y orden correctos (\emph{orden} = 2; no confundir con el grado del término, que es 3) & 1 & \\
+b) & Tipo y orden correctos (\emph{orden} = 2; no confundir con el grado del término, que es 4) & 1 & \\
 b) & Linealidad justificada (potencia de $y''$ rompe la linealidad) & 1.5 & \\
 c) & Tipo y orden correctos (EDP, orden 2) & 1 & \\
 c) & Linealidad justificada & 1.5 & \\
 d) & Tipo y orden correctos & 1 & \\
-d) & Linealidad justificada (identifica el producto $s\,s'$ o el coeficiente dependiente de $s$) & 1.5 & \\
+d) & Linealidad justificada (identifica el producto $r\,r'$ o el coeficiente dependiente de $r$) & 1.5 & \\
 \end{tablarubrica}
 
 \textit{Nota: en cualquier inciso, 0 pts en linealidad si el alumno confunde orden con grado o no explica la condición violada/cumplida — no basta un ``sí'' o ``no'' sueltos.}
@@ -101,7 +97,7 @@ a) & Elige una región concreta que contenga $(0,-3)$ (acepta $y<0$ u otra regi�
 b) & Separa e integra correctamente & 3 & \\
 b) & Usa la condición inicial para obtener $C$ & 2 & \\
 b) & Solución explícita con el signo correcto (rama negativa) & 2 & \\
-b) & Identifica el intervalo abierto $(-6,6)$ con su justificación & 1 & \\
+b) & Identifica el intervalo abierto $(-1,1)$ con su justificación & 1 & \\
 c) & Conecta explícitamente la región de (a) con el intervalo de (b) y explica por qué coinciden (2 pts si solo afirma que coinciden, sin explicar) & 4 & \\
 \end{tablarubrica}
 
@@ -114,11 +110,11 @@ c) & Conecta explícitamente la región de (a) con el intervalo de (b) y explica
 \begin{tablarubrica}
 a) & Forma estándar correcta & 2 & \\
 a) & Identifica el intervalo de continuidad de $P(x)$ y $f(x)$ & 2 & \\
-b) & Factor integrante $\mu(x)=x^{-3}$ correcto & 3 & \\
+b) & Factor integrante $\mu(x)=x^{-2}$ correcto & 3 & \\
 b) & Reconoce/integra el lado izquierdo como derivada de un producto & 3 & \\
 b) & Aplica la condición inicial correctamente & 2 & \\
 b) & Solución final correcta (y verificada, si el alumno lo hace) & 2 & \\
-c) & Cita el teorema del caso lineal explícitamente para justificar $I=(0,\infty)$ (no basta con repetir el intervalo de (a) sin conectar por qué es también el de la solución) & 4 & \\
+c) & Cita el teorema del caso lineal explícitamente para justificar $I=(-\infty,0)$ (no basta con repetir el intervalo de (a) sin conectar por qué es también el de la solución) & 4 & \\
 \end{tablarubrica}
 
 \medskip
@@ -133,13 +129,13 @@ a) & Calcula $M_y$ y $N_x$ correctamente & 2 & \\
 a) & Concluye explícitamente que la ecuación no es exacta & 2 & \\
 b) & Plantea el cociente correcto ($\mu(x)$ o $\mu(y)$, según lo que el alumno intente) & 2 & \\
 b) & Verifica que el cociente depende de una sola variable & 2 & \\
-b) & Factor integrante correcto, $\mu(y)=y$ & 2 & \\
-c) & Integra $M^*$ y plantea $g(y)$ correctamente & 3 & \\
-c) & Resuelve $g'(y)$ correctamente (incluye el manejo correcto de la integración por partes) & 3 & \\
+b) & Factor integrante correcto, $\mu(x)=x$ & 2 & \\
+c) & Integra $M^*$ respecto a $x$ correctamente (incluye el manejo correcto de la integración por partes) & 3 & \\
+c) & Plantea y resuelve $h'(y)=0$ correctamente & 3 & \\
 c) & Aplica el PVI y obtiene la constante & 2 & \\
 \end{tablarubrica}
 
-\textit{Nota: si el alumno prueba $\mu(x)$ primero y llega a un callejón sin salida, puede recibir crédito parcial en (b) por el intento correcto de verificación, pero 0 pts en (c) si no logra una ecuación exacta.}
+\textit{Nota: si el alumno prueba $\mu(y)$ primero y llega a un callejón sin salida, puede recibir crédito parcial en (b) por el intento correcto de verificación, pero 0 pts en (c) si no logra una ecuación exacta.}
 
 \medskip
 \noindent\textbf{Subtotal Problema 4:\ } \underline{\hspace{2.5cm}} / 18
@@ -148,18 +144,18 @@ c) & Aplica el PVI y obtiene la constante & 2 & \\
 \problema{5}{21}{Taller de modelado integrador}
 
 \begin{tablarubrica}
-a) & Formular: signo correcto ($-0.5\sqrt h$, no $+0.5\sqrt h$); 0 pts si el signo está mal sin justificar & 3 & \\
+a) & Formular: signo correcto ($-0.4\sqrt h$, no $+0.4\sqrt h$); 0 pts si el signo está mal sin justificar & 3 & \\
 b) & Clasificar: justifica \emph{no lineal} & 1.5 & \\
 b) & Clasificar: justifica \emph{separable} & 1.5 & \\
 c) & Identifica la discontinuidad de $\partial f/\partial h$ en $h=0$ & 2 & \\
 c) & Conecta esto con una posible falla de unicidad (aunque sea brevemente) & 2 & \\
 d) & Separación e integración correctas & 3 & \\
-d) & Aplica la condición inicial ($h(0)=16$) & 2 & \\
-d) & Encuentra $t=16$ con su restricción de dominio ($0\le t\le16$) & 1 & \\
-e) & \textbf{Restringe el dominio de la fórmula y explica qué pasa físicamente para $t>16$} — punto central del problema & 5 & \\
+d) & Aplica la condición inicial ($h(0)=25$) & 2 & \\
+d) & Encuentra $t=25$ con su restricción de dominio ($0\le t\le25$) & 1 & \\
+e) & \textbf{Restringe el dominio de la fórmula y explica qué pasa físicamente para $t>25$} — punto central del problema & 5 & \\
 \end{tablarubrica}
 
-\textit{Nota crítica en (e): no dar crédito completo si el alumno solo reporta $h(t)=(4-0.25t)^2$ sin restringir el dominio ni explicar la continuación física, incluso si el resto del problema está correcto.}
+\textit{Nota crítica en (e): no dar crédito completo si el alumno solo reporta $h(t)=(5-0.2t)^2$ sin restringir el dominio ni explicar la continuación física, incluso si el resto del problema está correcto.}
 
 \medskip
 \noindent\textbf{Subtotal Problema 5:\ } \underline{\hspace{2.5cm}} / 21
@@ -169,14 +165,14 @@ e) & \textbf{Restringe el dominio de la fórmula y explica qué pasa físicament
 \problema{6}{15}{Segunda opinión (diagnóstico conceptual)}
 
 \begin{tablarubrica}
-a) & Identifica que $y=2$ es una solución constante perdida al dividir entre $h(y)=y^2-4$ & 3 & \\
+a) & Identifica que $y=3$ es una solución constante perdida al dividir entre $h(y)=y^2-9$ & 3 & \\
 a) & Explica correctamente por qué ``aproximar'' el logaritmo es matemáticamente inválido en un PVI & 2 & \\
-b) & Verifica que $y\equiv2$ satisface la ecuación y la condición inicial & 4 & \\
+b) & Verifica que $y\equiv3$ satisface la ecuación y la condición inicial & 4 & \\
 b) & Invoca correctamente el Teorema de Existencia y Unicidad (continuidad de $f$ y $\partial f/\partial y$ en todo $\mathbb{R}^2$) para justificar unicidad & 4 & \\
-b) & Conclusión final clara ($y(x)=2$ para todo $x$) & 2 & \\
+b) & Conclusión final clara ($y(x)=3$ para todo $x$) & 2 & \\
 \end{tablarubrica}
 
-\textit{Notas: en (a), 0 pts si el alumno solo señala un error aritmético sin mencionar la solución constante perdida. En (b), máximo 6/10 si el alumno da $y=2$ sin justificar la unicidad con el teorema.}
+\textit{Notas: en (a), 0 pts si el alumno solo señala un error aritmético sin mencionar la solución constante perdida. En (b), máximo 6/10 si el alumno da $y=3$ sin justificar la unicidad con el teorema.}
 
 \medskip
 \noindent\textbf{Subtotal Problema 6:\ } \underline{\hspace{2.5cm}} / 15
