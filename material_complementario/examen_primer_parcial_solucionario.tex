@@ -68,14 +68,14 @@
 \problema{1}{10}{Clasificación de ecuaciones diferenciales}
 
 \begin{enumerate}[label=\textbf{\alph*)}, itemsep=8pt]
-  \item $x^2 y''' - x y' + 5y = e^x$: \textbf{EDO}, \textbf{orden 3} (la derivada de mayor orden que aparece es $y'''$). \textbf{Lineal}: $y$, $y'$, $y'''$ aparecen a la primera potencia y los coeficientes ($x^2$, $-x$, $5$) dependen solo de la variable independiente $x$.
-  \item $(y'')^3 + x y' - y = \cos x$: \textbf{EDO}, \textbf{orden 2} (la derivada de mayor orden presente es $y''$; el exponente 3 es el \emph{grado} del término, no el orden de la ecuación — no deben confundirse). \textbf{No lineal}: $y''$ aparece elevada a la potencia 3, y la condición de linealidad exige que \emph{cada} derivada (no solo $y$) aparezca a la primera potencia.
-  \item $u_{xx}+u_{tt}=0$: \textbf{EDP} (dos variables independientes, $x$ y $t$). \textbf{Orden 2}. \textbf{Lineal} (ecuación de Laplace: todos los términos son derivadas de $u$ a la primera potencia con coeficientes constantes).
-  \item $t\,s'' + s\,s' - 2s = t^2$: \textbf{EDO}, \textbf{orden 2}. \textbf{No lineal}: el término $s\,s'$ es un producto de la variable dependiente por su propia derivada; además el \emph{coeficiente} de $s'$ es $s$ mismo, y la condición de linealidad exige que los coeficientes dependan únicamente de la variable independiente $t$, nunca de $s$.
+  \item $x^2 y''' - x y' + 5y = e^x$: \textbf{orden 3} (la derivada de mayor orden que aparece es $y'''$). \textbf{Lineal}: $y$, $y'$, $y'''$ aparecen a la primera potencia y los coeficientes ($x^2$, $-x$, $5$) dependen solo de la variable independiente $x$.
+  \item $(y'')^3 + x y' - y = \cos x$: \textbf{orden 2} (la derivada de mayor orden presente es $y''$; el exponente 3 es el \emph{grado} del término, no el orden de la ecuación — no deben confundirse). \textbf{No lineal}: $y''$ aparece elevada a la potencia 3, y la condición de linealidad exige que \emph{cada} derivada (no solo $y$) aparezca a la primera potencia.
+  \item $u_{xx}+u_{tt}=0$: \textbf{orden 2}. \textbf{Lineal} (ecuación de Laplace: todos los términos son derivadas de $u$ a la primera potencia con coeficientes constantes).
+  \item $t\,s'' + s\,s' - 2s = t^2$: \textbf{orden 2}. \textbf{No lineal}: el término $s\,s'$ es un producto de la variable dependiente por su propia derivada; además el \emph{coeficiente} de $s'$ es $s$ mismo, y la condición de linealidad exige que los coeficientes dependan únicamente de la variable independiente $t$, nunca de $s$.
 \end{enumerate}
 
 \begin{rubrica}
-2.5 pts por inciso: 1 pt por Tipo+Orden correctos, 1.5 pts por la clasificación de linealidad \emph{con} justificación explícita citando la condición violada o cumplida (no basta con un \emph{sí} o \emph{no} sueltos). En b) y d), 0 pts en linealidad si el alumno confunde orden con grado o no explica la condición de linealidad.
+2.5 pts por inciso: 1 pt por orden correcto, 1.5 pts por la clasificación de linealidad \emph{con} justificación explícita citando la condición violada o cumplida (no basta con un \emph{sí} o \emph{no} sueltos). En b) y d), 0 pts en linealidad si el alumno confunde orden con grado o no explica la condición de linealidad.
 \end{rubrica}
 
 \newpage
@@ -199,7 +199,7 @@ PVI: $\dfrac{dh}{dt} = -0.5\sqrt{h}$, $h(0)=16$ (el signo negativo porque la alt
 \]
 }
 
-\subparte{b) Clasificar}{EDO, orden 1. \textbf{No lineal} (el término $\sqrt{h}$ no es lineal en $h$), pero sí es \textbf{separable}: $\dfrac{dh}{\sqrt{h}} = -0.5\,dt$.}
+\subparte{b) Clasificar}{Orden 1. \textbf{No lineal} (el término $\sqrt{h}$ no es lineal en $h$), pero sí es \textbf{separable}: $\dfrac{dh}{\sqrt{h}} = -0.5\,dt$.}
 
 \subparte{c) Verificar}{$f(t,h)=-0.5\sqrt{h}$ y $\dfrac{\partial f}{\partial h} = -\dfrac{0.25}{\sqrt{h}}$ son continuas para $h>0$. Como $h_0=16>0$, el teorema garantiza solución única en algún intervalo alrededor de $t=0$. Sin embargo, $\partial f/\partial h$ \textbf{no} es continua en $h=0$ (se indefine): ahí las hipótesis del teorema fallan, y podría perderse la unicidad —físicamente, esto anticipa que el modelo necesitará una interpretación especial en el instante en que el tanque se vacía.}
 
