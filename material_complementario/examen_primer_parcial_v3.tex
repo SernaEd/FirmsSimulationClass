@@ -1,27 +1,18 @@
 % ============================================================
-%  EXAMEN — PRIMER EXAMEN PARCIAL
+%  EXAMEN — PRIMER EXAMEN PARCIAL — VERSIÓN C
 %  Cálculo III: Ecuaciones Diferenciales en Ingeniería (MT024)
 %  Universidad Iberoamericana · Sesiones 1–6
 %
 %  NOTA PARA EL PROFESOR (no se imprime, es un comentario LaTeX):
-%  - Diseño calibrado con la "regla de 3x" de tiempo de examen:
-%    tiempo del profesor (experto) ~ 30 min; tiempo del alumno ~ 90 min.
-%    Referencia: Harvard Bok Center / CMU Eberly Center, "final exam
-%    length" guidance — el estudiante promedio tarda 3 a 4 veces más
-%    que un profesor experimentado en resolver el mismo examen.
-%  - Balance conceptual/procedimental: cada problema mezcla cálculo
-%    (fluidez procedimental) con al menos un paso de clasificar,
-%    verificar o interpretar (comprensión conceptual), siguiendo el
-%    "Pipeline de Modelado" de la Sesión 6 (Formular-Clasificar-
-%    Verificar-Resolver-Interpretar). Ningún reactivo nombra la
-%    técnica a usar: el alumno debe decidir, como se les entrenó en
-%    la Sesión 6 ("ustedes deciden qué herramienta usar, no nosotros").
-%  - Puntaje repartido por dificultad/profundidad conceptual, no de
-%    forma uniforme (10/18/18/18/21/15 = 100 pts).
-%  - Política de procedimiento obligatorio ya es política oficial del
-%    curso (ver guion Sesión 1): "resultado sin procedimiento
-%    justificado, vale cero. Esto aplica ... hasta opción múltiple o
-%    falso/verdadero." Por eso este examen es 100% de desarrollo.
+%  - Documento hermano de examen_primer_parcial.tex (Versión A) y
+%    examen_primer_parcial_v2.tex (Versión B): misma estructura de 6
+%    problemas, mismo reparto de puntos por problema (10/18/18/18/
+%    21/15 = 100 pts) y mismas técnicas evaluadas en cada reactivo,
+%    para garantizar el mismo nivel de dificultad y el mismo calibre
+%    de tiempo ("regla de 3x": profesor ~30 min, alumno ~90 min).
+%  - Balance conceptual/procedimental y política de procedimiento
+%    obligatorio: idénticas a la Versión A (ver esa nota para el
+%    razonamiento completo).
 % ============================================================
 \documentclass[11pt,letterpaper]{article}
 
@@ -62,7 +53,7 @@
 
 % ---------- Encabezado ----------
 \begin{center}
-{\Large\bfseries PRIMER EXAMEN PARCIAL --- Versión A}\\[2pt]
+{\Large\bfseries PRIMER EXAMEN PARCIAL --- Versión C}\\[2pt]
 {\small Cálculo III: Ecuaciones Diferenciales en Ingeniería (MT024) · Universidad Iberoamericana}\\[1pt]
 {\small Duración: 90 minutos \; $\cdot$ \; Puntaje total: 100 pts}
 \end{center}
@@ -114,10 +105,10 @@ Problema & Puntos posibles & Puntos obtenidos \\
 Para cada una de las siguientes ecuaciones, indica en la tabla: (i) el \textbf{orden}, y (ii) si es \textbf{lineal o no lineal}. En la columna de justificación, explica en una frase el criterio que usaste (no basta con la respuesta sola).
 
 \begin{enumerate}[label=\textbf{\alph*)}, leftmargin=2em, itemsep=10pt]
-  \item $\displaystyle x^2\,\frac{d^3y}{dx^3} - x\,\frac{dy}{dx} + 5y = e^x$
-  \item $\displaystyle \left(\frac{d^2y}{dx^2}\right)^{3} + x\,\frac{dy}{dx} - y = \cos x$
-  \item $\displaystyle \frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial t^2} = 0$
-  \item $\displaystyle t\,s'' + s\,s' - 2s = t^2 \qquad (s \text{ es función de } t)$
+  \item $\displaystyle x^2\,\frac{d^3y}{dx^3} + 2x\,\frac{dy}{dx} - 9y = e^{-x}$
+  \item $\displaystyle \left(\frac{d^2y}{dx^2}\right)^{5} - x^2\,\frac{dy}{dx} + 3y = \sin x$
+  \item $\displaystyle \frac{\partial^2 u}{\partial t^2} - 4\,\frac{\partial^2 u}{\partial x^2} = 0$
+  \item $\displaystyle q\, p'' + p\,p' - 4p = q^2 \qquad (p \text{ es función de } q)$
 \end{enumerate}
 
 \renewcommand{\arraystretch}{2.6}
@@ -141,7 +132,7 @@ d) & & & \\
 
 Considera el PVI
 \[
-\frac{dy}{dx} = -\frac{x}{4y}, \qquad y(0) = -3.
+\frac{dy}{dx} = -\frac{x}{9y}, \qquad y(0) = -3.
 \]
 
 \subparte{a) [6 pts]}{Antes de resolver, usa el Teorema de Existencia y Unicidad para determinar una región del plano $xy$ donde el PVI garantiza tener una única solución. Cita explícitamente qué hipótesis del teorema estás verificando y en qué región se cumplen.}
@@ -156,7 +147,7 @@ Considera el PVI
 
 Considera el PVI
 \[
-x\,\frac{dy}{dx} - 3y = x^4 e^x, \qquad y(1) = 3e.
+x\,\frac{dy}{dx} - 4y = 2x^5 e^{2x}, \qquad y(1) = 3e^2.
 \]
 
 \subparte{a) [4 pts]}{Escribe la ecuación en su forma estándar e indica el intervalo más grande que contiene a $x_0=1$ donde los coeficientes de esa forma estándar son continuos.}
@@ -170,7 +161,7 @@ x\,\frac{dy}{dx} - 3y = x^4 e^x, \qquad y(1) = 3e.
 
 Considera el PVI
 \[
-dx + \left(\frac{x}{y} - \cos y\right) dy = 0, \qquad y(0) = \pi.
+\left(\frac{y}{x} - e^x\right) dx + dy = 0, \qquad y(1) = 3.
 \]
 
 \subparte{a) [4 pts]}{Verifica que, tal como está escrita, la ecuación no cumple el criterio de exactitud.}
@@ -183,7 +174,7 @@ dx + \left(\frac{x}{y} - \cos y\right) dy = 0, \qquad y(0) = \pi.
 % ============================================================
 \problema{5}{21}{Taller de modelado integrador}
 
-Una planta de tratamiento de agua usa un tanque cilíndrico que se vacía por un orificio en el fondo. Estudios de mecánica de fluidos para este tanque indican que la razón de cambio de la altura del agua $h(t)$ (en cm, con $t$ en minutos) es proporcional a la raíz cuadrada de la altura instantánea, con constante de proporcionalidad $k = 0.5 \text{ cm}^{1/2}/\text{min}$. Al iniciar la medición ($t=0$) el tanque contiene agua hasta una altura de $16$ cm.
+Un depósito hemisférico en un sistema de riego agrícola se vacía por goteo controlado en la base. Mediciones de campo para este depósito indican que la razón de cambio de la altura del agua $h(t)$ (en cm, con $t$ en minutos) es proporcional a la raíz cuadrada de la altura instantánea, con constante de proporcionalidad $k = 0.6 \text{ cm}^{1/2}/\text{min}$. Al iniciar el riego ($t=0$) el depósito contiene agua hasta una altura de $36$ cm.
 
 Sigue el proceso completo de modelado en los incisos siguientes: formular, clasificar, verificar, resolver e interpretar.
 
@@ -193,9 +184,9 @@ Sigue el proceso completo de modelado en los incisos siguientes: formular, clasi
 
 \subparte{c) Verificar [4 pts]}{Aplica el Teorema de Existencia y Unicidad en el punto inicial. ¿Hay algún valor de $h$ donde las hipótesis del teorema dejen de cumplirse? ¿Qué podría significar eso físicamente?}
 
-\subparte{d) Resolver [6 pts]}{Encuentra $h(t)$ y determina en qué instante $t$ se vacía el tanque (según tu modelo).}
+\subparte{d) Resolver [6 pts]}{Encuentra $h(t)$ y determina en qué instante $t$ se vacía el depósito (según tu modelo).}
 
-\subparte{e) Interpretar [5 pts]}{¿Es válida la fórmula que obtuviste en (d) para \emph{todo} $t \geq 0$? Explica qué le pasa físicamente al tanque después de vaciarse, y relaciona tu respuesta con lo que encontraste en el inciso (c).}
+\subparte{e) Interpretar [5 pts]}{¿Es válida la fórmula que obtuviste en (d) para \emph{todo} $t \geq 0$? Explica qué le pasa físicamente al depósito después de vaciarse, y relaciona tu respuesta con lo que encontraste en el inciso (c).}
 
 
 % ============================================================
@@ -203,13 +194,13 @@ Sigue el proceso completo de modelado en los incisos siguientes: formular, clasi
 
 Un compañero te muestra su solución del siguiente PVI y te pide una segunda opinión antes de entregarla:
 \[
-\frac{dy}{dx} = y^2 - 4, \qquad y(0) = 2.
+\frac{dy}{dx} = 25-y^2, \qquad y(0) = -5.
 \]
 
 \textit{Trabajo del colega:}
 \begin{quote}
 \small
-``Separando variables: $\displaystyle\int \frac{dy}{y^2-4} = \int dx$. Por fracciones parciales, $\displaystyle \frac{1}{4}\ln\left|\frac{y-2}{y+2}\right| = x + C$. Al aplicar $y(0)=2$ no puedo evaluar el logaritmo porque el argumento es cero, así que tomo $y(0) \approx 2$ y obtengo $C \approx -7$ (un número muy grande y negativo), por lo que la solución aproximada es $\displaystyle\frac{1}{4}\ln\left|\frac{y-2}{y+2}\right| = x - 7$.''
+``Separando variables: $\displaystyle\int \frac{dy}{25-y^2} = \int dx$. Por fracciones parciales, $\displaystyle \frac{1}{10}\ln\left|\frac{5+y}{5-y}\right| = x + C$. Al aplicar $y(0)=-5$ no puedo evaluar el logaritmo porque el argumento es cero, así que tomo $y(0) \approx -5$ y obtengo $C \approx -11$ (un número muy grande y negativo), por lo que la solución aproximada es $\displaystyle\frac{1}{10}\ln\left|\frac{5+y}{5-y}\right| = x - 11$.''
 \end{quote}
 
 \subparte{a) [5 pts]}{Identifica con precisión en qué paso está el error \textbf{conceptual} del colega (no es un error aritmético). Explica, citando el concepto o teorema correspondiente, por qué ese paso es inválido.}
