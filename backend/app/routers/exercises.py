@@ -1,6 +1,6 @@
 from datetime import datetime
 from zoneinfo import ZoneInfo
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Path, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
@@ -27,12 +27,12 @@ def get_today_exercise(
 
 @router.get("/{id}/image")
 def get_exercise_image(
-    id: int,
+    exercise_id: int = Path(alias="id"),
     db: Session = Depends(get_db),
     _user: User = Depends(get_current_active_user),
 ):
     """Devuelve la imagen del ejercicio."""
-    exercise = db.get(DailyExercise, id)
+    exercise = db.get(DailyExercise, exercise_id)
     if not exercise or not exercise.imagen_path:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Imagen no encontrada.")
     if not os.path.exists(exercise.imagen_path):

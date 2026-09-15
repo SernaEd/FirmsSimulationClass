@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends, Query, HTTPException, status
-from sqlalchemy import select
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, Path, Query, HTTPException, status
 from fastapi.responses import FileResponse
+from sqlalchemy import select
+from sqlalchemy.orm import Session, selectinload
 from typing import Optional
 import os
 
@@ -13,8 +13,6 @@ from app.schemas.streak import StreakEvidenceOut
 from pydantic import BaseModel
 
 router = APIRouter(prefix="/admin/streak", tags=["Admin Streak"])
-
-from sqlalchemy.orm import Session, selectinload
 
 @router.get("/evidence", response_model=list[StreakEvidenceOut])
 def get_streak_evidence(
@@ -33,41 +31,34 @@ def get_streak_evidence(
     stmt = stmt.offset(skip).limit(limit)
     return list(db.scalars(stmt).all())
 
-from fastapi.responses import FileResponse
-import os
-from fastapi import HTTPException, status
-
 @router.get("/evidence/{id}/download")
 def download_streak_evidence(
-    id: int,
+    evidence_id: int = Path(alias="id"),
     db: Session = Depends(get_db),
     _admin: User = Depends(get_current_admin),
 ):
     """Descarga la captura de evidencia para verificación."""
-    evidence = db.get(StreakEvidence, id)
+    evidence = db.get(StreakEvidence, evidence_id)
     if not evidence:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Evidencia no encontrada.")
-        
+
     if not os.path.exists(evidence.solucion_path):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Archivo no encontrado en disco.")
-        
-    return FileResponse(evidence.solucion_path)
 
-from pydantic import BaseModel
-from app.models.streak import StreakDayStatus
+    return FileResponse(evidence.solucion_path)
 
 class ResolveStreakDayIn(BaseModel):
     estado: StreakDayStatus
 
 @router.post("/days/{id}/resolve")
 def resolve_streak_day(
-    id: int,
     payload: ResolveStreakDayIn,
+    day_id: int = Path(alias="id"),
     db: Session = Depends(get_db),
     _admin: User = Depends(get_current_admin),
 ):
     """Resuelve un día pendiente de revisión a fallido o neutro."""
-    day = db.get(StreakDay, id)
+    day = db.get(StreakDay, day_id)
     if not day:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Día de racha no encontrado.")
         

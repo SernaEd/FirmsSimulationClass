@@ -1,8 +1,7 @@
 import logging
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
-from sqlalchemy import select, func
-from sqlalchemy.orm import Session
+from sqlalchemy import select
 from datetime import datetime, timezone, timedelta
 
 from app.database import SessionLocal
