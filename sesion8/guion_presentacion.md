@@ -13,10 +13,10 @@
 ---
 
 ### Diapositiva 2: Repaso Relámpago — Sesiones 1 a 6
-*(La pantalla muestra los cinco casos del Taller de Modelado: Carbono-14, forense, circuito RL, paracaidista, líneas de corriente)*
+*(La pantalla muestra los tres casos del Taller de Modelado: Carbono-14, forense, paracaidista)*
 
 **Lo que debes decir:**
-"Recuerden el Taller de Modelado: datación por Carbono-14, la hora de la muerte de un forense, un circuito RL, la velocidad terminal de un paracaidista, líneas de corriente de un flujo. Las cinco las resolvimos **exactamente**, con fórmula cerrada. Hoy vamos a tomar dos de esos mismos casos y fingir, por un momento, que no conocemos el atajo algebraico — para poder comparar la aproximación numérica contra la respuesta exacta que ya tienen en su cuaderno. Así sabremos, con certeza, qué tan buena es esta nueva herramienta."
+"Recuerden el Taller de Modelado: datación por Carbono-14, la hora de la muerte de un forense, la velocidad terminal de un paracaidista. Los tres los resolvimos **exactamente**, con fórmula cerrada. Hoy vamos a tomar dos de esos mismos casos y fingir, por un momento, que no conocemos el atajo algebraico — para poder comparar la aproximación numérica contra la respuesta exacta que ya tienen en su cuaderno. Así sabremos, con certeza, qué tan buena es esta nueva herramienta."
 
 ---
 
