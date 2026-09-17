@@ -12,7 +12,25 @@
 
 ---
 
-### Diapositiva 2: Repaso Relámpago — De la Teoría al Método
+### Diapositiva 2: Revisión de Tarea — Preguntas al Azar
+*(La pantalla muestra el título "Revisión: Operadores Diferenciales" con las tres preguntas de memoria de la tarea)*
+
+**Lo que debes decir:**
+"Antes de arrancar, reviso la tarea de operadores diferenciales — la que cierra la brecha para el anulador de hoy. Voy a elegir al azar a tres o cuatro personas, por lista, así que nadie se relaja pensando que ya le tocó.
+
+[Elijan a un alumno al azar] ¿Qué operador aniquila un polinomio de grado $k$? [Esperen la respuesta: $D^{k+1}$].
+
+[Elijan a otro alumno al azar] ¿Qué operador aniquila $e^{rx}$? [Esperen la respuesta: $(D-r)$].
+
+[Elijan a otro alumno al azar] Si en vez de $e^{rx}$ tengo $xe^{rx}$, ¿por qué $(D-r)$ ya no alcanza, y qué operador sí lo aniquila? [Esperen la respuesta: $(D-r)$ elimina la parte $e^{rx}$, pero no el factor $x$ adicional; hace falta aplicarlo dos veces, $(D-r)^2$].
+
+[Elijan a un cuarto alumno al azar] Si $g(x)$ tiene varios términos distintos, como $3x+e^{2x}$, ¿qué hacen para encontrar el operador que aniquila toda la suma? [Esperen la respuesta: combinan —multiplican— los anuladores de cada término por separado: $D^2$ para $3x$, y $(D-2)$ para $e^{2x}$, dando el anulador combinado $D^2(D-2)$].
+
+Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien más complete la idea. Pero si nadie en el salón puede contestar ninguna, es una señal clara: hay que repasar la tarea antes de seguir, porque todo lo de hoy —empezando por el anulador— la da por sabida."
+
+---
+
+### Diapositiva 3: Repaso Relámpago — De la Teoría al Método
 *(La pantalla muestra los tres pilares de la Sesión 9: Existencia y Unicidad, Independencia Lineal, y=yc+yp)*
 
 **Lo que debes decir:**
@@ -20,7 +38,7 @@
 
 ---
 
-### Diapositiva 3: De una Solución a Todas — Reducción de Orden y la Apuesta Exponencial
+### Diapositiva 4: De una Solución a Todas — Reducción de Orden y la Apuesta Exponencial
 *(La pantalla muestra la fórmula de reducción de orden y, al lado, la sustitución $y=e^{rx}$)*
 
 **Lo que debes decir:**
@@ -28,7 +46,7 @@
 
 ---
 
-### Diapositiva 4: La Ecuación Característica — Los Tres Casos
+### Diapositiva 5: La Ecuación Característica — Los Tres Casos
 *(La pantalla muestra las tres familias de solución según el signo del discriminante $b^2-4ac$)*
 
 **Lo que debes decir:**
@@ -36,7 +54,7 @@
 
 ---
 
-### Diapositiva 5: Ejemplo — Raíces Reales Distintas
+### Diapositiva 6: Ejemplo — Raíces Reales Distintas
 *(La pantalla muestra $y''-5y'+6y=0$, $y(0)=1$, $y'(0)=0$, con la solución completa)*
 
 **Lo que debes decir:**
@@ -44,7 +62,7 @@
 
 ---
 
-### Diapositiva 6: Ejemplos Directos — Raíz Repetida y Raíces Complejas
+### Diapositiva 7: Ejemplos Directos — Raíz Repetida y Raíces Complejas
 *(La pantalla muestra, en dos columnas, $y''-6y'+9y=0$ y $y''+4y'+13y=0$, cada una con su solución)*
 
 **Lo que debes decir:**
@@ -52,7 +70,7 @@
 
 ---
 
-### Diapositiva 7: Cauchy-Euler — La Misma Idea, Otra Apuesta
+### Diapositiva 8: Cauchy-Euler — La Misma Idea, Otra Apuesta
 *(La pantalla muestra la forma general $ax^2y''+bxy'+cy=0$ y la sustitución $y=x^m$)*
 
 **Lo que debes decir:**
@@ -60,7 +78,7 @@
 
 ---
 
-### Diapositiva 8: Cauchy-Euler — Ejemplo
+### Diapositiva 9: Cauchy-Euler — Ejemplo
 *(La pantalla muestra $x^2y''+xy'+4y=0$ con la solución completa)*
 
 **Lo que debes decir:**
@@ -68,7 +86,7 @@
 
 ---
 
-### Diapositiva 9: El Método del Anulador — ¿Por Qué No Basta con Adivinar?
+### Diapositiva 10: El Método del Anulador — ¿Por Qué No Basta con Adivinar?
 *(La pantalla muestra una ecuación no homogénea y la pregunta de qué forma debería tener $y_p$)*
 
 **Lo que debes decir:**
@@ -76,7 +94,7 @@
 
 ---
 
-### Diapositiva 10: Operadores D y la Tabla de Anuladores
+### Diapositiva 11: Operadores D y la Tabla de Anuladores
 *(La pantalla muestra la tabla: función → operador que la aniquila)*
 
 **Lo que debes decir:**
@@ -84,7 +102,7 @@
 
 ---
 
-### Diapositiva 11: El Algoritmo del Anulador, Paso a Paso
+### Diapositiva 12: El Algoritmo del Anulador, Paso a Paso
 *(La pantalla muestra los pasos numerados del método completo)*
 
 **Lo que debes decir:**
@@ -92,7 +110,7 @@
 
 ---
 
-### Diapositiva 12: Ejemplo — Anulador (Planteamiento)
+### Diapositiva 13: Ejemplo — Anulador (Planteamiento)
 *(La pantalla muestra únicamente $y''-y'-2y=4x^2$, sin pasos ni respuesta)*
 
 **Lo que debes decir:**
@@ -100,7 +118,7 @@
 
 ---
 
-### Diapositiva 13: Ejemplo — Anulador (Solución)
+### Diapositiva 14: Ejemplo — Anulador (Solución)
 *(La pantalla muestra los cuatro pasos completos y la solución final)*
 
 **Lo que debes decir:**
@@ -108,15 +126,15 @@
 
 ---
 
-### Diapositiva 14: El Caso Real — Masa-Resorte-Amortiguador, Ahora Forzado
-*(La pantalla muestra $x''+4x'+13x=26$, comparándola con la $y''+4y'+13y=0$ de la Diapositiva 6)*
+### Diapositiva 15: El Caso Real — Masa-Resorte-Amortiguador, Ahora Forzado
+*(La pantalla muestra $x''+4x'+13x=26$, comparándola con la $y''+4y'+13y=0$ de la Diapositiva 7)*
 
 **Lo que debes decir:**
 "¿Reconocen esta estructura? Es la misma ecuación característica de hace un momento — solo que ahora el sistema masa-resorte-amortiguador tiene una fuerza constante empujándolo: $x''+4x'+13x=26$, como si de repente colgaran un peso adicional. Ya saben que $x_c=e^{-2t}(C_1\cos3t+C_2\sin3t)$. El anulador de la constante 26 es $D$; aplicando el algoritmo completo, la forma de $x_p$ es simplemente una constante, y sustituyendo se obtiene $x_p=2$. La solución general es $x(t)=e^{-2t}(C_1\cos3t+C_2\sin3t)+2$. Sin importar las condiciones iniciales —sin importar $C_1$ y $C_2$—, el término exponencial decae a cero cuando $t\to\infty$, dejando solamente $x_p=2$: el sistema termina oscilando cada vez menos, hasta asentarse en un **nuevo equilibrio**, desplazado 2 unidades del original. Eso es exactamente lo que $y_c$ y $y_p$ significan físicamente: $y_c$ es la respuesta transitoria que se apaga, $y_p$ es hacia dónde se dirige el sistema a largo plazo."
 
 ---
 
-### Diapositiva 15: Errores Comunes
+### Diapositiva 16: Errores Comunes
 *(La pantalla muestra las trampas típicas de los métodos de hoy)*
 
 **Lo que debes decir:**
@@ -124,7 +142,7 @@
 
 ---
 
-### Diapositiva 16: Cierre y Próximo Paso
+### Diapositiva 17: Cierre y Próximo Paso
 *(La pantalla muestra la conclusión y el gancho hacia variación de parámetros y sistemas)*
 
 **Lo que debes decir:**
