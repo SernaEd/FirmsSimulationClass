@@ -24,7 +24,7 @@
 *(La pantalla muestra un PVI de orden $n$: $a_n(x)y^{(n)}+\dots+a_0(x)y=g(x)$, con $y(x_0)=y_0$, $y'(x_0)=y_1$, …, $y^{(n-1)}(x_0)=y_{n-1}$)*
 
 **Lo que debes decir:**
-"Ya conocen el problema de valor inicial de primer orden desde la Sesión 2: una ecuación más una condición $y(x_0)=y_0$. La generalización a orden $n$ es natural: necesitan **una condición por cada derivada**, hasta la $(n-1)$-ésima, todas evaluadas en el mismo punto $x_0$. Para una ecuación de segundo orden, eso significa posición y velocidad iniciales; para tercer orden, agregan la aceleración inicial. Analistas: cuenten las condiciones antes de empezar — si les faltan o les sobran, algo está mal planteado."
+"Ya conocen el problema de valor inicial de primer orden desde la Sesión 2: una ecuación más una condición $y(x_0)=y_0$. La generalización a orden $n$ es natural: necesitan **una condición por cada derivada**, hasta la $(n-1)$-ésima, todas evaluadas en el mismo punto $x_0$. Para una ecuación de segundo orden, eso significa posición y velocidad iniciales; para tercer orden, agregan la aceleración inicial. Ingenieros: cuenten las condiciones antes de empezar — si les faltan o les sobran, algo está mal planteado."
 
 ---
 
@@ -108,7 +108,7 @@
 
 ---
 
-### Diapositiva 14: Ojo de Analista — Errores Comunes
+### Diapositiva 14: Errores Comunes
 *(La pantalla muestra las trampas típicas de la teoría de orden superior)*
 
 **Lo que debes decir:**
