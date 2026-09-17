@@ -757,6 +757,60 @@ export type LicitacionAbrirIn = {
   pts_participacion?: number;
 };
 
+// ---- Tipos Solver de Euler (Sesión 8) ----
+export type EulerModelKey = "paracaidista" | "forense" | "custom";
+
+export type EulerModelInfo = {
+  key: string;
+  nombre: string;
+  descripcion: string;
+  expresion_display: string;
+  x0: number;
+  y0: number;
+  tiene_exacta: boolean;
+};
+
+export type EulerSimulateIn = {
+  modelo: EulerModelKey;
+  expresion?: string | null;
+  x0: number;
+  y0: number;
+  h: number;
+  n_pasos: number;
+};
+
+export type EulerStepOut = {
+  n: number;
+  x: number;
+  y: number;
+  exacta: number | null;
+  error_abs: number | null;
+};
+
+export type VectorFieldPointOut = {
+  x: number;
+  y: number;
+  pendiente: number;
+};
+
+export type CurvePointOut = {
+  x: number;
+  y: number;
+};
+
+export type EulerSimulateOut = {
+  pasos: EulerStepOut[];
+  campo_direcciones: VectorFieldPointOut[];
+  curva_exacta: CurvePointOut[];
+  tiene_exacta: boolean;
+  diverged_at: number | null;
+  x_min: number;
+  x_max: number;
+  y_min: number;
+  y_max: number;
+  expresion_evaluada: string;
+};
+
 // ---- API pública ----
 export const api = {
   // Dominio 1
@@ -1230,6 +1284,16 @@ export const api = {
     request<LicitacionOut>(`/admin/licitaciones/${licitacionId}/cerrar`, { method: "POST" }, token),
   adminListRespuestasLicitacion: (token: string, licitacionId: number) =>
     request<LicitacionResponseOut[]>(`/admin/licitaciones/${licitacionId}/respuestas`, {}, token),
+
+  // Solver de Euler (Sesión 8)
+  eulerModels: (token: string) =>
+    request<EulerModelInfo[]>("/tools/euler/models", {}, token),
+  eulerSimulate: (token: string, body: EulerSimulateIn) =>
+    request<EulerSimulateOut>(
+      "/tools/euler/simulate",
+      { method: "POST", body: JSON.stringify(body) },
+      token,
+    ),
 };
 
 // ---- Sesión en localStorage (token + usuario cacheado) ----

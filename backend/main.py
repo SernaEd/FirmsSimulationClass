@@ -20,6 +20,7 @@ from app.routers import (
     calendar,
     content,
     economy,
+    euler,
     forum,
     admin_forum,
     health,
@@ -80,6 +81,7 @@ app.include_router(exercises.router)
 app.include_router(admin_exercises.router)
 app.include_router(admin_calendar.router)
 app.include_router(calendar.router)
+app.include_router(euler.router)
 
 
 @app.get("/")

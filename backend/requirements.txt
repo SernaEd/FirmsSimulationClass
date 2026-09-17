@@ -27,5 +27,7 @@ python-dotenv==1.2.2
 httpx==0.27.2
 apscheduler==3.10.4
 
-# Nota: SymPy, MathLive antlr, y otros
-# se agregan en iteraciones posteriores del roadmap.
+# Parseo seguro de ecuaciones f(x, y) para el solver de Euler (Sesión 8)
+sympy==1.14.0
+
+# Nota: MathLive antlr y otros se agregan en iteraciones posteriores del roadmap.
