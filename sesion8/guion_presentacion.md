@@ -13,10 +13,10 @@
 ---
 
 ### Diapositiva 2: Repaso Relámpago — Sesiones 1 a 6
-*(La pantalla muestra los cinco casos del Taller de Modelado: Carbono-14, forense, circuito RL, paracaidista, líneas de corriente)*
+*(La pantalla muestra los tres casos del Taller de Modelado: Carbono-14, forense, paracaidista)*
 
 **Lo que debes decir:**
-"Recuerden el Taller de Modelado: datación por Carbono-14, la hora de la muerte de un forense, un circuito RL, la velocidad terminal de un paracaidista, líneas de corriente de un flujo. Las cinco las resolvimos **exactamente**, con fórmula cerrada. Hoy vamos a tomar dos de esos mismos casos y fingir, por un momento, que no conocemos el atajo algebraico — para poder comparar la aproximación numérica contra la respuesta exacta que ya tienen en su cuaderno. Así sabremos, con certeza, qué tan buena es esta nueva herramienta."
+"Recuerden el Taller de Modelado: datación por Carbono-14, la hora de la muerte de un forense, la velocidad terminal de un paracaidista. Los tres los resolvimos **exactamente**, con fórmula cerrada. Hoy vamos a tomar dos de esos mismos casos y fingir, por un momento, que no conocemos el atajo algebraico — para poder comparar la aproximación numérica contra la respuesta exacta que ya tienen en su cuaderno. Así sabremos, con certeza, qué tan buena es esta nueva herramienta."
 
 ---
 
@@ -40,7 +40,7 @@
 *(La pantalla muestra la fórmula de recurrencia y el pseudocódigo)*
 
 **Lo que debes decir:**
-"Con eso, el algoritmo completo cabe en dos líneas. Dado un punto inicial $(x_0,y_0)$ y un tamaño de paso $h$: $x_{n+1} = x_n + h$, y $y_{n+1} = y_n + h\\,f(x_n,y_n)$, para $n=0,1,2,\\dots$ hasta llegar al punto que les interesa. Eso es todo. No hay integrales, no hay sustituciones ingeniosas — solo evaluar $f$ y sumar, una y otra vez. Es mecánico, es repetitivo, y por eso es perfecto para una computadora... o para un equipo completo trabajando en cadena."
+"Con eso, el algoritmo completo cabe en dos líneas. Dado un punto inicial $(x_0,y_0)$ y un tamaño de paso $h$: $x_{n+1} = x_n + h$, y $y_{n+1} = y_n + h\\,f(x_n,y_n)$, para $n=0,1,2,\\dots$ hasta llegar al punto que les interesa. Eso es todo. No hay integrales, no hay sustituciones ingeniosas — solo evaluar $f$ y sumar, una y otra vez. Es mecánico, es repetitivo, y por eso es perfecto para una computadora."
 
 ---
 
@@ -56,7 +56,7 @@
 *(La pantalla muestra la tabla de iteración completa, t=0 a t=5)*
 
 **Lo que debes decir:**
-"Aquí está la cadena completa. Empezamos en $v_0=0$. Paso 1: $v_1 = 0 + 1\\times(9.8-0.25\\times0) = 9.8$. Paso 2: $v_2 = 9.8 + 1\\times(9.8-0.25\\times9.8) = 17.15$. Paso 3: $v_3 = 17.15+1\\times(9.8-0.25\\times17.15) = 22.66$. Paso 4: $v_4=22.66+1\\times(9.8-0.25\\times22.66)=26.80$. Paso 5: $v_5=26.80+1\\times(9.8-0.25\\times26.80)=29.90$. Noten que **cada paso solo necesita el resultado del paso anterior** — así que voy a dividir la sala en cinco equipos, cada uno calcula un paso, y se pasan el resultado al siguiente como una carrera de relevos. El último equipo entrega la velocidad estimada a los 5 segundos."
+"Aquí está la cadena completa. Empezamos en $v_0=0$. Paso 1: $v_1 = 0 + 1\\times(9.8-0.25\\times0) = 9.8$. Paso 2: $v_2 = 9.8 + 1\\times(9.8-0.25\\times9.8) = 17.15$. Paso 3: $v_3 = 17.15+1\\times(9.8-0.25\\times17.15) = 22.66$. Paso 4: $v_4=22.66+1\\times(9.8-0.25\\times22.66)=26.80$. Paso 5: $v_5=26.80+1\\times(9.8-0.25\\times26.80)=29.90$. Noten que **cada paso solo necesita el resultado del paso anterior** — así que vamos a resolverlo juntos, paso a paso, en el pizarrón. Al llegar al quinto paso tendremos la velocidad estimada a los 5 segundos."
 
 ---
 
@@ -96,7 +96,7 @@
 *(La pantalla muestra el Caso 2 de la Sesión 6: T' = k(T−20), T(0)=34.8, k≈−0.0994)*
 
 **Lo que debes decir:**
-"Cerramos con el caso forense de la Sesión 6: $T' = -0.0994(T-20)$, $T(0)=34.8°C$. Ya saben, por álgebra exacta, que a la hora $t=1$ la temperatura es $T(1)=33.4°C$ — ese dato viene directo de su tabla de la sesión pasada. Su tarea: usando Euler con $h=0.25$ —cuatro pasos hasta $t=1$—, calculen $T_4$ a mano o con el solver, y compárenlo contra los 33.4°C exactos. Si lo hacen bien, verán que el error es minúsculo, de centésimas de grado. ¿Por qué tan preciso esta vez, si con el paracaidista el error fue mucho más grande con el mismo número de pasos? Esa pregunta es su boleto de salida: discútanla en equipo antes de irse — la respuesta tiene que ver con qué tan curvada es cada función. Quien la responda bien al entrar a la próxima sesión, se lleva Tokens extra."
+"Cerramos con el caso forense de la Sesión 6: $T' = -0.0994(T-20)$, $T(0)=34.8°C$. Ya saben, por álgebra exacta, que a la hora $t=1$ la temperatura es $T(1)=33.4°C$ — ese dato viene directo de su tabla de la sesión pasada. Su tarea: usando Euler con $h=0.25$ —cuatro pasos hasta $t=1$—, calculen $T_4$ a mano o con el solver, y compárenlo contra los 33.4°C exactos. Si lo hacen bien, verán que el error es minúsculo, de centésimas de grado. ¿Por qué tan preciso esta vez, si con el paracaidista el error fue mucho más grande con el mismo número de pasos? Esa pregunta es su boleto de salida: piénsenla antes de irse — la respuesta tiene que ver con qué tan curvada es cada función. Tráiganla lista para la próxima sesión."
 
 ---
 
