@@ -71,18 +71,20 @@ Antes de seguir, fíjense en $g(x)$, el lado derecho de la ecuación. Cuando $g(
 ---
 
 ### Diapositiva 9: El Wronskiano — Un Detector de Independencia
-*(La pantalla muestra la definición del Wronskiano como determinante, para el caso de dos funciones)*
+*(La pantalla muestra la definición del Wronskiano como determinante: primero el caso de dos funciones, luego la forma general $n\times n$)*
 
 **Lo que debes decir:**
-"Revisar la definición a mano, función por función, es lento. El Wronskiano es un atajo algebraico: para dos funciones derivables, $W(f_1,f_2)=f_1f_2'-f_2f_1'$ — el determinante de la matriz de las funciones y sus derivadas. El teorema que lo hace útil: si $y_1,\dots,y_n$ son soluciones de la **misma** ecuación diferencial lineal homogénea, entonces son linealmente independientes en un intervalo si y solo si su Wronskiano **nunca se anula** ahí. Ojo con la condición — el Wronskiano solo es una prueba confiable de independencia cuando las funciones ya son soluciones de la misma ecuación; para funciones cualesquiera, un Wronskiano cero no garantiza dependencia."
+"Revisar la definición a mano, función por función, es lento. El Wronskiano es un atajo algebraico: para dos funciones derivables, $W(f_1,f_2)=f_1f_2'-f_2f_1'$ — el determinante de la matriz de las funciones y sus derivadas. La idea se generaliza a cualquier cantidad de funciones: para $n$ funciones $f_1,\dots,f_n$, cada una derivable $n-1$ veces, el Wronskiano es el determinante $n\times n$ que tiene a las funciones en el primer renglón, sus primeras derivadas en el segundo, y así sucesivamente hasta la derivada $(n-1)$-ésima en el último renglón. El teorema que lo hace útil: si $y_1,\dots,y_n$ son soluciones de la **misma** ecuación diferencial lineal homogénea, entonces son linealmente independientes en un intervalo si y solo si su Wronskiano **nunca se anula** ahí. Ojo con la condición — el Wronskiano solo es una prueba confiable de independencia cuando las funciones ya son soluciones de la misma ecuación; para funciones cualesquiera, un Wronskiano cero no garantiza dependencia."
 
 ---
 
-### Diapositiva 10: Ejemplo — Calculando un Wronskiano
-*(La pantalla muestra $y_1=e^{3x}$, $y_2=e^{-3x}$, soluciones de $y''-9y=0$)*
+### Diapositiva 10: Ejemplo — Independencia y Dependencia
+*(La pantalla muestra dos casos lado a lado: $y_1=e^{3x}, y_2=e^{-3x}$ [independientes, solución de $y''-9y=0$] vs. $y_1=e^{2x}, y_2=3e^{2x}$ [dependientes, solución de $y''-4y'+4y=0$])*
 
 **Lo que debes decir:**
-"Verifiquemos que $y_1=e^{3x}$ y $y_2=e^{-3x}$ —ambas soluciones de $y''-9y=0$— son independientes. Derivamos: $y_1'=3e^{3x}$, $y_2'=-3e^{-3x}$. El Wronskiano es $W=y_1y_2'-y_2y_1' = e^{3x}(-3e^{-3x}) - e^{-3x}(3e^{3x}) = -3-3=-6$. Como $e^{3x}\cdot e^{-3x}=e^0=1$ para toda $x$, el resultado es $-6$ sin importar el valor de $x$ — nunca es cero. Son linealmente independientes en toda la recta real, y por lo tanto forman lo que se llama un **conjunto fundamental de soluciones**."
+"Verifiquemos que $y_1=e^{3x}$ y $y_2=e^{-3x}$ —ambas soluciones de $y''-9y=0$— son independientes. Derivamos: $y_1'=3e^{3x}$, $y_2'=-3e^{-3x}$. El Wronskiano es $W=y_1y_2'-y_2y_1' = e^{3x}(-3e^{-3x}) - e^{-3x}(3e^{3x}) = -3-3=-6$. Como $e^{3x}\cdot e^{-3x}=e^0=1$ para toda $x$, el resultado es $-6$ sin importar el valor de $x$ — nunca es cero. Son linealmente independientes en toda la recta real, y por lo tanto forman un **conjunto fundamental de soluciones**.
+
+Ahora el contraejemplo, para que vean qué pasa cuando sí son dependientes. Tomen $y_1=e^{2x}$ y $y_2=3e^{2x}$, ambas soluciones de $y''-4y'+4y=0$ —no es casualidad, en la Sesión 10 van a ver que esta ecuación tiene una raíz repetida, y cualquier múltiplo de $e^{2x}$ la resuelve—. Derivando: $y_1'=2e^{2x}$, $y_2'=6e^{2x}$. El Wronskiano: $W=y_1y_2'-y_2y_1'=e^{2x}(6e^{2x})-3e^{2x}(2e^{2x})=6e^{4x}-6e^{4x}=0$ para toda $x$. Tiene sentido: $y_2=3y_1$, son múltiplos una de otra — dependientes. No forman un conjunto fundamental, y si intentaran usarlas como si lo fueran, estarían perdiendo la mitad del espacio de soluciones."
 
 ---
 
@@ -90,7 +92,7 @@ Antes de seguir, fíjense en $g(x)$, el lado derecho de la ecuación. Cuando $g(
 *(La pantalla muestra: $n$ soluciones linealmente independientes de una ED homogénea de orden $n$ → solución general $y=C_1y_1+\dots+C_ny_n$)*
 
 **Lo que debes decir:**
-"Aquí se junta todo lo de hoy. Un **conjunto fundamental de soluciones** de una ecuación lineal homogénea de orden $n$ es exactamente eso: $n$ soluciones, linealmente independientes entre sí, de esa misma ecuación. Y el teorema central de esta sesión: si $y_1,\dots,y_n$ es un conjunto fundamental, la **solución general** de la ecuación homogénea es $y=C_1y_1+\dots+C_ny_n$ — combina todas las soluciones posibles, ninguna se les escapa. Esto es exactamente lo que va a hacer la ecuación característica en la Sesión 10: fabricar, de forma mecánica, un conjunto fundamental completo."
+"Aquí se junta todo lo de hoy. Pero antes, una distinción con lo que vimos hace varias diapositivas: la superposición nos dijo que **cualquier** combinación lineal de soluciones de la homogénea sigue siendo solución — eso es una propiedad de cierre, nunca nos salimos del conjunto de soluciones. Pero no nos dijo que esa combinación agotara **todas** las soluciones posibles; para eso hacía falta algo más. Ese algo más es lo que acabamos de construir con el Wronskiano: un **conjunto fundamental de soluciones** de una ecuación lineal homogénea de orden $n$ es $n$ soluciones, linealmente independientes entre sí, de esa misma ecuación. Y el teorema central de esta sesión: si $y_1,\dots,y_n$ es un conjunto fundamental, la **solución general** de la ecuación homogénea es $y=C_1y_1+\dots+C_ny_n$ — y esta vez sí, combina **todas** las soluciones posibles, ninguna se les escapa. La diferencia exacta con la superposición: ahí solo sabíamos que la combinación seguía siendo solución; aquí, gracias a la independencia lineal y al conteo exacto de $n$ soluciones, sabemos que no existe ninguna otra solución fuera de esta familia. Esto es exactamente lo que va a hacer la ecuación característica en la Sesión 10: fabricar, de forma mecánica, un conjunto fundamental completo."
 
 ---
 
@@ -106,7 +108,7 @@ Antes de seguir, fíjense en $g(x)$, el lado derecho de la ecuación. Cuando $g(
 *(La pantalla muestra: si $y_{p_1}$ resuelve con $g=g_1$ y $y_{p_2}$ con $g=g_2$, entonces $y_{p_1}+y_{p_2}$ resuelve con $g=g_1+g_2$)*
 
 **Lo que debes decir:**
-"Una última pieza, y va a ser la más útil en la próxima sesión: si $y_{p_1}$ es una solución particular cuando el lado derecho es $g_1(x)$, y $y_{p_2}$ es una solución particular cuando el lado derecho es $g_2(x)$, entonces $y_{p_1}+y_{p_2}$ es una solución particular cuando el lado derecho es la suma, $g_1(x)+g_2(x)$. En otras palabras: si el forzamiento tiene varios términos distintos —un polinomio más una exponencial, digamos—, pueden resolver **cada término por separado** y sumar los resultados. Esa es la lógica exacta detrás del método que van a aprender en la Sesión 10."
+"Una última pieza, y va a ser la más útil en la próxima sesión: si $y_{p_1}$ es una solución particular cuando el lado derecho es $g_1(x)$, y $y_{p_2}$ es una solución particular cuando el lado derecho es $g_2(x)$, entonces $y_{p_1}+y_{p_2}$ es una solución particular cuando el lado derecho es la suma, $g_1(x)+g_2(x)$. A ese lado derecho $g(x)$ también lo van a escuchar llamar el **forzamiento** o la **función forzante** — mismo concepto, otro nombre, porque es lo que 'fuerza' a la ecuación a salirse de cero. En otras palabras: si el forzamiento tiene varios términos distintos —por ejemplo, $g(x)=x^2+e^{3x}$—, resuelven **cada término por separado**: encuentran $y_{p_1}$ para $g_1=x^2$, luego $y_{p_2}$ para $g_2=e^{3x}$, y la solución particular completa es simplemente $y_p=y_{p_1}+y_{p_2}$, sin repetir todo el trabajo para la suma completa de una sola vez. Esa es la lógica exacta detrás del método del anulador que van a aprender en la Sesión 10."
 
 ---
 
@@ -122,6 +124,14 @@ Antes de seguir, fíjense en $g(x)$, el lado derecho de la ecuación. Cuando $g(
 *(La pantalla muestra la conclusión y el gancho hacia los métodos de solución)*
 
 **Lo que debes decir:**
-"Con esto, tienen las reglas del juego completas: cuándo una solución existe y es única, cómo saber si un grupo de soluciones es genuinamente independiente, y cómo se construye la solución general en ambos casos, homogéneo y no homogéneo. Ninguna fórmula todavía — eso empieza ya. La próxima sesión vamos a fabricar, de manera completamente mecánica, conjuntos fundamentales de soluciones para ecuaciones con coeficientes constantes, y vamos a resolver nuestro primer caso real con valores en la frontera. Nos vemos en la Sesión 10."
+"Con esto, tienen las reglas del juego completas: cuándo una solución existe y es única, cómo saber si un grupo de soluciones es genuinamente independiente, y cómo se construye la solución general en ambos casos, homogéneo y no homogéneo. Ninguna fórmula todavía — eso empieza ya. La próxima sesión vamos a fabricar, de manera completamente mecánica, conjuntos fundamentales de soluciones para ecuaciones con coeficientes constantes, y vamos a resolver nuestro primer caso real con valores en la frontera. Antes de irse, tienen una tarea corta que los prepara para esa sesión."
+
+---
+
+### Diapositiva 16: Tarea Para la Próxima Clase — Operadores Diferenciales
+*(La pantalla muestra: "Tarea de Investigación: Operadores Diferenciales" — tres partes, 30–40 min, individual, revisión visto/no visto al inicio de la Sesión 10)*
+
+**Lo que debes decir:**
+"Antes de irse, una tarea corta. En la Sesión 10 van a aprender el método del anulador, que trata a $D=dy/dx$ como si fuera un número que se puede sumar, multiplicar y factorizar — no solo como la instrucción de 'derivar'. Si esa idea les resulta nueva, esta tarea cierra la brecha antes de clase: tres partes cortas, 30 a 40 minutos en total, individual, en su cuaderno. Parte uno: investigan qué es un operador diferencial y cómo se factoriza, como número. Parte dos: por qué $(D-r)$ 'aniquila' —convierte en cero— a $e^{rx}$, y por qué $D^{k+1}$ aniquila cualquier polinomio de grado $k$. Parte tres: conectan esa idea con la superposición que acabamos de ver hoy, proponiendo qué operador aniquilaría una función forzante con varios términos distintos, como $3x+e^{2x}$. Se las comparto por la plataforma de siempre. La reviso al inicio de la próxima clase — visto o no visto, sin rúbrica detallada. Si llegan sin haberla hecho, la Sesión 10 les va a costar el doble."
 
 ---
