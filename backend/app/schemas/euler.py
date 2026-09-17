@@ -50,6 +50,9 @@ class EulerStepOut(BaseModel):
     y: float
     exacta: Optional[float] = None
     error_abs: Optional[float] = None
+    error_rel: Optional[float] = Field(
+        None, description="Error relativo porcentual respecto a la solución exacta (%)"
+    )
 
 
 class VectorFieldPointOut(BaseModel):

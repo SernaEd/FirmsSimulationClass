@@ -785,6 +785,7 @@ export type EulerStepOut = {
   y: number;
   exacta: number | null;
   error_abs: number | null;
+  error_rel?: number | null;
 };
 
 export type VectorFieldPointOut = {

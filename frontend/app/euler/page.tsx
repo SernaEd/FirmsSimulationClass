@@ -114,11 +114,13 @@ export default function EulerPage() {
     if (!result || !result.tiene_exacta) return null;
     let max = 0;
     for (const p of result.pasos) {
-      if (p.exacta != null && p.error_abs != null && Math.abs(p.exacta) > 1e-9) {
-        max = Math.max(max, Math.abs(p.error_abs / p.exacta));
+      if (p.error_rel != null) {
+        max = Math.max(max, p.error_rel);
+      } else if (p.exacta != null && p.error_abs != null && Math.abs(p.exacta) > 1e-9) {
+        max = Math.max(max, Math.abs(p.error_abs / p.exacta) * 100);
       }
     }
-    return max * 100;
+    return max;
   }, [result]);
 
   function handleModeloChange(nextKey: string) {
@@ -527,8 +529,11 @@ function StepsTable({ result }: { result: EulerSimulateOut }) {
                 <th className="py-2 pr-3 text-[11px] font-medium uppercase tracking-widest text-neutral-500">
                   Exacta
                 </th>
-                <th className="py-2 text-[11px] font-medium uppercase tracking-widest text-neutral-500">
+                <th className="py-2 pr-3 text-[11px] font-medium uppercase tracking-widest text-neutral-500">
                   Error abs.
+                </th>
+                <th className="py-2 text-[11px] font-medium uppercase tracking-widest text-neutral-500">
+                  Error rel. (%)
                 </th>
               </>
             )}
@@ -545,8 +550,11 @@ function StepsTable({ result }: { result: EulerSimulateOut }) {
                   <td className="py-1.5 pr-3 tabular-nums text-neutral-300">
                     {p.exacta != null ? fmtNum(p.exacta, 4) : "—"}
                   </td>
-                  <td className="py-1.5 tabular-nums text-neutral-400">
+                  <td className="py-1.5 pr-3 tabular-nums text-neutral-400">
                     {p.error_abs != null ? fmtNum(p.error_abs, 4) : "—"}
+                  </td>
+                  <td className="py-1.5 tabular-nums text-neutral-400">
+                    {p.error_rel != null ? `${fmtNum(p.error_rel, 2)}%` : "—"}
                   </td>
                 </>
               )}

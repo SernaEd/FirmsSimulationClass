@@ -189,7 +189,11 @@ def _build_step(
     if exact_fn is None:
         return EulerStepOut(n=n, x=x, y=y)
     exacta = exact_fn(x)
-    return EulerStepOut(n=n, x=x, y=y, exacta=exacta, error_abs=abs(y - exacta))
+    err_abs = abs(y - exacta)
+    err_rel = (err_abs / abs(exacta) * 100.0) if abs(exacta) > 1e-12 else None
+    return EulerStepOut(
+        n=n, x=x, y=y, exacta=exacta, error_abs=err_abs, error_rel=err_rel
+    )
 
 
 def _build_vector_field(
