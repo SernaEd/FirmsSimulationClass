@@ -16,15 +16,17 @@
 *(La pantalla muestra los dos compartimentos de la Sesión 8: Álgebra Exacta y Aproximación Numérica)*
 
 **Lo que debes decir:**
-"Recuerden el cierre de la Sesión 8: álgebra exacta cuando hay fórmula cerrada, Euler cuando no la hay. Todo lo que resolvimos con álgebra exacta hasta ahora —separables, lineales, exactas, homogéneas, Bernoulli— comparte algo: son ecuaciones de **primer orden**, donde solo aparece $y'$. Hoy subimos un escalón: ecuaciones de orden $n$, donde aparecen $y'$, $y''$, hasta $y^{(n)}$. Antes de aprender a resolverlas —eso empieza en la Sesión 10— necesitamos la teoría que sostiene todo el edificio. Una advertencia rápida de vocabulario: la palabra 'homogénea' que acabo de usar —la de $dy/dx=f(y/x)$ de la Sesión 7— va a reaparecer hoy mismo con un significado completamente distinto. Se los aclaro en el momento en que llegue."
+"Recuerden el cierre de la Sesión 8: álgebra exacta cuando hay fórmula cerrada, Euler cuando no la hay. Todo lo que resolvimos con álgebra exacta hasta ahora —separables, lineales, exactas, homogéneas, Bernoulli— comparte algo: son ecuaciones de **primer orden**, donde solo aparece $y'$. Hoy subimos un escalón: ecuaciones de orden $n$, donde aparecen $y'$, $y''$, hasta $y^{(n)}$. Antes de aprender a resolverlas —eso empieza en la Sesión 10— necesitamos la teoría que sostiene todo el edificio. Una advertencia rápida de vocabulario: la palabra 'homogénea' que acabo de usar —la de $dy/dx=f(y/x)$ de la Sesión 7— va a reaparecer en un momento con un significado completamente distinto. Se los aclaro en la siguiente diapositiva."
 
 ---
 
 ### Diapositiva 3: El Problema de Valor Inicial, Generalizado
-*(La pantalla muestra un PVI de orden $n$: $a_n(x)y^{(n)}+\dots+a_0(x)y=g(x)$, con $y(x_0)=y_0$, $y'(x_0)=y_1$, …, $y^{(n-1)}(x_0)=y_{n-1}$)*
+*(La pantalla muestra un PVI de orden $n$: $a_n(x)y^{(n)}+\dots+a_0(x)y=g(x)$, con $y(x_0)=y_0$, $y'(x_0)=y_1$, …, $y^{(n-1)}(x_0)=y_{n-1}$; y una pausa de vocabulario sobre $g(x)$: $g(x)=0\Rightarrow$ homogénea, $g(x)\neq0\Rightarrow$ no homogénea — distinta, sin relación, de la "homogénea" de la Sesión 7)*
 
 **Lo que debes decir:**
-"Ya conocen el problema de valor inicial de primer orden desde la Sesión 2: una ecuación más una condición $y(x_0)=y_0$. La generalización a orden $n$ es natural: necesitan **una condición por cada derivada**, hasta la $(n-1)$-ésima, todas evaluadas en el mismo punto $x_0$. Para una ecuación de segundo orden, eso significa posición y velocidad iniciales; para tercer orden, agregan la aceleración inicial. Ingenieros: cuenten las condiciones antes de empezar — si les faltan o les sobran, algo está mal planteado."
+"Ya conocen el problema de valor inicial de primer orden desde la Sesión 2: una ecuación más una condición $y(x_0)=y_0$. La generalización a orden $n$ es natural: necesitan **una condición por cada derivada**, hasta la $(n-1)$-ésima, todas evaluadas en el mismo punto $x_0$. Para una ecuación de segundo orden, eso significa posición y velocidad iniciales; para tercer orden, agregan la aceleración inicial. Ingenieros: cuenten las condiciones antes de empezar — si les faltan o les sobran, algo está mal planteado.
+
+Antes de seguir, fíjense en $g(x)$, el lado derecho de la ecuación. Cuando $g(x)=0$, decimos que la ecuación es **homogénea**; cuando $g(x)\neq0$, es **no homogénea** — vamos a usar ambos términos todo el resto del capítulo. Ojo con esto: esta 'homogénea' **no tiene ninguna relación** con la que vieron en la Sesión 7 —$dy/dx=f(y/x)$, resuelta con la sustitución $y=vx$—. Son dos propiedades de dos tipos de ecuaciones completamente distintos que, por accidente histórico, comparten el mismo nombre. De aquí en adelante, cada vez que yo diga 'homogénea', es en este segundo sentido: lado derecho igual a cero."
 
 ---
 
@@ -53,10 +55,10 @@
 ---
 
 ### Diapositiva 7: Combinando Soluciones — El Principio de Superposición
-*(La pantalla muestra primero una pausa de vocabulario: "homogénea" en la Sesión 7 era $dy/dx=f(y/x)$ [sustitución $y=vx$]; aquí, de hoy en adelante, significa $g(x)=0$ — son dos ideas distintas, sin relación entre sí, que comparten nombre. Luego: si $y_1,\dots,y_k$ son soluciones de la homogénea (en este nuevo sentido), $C_1y_1+\dots+C_ky_k$ también lo es)*
+*(La pantalla muestra: si $y_1,\dots,y_k$ son soluciones de la homogénea, $C_1y_1+\dots+C_ky_k$ también lo es)*
 
 **Lo que debes decir:**
-"Antes de seguir, cumplo la promesa de hace un momento. La palabra 'homogénea' que vieron en la Sesión 7 —$dy/dx=f(y/x)$, resuelta con la sustitución $y=vx$— **no tiene nada que ver** con la que voy a usar de aquí en adelante. A partir de ahora, para una ecuación lineal de orden $n$, decimos que es **homogénea** cuando el lado derecho es cero: $g(x)=0$. Son dos propiedades distintas de dos tipos de ecuaciones distintos, que por accidente histórico comparten el mismo nombre — no hay ninguna relación matemática entre ellas, así que no intenten conectarlas. De aquí en adelante, cada vez que yo diga 'homogénea', es en este segundo sentido. Aclarado esto: volvamos a las ecuaciones homogéneas. Aquí vive una de las propiedades más útiles de la linealidad: el principio de superposición. Si $y_1, y_2, \dots, y_k$ son soluciones de la misma ecuación homogénea, entonces **cualquier combinación lineal** $C_1y_1+C_2y_2+\dots+C_ky_k$ también es solución. Pueden verificarlo sustituyendo directamente. Esto es la razón por la que, en la Sesión 10, nunca vamos a buscar 'la' solución — vamos a buscar varias soluciones simples y combinarlas."
+"Volvamos a las ecuaciones **homogéneas** —como definimos hace unas diapositivas, lado derecho igual a cero—. Aquí vive una de las propiedades más útiles de la linealidad: el principio de superposición. Si $y_1, y_2, \dots, y_k$ son soluciones de la misma ecuación homogénea, entonces **cualquier combinación lineal** $C_1y_1+C_2y_2+\dots+C_ky_k$ también es solución. Pueden verificarlo sustituyendo directamente. Esto es la razón por la que, en la Sesión 10, nunca vamos a buscar 'la' solución — vamos a buscar varias soluciones simples y combinarlas."
 
 ---
 
