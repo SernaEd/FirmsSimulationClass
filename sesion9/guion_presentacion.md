@@ -48,7 +48,7 @@
 *(La pantalla muestra $y''+16y=0$ con tres pares distintos de condiciones de frontera)*
 
 **Lo que debes decir:**
-"Miren este ejemplo clásico: $y''+16y=0$, cuya solución general es $y=C_1\cos4x+C_2\sin4x$ — ya lo verán derivado formalmente en la Sesión 10, hoy solo lo usamos para ilustrar. Con $y(0)=0$ y $y(\pi/2)=0$: la primera condición da $C_1=0$; la segunda, $C_2\sin(2\pi)=0$, y como $\sin(2\pi)=0$, se cumple para **cualquier** $C_2$ — infinitas soluciones. Cambien la segunda condición a $y(\pi/8)=0$: ahora $C_2\sin(\pi/2)=C_2=0$ — **solo** la solución trivial. La misma ecuación, condiciones de frontera ligeramente distintas, comportamientos completamente distintos. Esto jamás pasa con un PVI."
+"Miren este ejemplo clásico: $y''+16y=0$, cuya solución general es $y=C_1\cos4x+C_2\sin4x$ — ya lo verán derivado formalmente en la Sesión 10, hoy solo lo usamos para ilustrar. En los tres casos fijamos $y(0)=0$, lo que siempre da $C_1=0$, y solo cambiamos la segunda condición. Personalidad uno — $y(\pi/2)=0$: la condición es $C_2\sin(2\pi)=0$, y como $\sin(2\pi)=0$, se cumple para **cualquier** $C_2$ — **infinitas** soluciones. Personalidad dos — $y(\pi/2)=1$: la condición es $C_2\sin(2\pi)=1$, es decir $C_2\cdot0=1$ — **ninguna** solución la satisface, es imposible. Personalidad tres — $y(\pi/8)=0$: la condición es $C_2\sin(\pi/2)=C_2=0$ — **solo** la solución trivial. La misma ecuación, la misma primera condición, y solo cambiando dónde y a qué valor evaluamos la segunda, pasamos de infinitas soluciones a ninguna a exactamente una. Esto jamás pasa con un PVI."
 
 ---
 
