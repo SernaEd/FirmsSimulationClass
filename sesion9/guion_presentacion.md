@@ -1,14 +1,14 @@
 # Guión de Presentación: Sesión 9 - Cálculo III
 
-**Tono:** Técnico, con el mismo espíritu de "detective de patrones" de las sustituciones — pero ahora el patrón no es un cambio de variable, es adivinar la *forma* de la solución antes de resolver nada. El caso real (masa-resorte-amortiguador) debe sentirse como el motivo de todo: los tres casos algebraicos de la ecuación característica no son una curiosidad matemática, son tres comportamientos físicos distintos y observables.
+**Tono:** Deliberadamente más teórico que las sesiones anteriores — el mensaje central es que antes de fabricar soluciones (eso es la Sesión 10), hay que entender qué garantiza que una solución exista, sea única, y por qué combinar soluciones simples produce la solución general. Nada de esto se resuelve hoy con álgebra pesada; hoy se construyen las reglas del juego.
 
 ---
 
 ### Diapositiva 1: Portada y Enganche
-*(La pantalla muestra el título "Ecuaciones Lineales de Orden Superior: La Ecuación Característica")*
+*(La pantalla muestra el título "Teoría Preliminar: Ecuaciones Lineales de Orden Superior")*
 
 **Lo que debes decir:**
-"¡Bienvenidos! La sesión pasada cerramos con dos compartimentos en su caja de herramientas: álgebra exacta y aproximación numérica. Hoy abrimos un capítulo nuevo dentro del álgebra exacta — pero para un tipo de ecuación que no hemos tocado: aquellas donde aparece la segunda derivada, la tercera, o más. Van a aprender un truco que parece casi mágico: adivinar la forma de la solución sin haber resuelto nada todavía, y de ahí derivar todo lo demás con álgebra pura, del tipo que ya dominan desde la prepa."
+"¡Bienvenidos! La sesión pasada cerramos el capítulo de métodos numéricos. Hoy abrimos un tema nuevo — ecuaciones donde aparece la segunda derivada, la tercera, o más — pero todavía no vamos a resolver ninguna. Eso es la próxima sesión. Hoy contestamos preguntas más finas: ¿cuándo existe una solución? ¿cuándo es única? ¿qué significa exactamente una 'solución general'? Sin estas reglas, resolver ecuaciones de orden superior sería solo álgebra a ciegas."
 
 ---
 
@@ -16,94 +16,110 @@
 *(La pantalla muestra los dos compartimentos de la Sesión 8: Álgebra Exacta y Aproximación Numérica)*
 
 **Lo que debes decir:**
-"Recuerden el cierre de la sesión pasada: álgebra exacta cuando hay fórmula cerrada, Euler cuando no la hay. Todo lo que resolvimos con álgebra exacta hasta ahora —separables, lineales, exactas, homogéneas, Bernoulli— comparte algo: son ecuaciones de **primer orden**. Solo aparece $y'$. Hoy subimos un escalón: ecuaciones donde aparece $y''$, y vamos a ver que, lejos de ser más difíciles, tienen una de las técnicas de solución más elegantes y mecánicas de todo el curso."
+"Recuerden el cierre de la Sesión 8: álgebra exacta cuando hay fórmula cerrada, Euler cuando no la hay. Todo lo que resolvimos con álgebra exacta hasta ahora —separables, lineales, exactas, homogéneas, Bernoulli— comparte algo: son ecuaciones de **primer orden**, donde solo aparece $y'$. Hoy subimos un escalón: ecuaciones de orden $n$, donde aparecen $y'$, $y''$, hasta $y^{(n)}$. Antes de aprender a resolverlas —eso empieza en la Sesión 10— necesitamos la teoría que sostiene todo el edificio."
 
 ---
 
-### Diapositiva 3: Clasificación — Ecuaciones de Orden Superior
-*(La pantalla muestra la forma general $a_n y^{(n)} + \dots + a_1 y' + a_0 y = g(x)$, con las palabras "orden", "lineal" y "homogénea" resaltadas)*
+### Diapositiva 3: El Problema de Valor Inicial, Generalizado
+*(La pantalla muestra un PVI de orden $n$: $a_n(x)y^{(n)}+\dots+a_0(x)y=g(x)$, con $y(x_0)=y_0$, $y'(x_0)=y_1$, …, $y^{(n-1)}(x_0)=y_{n-1}$)*
 
 **Lo que debes decir:**
-"Una ecuación diferencial es de orden $n$ cuando la derivada más alta que aparece es la $n$-ésima. Hoy nos concentramos en las **lineales**: $y$ y todas sus derivadas aparecen a la primera potencia, sin productos entre ellas ni dentro de funciones raras como seno o logaritmo. Y dentro de esas, en las **homogéneas de coeficientes constantes**: el lado derecho es cero, y las $a_i$ son números, no funciones de $x$. Una propiedad clave de la linealidad es el **principio de superposición**: si $y_1$ y $y_2$ son soluciones, entonces $C_1y_1 + C_2y_2$ también lo es, para cualquier constante. Esto no es un detalle técnico — es la razón por la que, en un momento, vamos a poder combinar dos soluciones simples para construir la solución general completa."
+"Ya conocen el problema de valor inicial de primer orden desde la Sesión 2: una ecuación más una condición $y(x_0)=y_0$. La generalización a orden $n$ es natural: necesitan **una condición por cada derivada**, hasta la $(n-1)$-ésima, todas evaluadas en el mismo punto $x_0$. Para una ecuación de segundo orden, eso significa posición y velocidad iniciales; para tercer orden, agregan la aceleración inicial. Analistas: cuenten las condiciones antes de empezar — si les faltan o les sobran, algo está mal planteado."
 
 ---
 
-### Diapositiva 4: La Apuesta Exponencial
-*(La pantalla muestra la sustitución $y=e^{rx}$ y sus derivadas)*
+### Diapositiva 4: El Teorema de Existencia y Unicidad
+*(La pantalla muestra el enunciado del teorema, con las hipótesis de continuidad resaltadas)*
 
 **Lo que debes decir:**
-"Aquí viene el truco. Para resolver $ay''+by'+cy=0$, apostamos a que la solución tiene la forma $y=e^{rx}$, para algún número $r$ todavía desconocido. ¿Por qué esa apuesta y no otra? Porque el exponencial es la única función cuya derivada es proporcional a sí misma: $y'=re^{rx}$, $y''=r^2e^{rx}$. Si sustituimos en la ecuación, cada término se convierte en un múltiplo de $e^{rx}$: $ar^2e^{rx}+bre^{rx}+ce^{rx}=0$. Factorizamos $e^{rx}$, que nunca es cero, y lo que queda es puro álgebra: $ar^2+br+c=0$. A esto se le llama la **ecuación característica** — resolverla en $r$ es resolver la ecuación diferencial completa."
+"Aquí está la garantía que hace confiable todo lo que viene después. Si $a_n(x), \dots, a_0(x)$ y $g(x)$ son continuas en un intervalo $I$, y además $a_n(x)\neq0$ en todo ese intervalo, entonces el PVI tiene **una solución, y es única**, en todo $I$. Noten las dos condiciones: continuidad de los coeficientes, y que el coeficiente principal nunca se anule. Esta segunda condición es la que más se les va a olvidar — y es exactamente donde viven la mayoría de las trampas de examen."
 
 ---
 
-### Diapositiva 5: Los Tres Caminos
-*(La pantalla muestra un diagrama de árbol: discriminante $b^2-4ac$ → tres ramas)*
+### Diapositiva 5: PVF — Un Mundo Distinto
+*(La pantalla muestra un problema de valores en la frontera: mismas condiciones, pero evaluadas en dos puntos distintos, $y(a)$ y $y(b)$)*
 
 **Lo que debes decir:**
-"La ecuación característica es una cuadrática ordinaria, así que solo hay tres posibilidades, exactamente como en la prepa: **raíces reales distintas**, cuando el discriminante $b^2-4ac$ es positivo — la solución general es $y=C_1e^{r_1x}+C_2e^{r_2x}$. **Raíz repetida**, cuando el discriminante es cero — aquí no basta con $e^{rx}$ solo, porque perderíamos una constante; la segunda solución independiente es $xe^{rx}$, así que $y=(C_1+C_2x)e^{rx}$. Y **raíces complejas conjugadas**, cuando el discriminante es negativo, $r=\alpha\pm\beta i$ — usando la fórmula de Euler, la solución se reescribe sin números imaginarios como $y=e^{\alpha x}(C_1\cos\beta x+C_2\sin\beta x)$. Tres casos, tres familias de comportamiento. Analistas: memoricen las tres formas, porque las van a reconocer constantemente en ingeniería."
+"Ahora comparen esto con un problema de valores en la frontera: en vez de fijar $y$ y todas sus derivadas en el mismo punto, fijan $y$ en **dos puntos distintos**, $x=a$ y $x=b$. Parece un cambio menor. No lo es: el teorema que acabamos de ver **no aplica aquí**. Un PVF puede tener una solución única, ninguna, o infinitas — y no hay forma de saberlo sin resolver el problema. Esto no es una curiosidad abstracta: la deflexión de una viga, o el pandeo de una columna bajo carga, se modelan exactamente como problemas de valores en la frontera. Van a resolver uno real en la Sesión 10."
 
 ---
 
-### Diapositiva 6: El Caso Real — Masa-Resorte-Amortiguador
-*(La pantalla muestra $m x'' + c x' + kx = 0$ y una animación conceptual de una masa oscilando sobre un resorte con amortiguador)*
+### Diapositiva 6: Ejemplo — Un PVF con Tres Personalidades
+*(La pantalla muestra $y''+16y=0$ con tres pares distintos de condiciones de frontera)*
 
 **Lo que debes decir:**
-"Esto no es álgebra abstracta. El sistema masa-resorte-amortiguador —una masa $m$, un resorte de rigidez $k$, un amortiguador viscoso $c$— se modela exactamente con $mx''+cx'+kx=0$, donde $x$ es el desplazamiento desde el equilibrio. Su ecuación característica es $mr^2+cr+k=0$, y el discriminante es $c^2-4mk$. Miren la coincidencia: los tres casos algebraicos de hace un momento son, literalmente, los tres regímenes de amortiguamiento que ven en cualquier suspensión de auto o amortiguador de puerta. Raíces reales distintas: **sobreamortiguado** — regresa al equilibrio sin oscilar, lento. Raíz repetida: **críticamente amortiguado** — regresa sin oscilar, en el menor tiempo posible; el punto óptimo de diseño. Raíces complejas: **subamortiguado** — oscila mientras la amplitud decae exponencialmente. Nada de esto es coincidencia: es la misma matemática, vista desde la física."
+"Miren este ejemplo clásico: $y''+16y=0$, cuya solución general es $y=C_1\cos4x+C_2\sin4x$ — ya lo verán derivado formalmente en la Sesión 10, hoy solo lo usamos para ilustrar. Con $y(0)=0$ y $y(\pi/2)=0$: la primera condición da $C_1=0$; la segunda, $C_2\sin(2\pi)=0$, y como $\sin(2\pi)=0$, se cumple para **cualquier** $C_2$ — infinitas soluciones. Cambien la segunda condición a $y(\pi/8)=0$: ahora $C_2\sin(\pi/2)=C_2=0$ — **solo** la solución trivial. La misma ecuación, condiciones de frontera ligeramente distintas, comportamientos completamente distintos. Esto jamás pasa con un PVI."
 
 ---
 
-### Diapositiva 7: Ejemplo — Planteamiento (Raíces Reales Distintas)
-*(La pantalla muestra únicamente $y''-5y'+6y=0$, $y(0)=1$, $y'(0)=0$, sin pasos ni respuesta)*
+### Diapositiva 7: Combinando Soluciones — El Principio de Superposición
+*(La pantalla muestra: si $y_1,\dots,y_k$ son soluciones de la homogénea, $C_1y_1+\dots+C_ky_k$ también lo es)*
 
 **Lo que debes decir:**
-"Vamos con el primer caso, y lo resolvemos juntos en el pizarrón: $y''-5y'+6y=0$, con $y(0)=1$ y $y'(0)=0$. Antes de que yo toque el gis: ¿cuál es la ecuación característica? [Esperen la respuesta] Exacto, $r^2-5r+6=0$. Factorícenla, encuentren las dos raíces, escriban la solución general, y luego usen las dos condiciones iniciales para encontrar $C_1$ y $C_2$ — recuerden que necesitan derivar la solución general antes de aplicar la segunda condición. Denle unos minutos, yo los voy guiando en el pizarrón."
+"Volvamos a las ecuaciones **homogéneas** — lado derecho igual a cero. Aquí vive una de las propiedades más útiles de la linealidad: el principio de superposición. Si $y_1, y_2, \dots, y_k$ son soluciones de la misma ecuación homogénea, entonces **cualquier combinación lineal** $C_1y_1+C_2y_2+\dots+C_ky_k$ también es solución. Pueden verificarlo sustituyendo directamente. Esto es la razón por la que, en la Sesión 10, nunca vamos a buscar 'la' solución — vamos a buscar varias soluciones simples y combinarlas."
 
 ---
 
-### Diapositiva 8: Ejemplo — Solución (Raíces Reales Distintas)
-*(La pantalla muestra los pasos completos y la solución final: $y=3e^{2x}-2e^{3x}$)*
+### Diapositiva 8: Dependencia e Independencia Lineal
+*(La pantalla muestra la definición formal y dos ejemplos: un par dependiente, un par independiente)*
 
 **Lo que debes decir:**
-"Recapitulemos. La ecuación característica $r^2-5r+6=0$ factoriza como $(r-2)(r-3)=0$, así que $r_1=2$, $r_2=3$ — raíces reales distintas. La solución general es $y=C_1e^{2x}+C_2e^{3x}$. Derivamos: $y'=2C_1e^{2x}+3C_2e^{3x}$. Aplicamos $y(0)=1$: $C_1+C_2=1$. Aplicamos $y'(0)=0$: $2C_1+3C_2=0$. Resolviendo el sistema: de la primera, $C_1=1-C_2$; sustituyendo, $2(1-C_2)+3C_2=0$, es decir $2+C_2=0$, así que $C_2=-2$ y $C_1=3$. La solución particular es $y=3e^{2x}-2e^{3x}$. Verifiquen ustedes mismos que $y(0)=3-2=1$ y que $y'(0)=6-6=0$ — así es como confirman, sin dudar, que no se les perdió un signo en el camino."
+"Pero combinar soluciones solo funciona si son genuinamente distintas entre sí — si una es múltiplo de otra, están reciclando la misma información con otro nombre. Un conjunto de funciones $f_1,\dots,f_n$ es **linealmente dependiente** en un intervalo si existen constantes $C_1,\dots,C_n$, no todas cero, tales que $C_1f_1+\dots+C_nf_n=0$ para toda $x$ en ese intervalo. Si la única forma de lograr esa suma cero es con todas las constantes en cero, son **linealmente independientes**. Ejemplo rápido: $f_1=x$ y $f_2=5x$ son dependientes — con $C_1=5, C_2=-1$ la combinación se anula siempre. Pero $f_1=x$ y $f_2=x^2$ son independientes: no hay forma de anular $C_1x+C_2x^2$ para toda $x$ salvo con ambas constantes en cero."
 
 ---
 
-### Diapositiva 9: Raíz Repetida — La Segunda Solución Perdida
-*(La pantalla muestra $y''-6y'+9y=0$ y la pregunta "¿por qué no basta con $y=e^{3x}$?")*
+### Diapositiva 9: El Wronskiano — Un Detector de Independencia
+*(La pantalla muestra la definición del Wronskiano como determinante, para el caso de dos funciones)*
 
 **Lo que debes decir:**
-"Segundo caso: $y''-6y'+9y=0$, con $y(0)=2$, $y'(0)=1$. La ecuación característica es $r^2-6r+9=0$, que es $(r-3)^2=0$ — una raíz doble, $r=3$. Aquí está la trampa: si escriben $y=C_1e^{3x}$ nada más, tienen una sola constante para satisfacer dos condiciones iniciales — es matemáticamente imposible en general. Necesitan una segunda solución independiente, y resulta ser $xe^{3x}$ — pueden verificar sustituyéndola que sí cumple la ecuación original. La solución general completa es $y=(C_1+C_2x)e^{3x}$. Aplicando las condiciones iniciales: $y(0)=C_1=2$. Derivando, $y'=C_2e^{3x}+3(C_1+C_2x)e^{3x}$, y $y'(0)=C_2+3C_1=1$, así que $C_2=1-6=-5$. La solución particular es $y=(2-5x)e^{3x}$. Regla de oro: raíz repetida siempre implica multiplicar por $x$ en la segunda solución — nunca escriban dos veces la misma exponencial con dos constantes distintas, porque en realidad es una sola constante disfrazada."
+"Revisar la definición a mano, función por función, es lento. El Wronskiano es un atajo algebraico: para dos funciones derivables, $W(f_1,f_2)=f_1f_2'-f_2f_1'$ — el determinante de la matriz de las funciones y sus derivadas. El teorema que lo hace útil: si $y_1,\dots,y_n$ son soluciones de la **misma** ecuación diferencial lineal homogénea, entonces son linealmente independientes en un intervalo si y solo si su Wronskiano **nunca se anula** ahí. Ojo con la condición — el Wronskiano solo es una prueba confiable de independencia cuando las funciones ya son soluciones de la misma ecuación; para funciones cualesquiera, un Wronskiano cero no garantiza dependencia."
 
 ---
 
-### Diapositiva 10: Raíces Complejas — La Fórmula de Euler
-*(La pantalla muestra $y''+4y'+13y=0$ y la fórmula de Euler $e^{i\theta}=\cos\theta+i\sin\theta$)*
+### Diapositiva 10: Ejemplo — Calculando un Wronskiano
+*(La pantalla muestra $y_1=e^{3x}$, $y_2=e^{-3x}$, soluciones de $y''-9y=0$)*
 
 **Lo que debes decir:**
-"Tercer caso: $y''+4y'+13y=0$, con $y(0)=0$, $y'(0)=3$. La ecuación característica es $r^2+4r+13=0$; con la fórmula general, $r=\dfrac{-4\pm\sqrt{16-52}}{2}=\dfrac{-4\pm\sqrt{-36}}{2}=-2\pm3i$. Tienen raíces complejas: $\alpha=-2$, $\beta=3$. Aquí es donde entra la fórmula de Euler, $e^{i\theta}=\cos\theta+i\sin\theta$ — permite reescribir $e^{(\alpha+\beta i)x}$ sin números imaginarios como $e^{\alpha x}(\cos\beta x+i\sin\beta x)$, y combinando las dos raíces conjugadas, la parte imaginaria se cancela y queda una solución real: $y=e^{\alpha x}(C_1\cos\beta x+C_2\sin\beta x)$. Con $\alpha=-2$, $\beta=3$: $y=e^{-2x}(C_1\cos3x+C_2\sin3x)$. Aplicando $y(0)=0$: $C_1=0$. Derivando y aplicando $y'(0)=3$, se obtiene $C_2=1$. La solución particular es $y=e^{-2x}\sin(3x)$ — una oscilación cuya amplitud decae exponencialmente. Reconocen esa forma, ¿verdad? Es exactamente el subamortiguado de hace un momento."
+"Verifiquemos que $y_1=e^{3x}$ y $y_2=e^{-3x}$ —ambas soluciones de $y''-9y=0$— son independientes. Derivamos: $y_1'=3e^{3x}$, $y_2'=-3e^{-3x}$. El Wronskiano es $W=y_1y_2'-y_2y_1' = e^{3x}(-3e^{-3x}) - e^{-3x}(3e^{3x}) = -3-3=-6$. Como $e^{3x}\cdot e^{-3x}=e^0=1$ para toda $x$, el resultado es $-6$ sin importar el valor de $x$ — nunca es cero. Son linealmente independientes en toda la recta real, y por lo tanto forman lo que se llama un **conjunto fundamental de soluciones**."
 
 ---
 
-### Diapositiva 11: Los Tres Regímenes, Uno al Lado del Otro
-*(La pantalla muestra la gráfica comparativa: tres curvas de desplazamiento vs. tiempo — sobreamortiguado, críticamente amortiguado, subamortiguado — para la misma masa y el mismo resorte, variando solo el amortiguamiento $c$)*
+### Diapositiva 11: Conjunto Fundamental y Solución General (Homogéneas)
+*(La pantalla muestra: $n$ soluciones linealmente independientes de una ED homogénea de orden $n$ → solución general $y=C_1y_1+\dots+C_ny_n$)*
 
 **Lo que debes decir:**
-"Cerramos el círculo. Aquí tienen las tres soluciones graficadas juntas, para la misma masa y el mismo resorte, cambiando solo el amortiguador. En **sobreamortiguado**, dos exponenciales reales negativas, ninguna oscilación, regreso lento. En **críticamente amortiguado**, el regreso más rápido posible sin oscilar — por eso es el punto que buscan los ingenieros de suspensiones. En **subamortiguado**, la masa cruza el equilibrio varias veces antes de asentarse, con la amplitud decayendo dentro de una envolvente exponencial. Las tres curvas nacen de la misma ecuación diferencial y del mismo procedimiento algebraico — lo único que cambió fue el signo de un discriminante."
+"Aquí se junta todo lo de hoy. Un **conjunto fundamental de soluciones** de una ecuación lineal homogénea de orden $n$ es exactamente eso: $n$ soluciones, linealmente independientes entre sí, de esa misma ecuación. Y el teorema central de esta sesión: si $y_1,\dots,y_n$ es un conjunto fundamental, la **solución general** de la ecuación homogénea es $y=C_1y_1+\dots+C_ny_n$ — combina todas las soluciones posibles, ninguna se les escapa. Esto es exactamente lo que va a hacer la ecuación característica en la Sesión 10: fabricar, de forma mecánica, un conjunto fundamental completo."
 
 ---
 
-### Diapositiva 12: Ojo de Analista — Errores Comunes
-*(La pantalla muestra las trampas típicas de ecuaciones de orden superior)*
+### Diapositiva 12: Ecuaciones No Homogéneas — $y=y_c+y_p$
+*(La pantalla muestra la descomposición: solución general = función complementaria + solución particular)*
 
 **Lo que debes decir:**
-"Cuatro advertencias antes de que salgan a aplicar esto. Uno: raíz repetida sin el factor $x$ — si escriben $y=C_1e^{rx}+C_2e^{rx}$, en realidad solo tienen una constante, $(C_1+C_2)$, y no van a poder satisfacer dos condiciones iniciales independientes. Dos: en raíces complejas, olvidar el factor $e^{\alpha x}$ — la parte real de la raíz no desaparece, controla la envolvente de crecimiento o decaimiento; sin ella, describen una oscilación que nunca cambia de amplitud, y eso casi nunca es físicamente cierto. Tres: aplicar la segunda condición inicial sobre la solución general sin derivar primero — $y'(0)$ es una condición sobre la derivada, no sobre $y$; es el error más común de esta técnica. Cuatro: para una ecuación de orden $n$ necesitan exactamente $n$ condiciones iniciales para fijar las $n$ constantes — dos para orden 2, tres para orden 3, y así sucesivamente."
+"Último ingrediente: ¿qué pasa cuando el lado derecho ya no es cero? La solución general de una ecuación **no homogénea** se construye en dos piezas. La **función complementaria**, $y_c$, es la solución general de la ecuación homogénea asociada —todo lo que acabamos de construir—. La **solución particular**, $y_p$, es cualquier función, sin constantes libres, que satisface la ecuación completa con su lado derecho. La solución general es la suma: $y=y_c+y_p$. Intuición: $y_c$ absorbe toda la libertad de las condiciones iniciales; $y_p$ carga con la 'culpa' de que el lado derecho no sea cero."
 
 ---
 
-### Diapositiva 13: Cierre y Próximo Paso
-*(La pantalla muestra la conclusión y el gancho hacia Ecuaciones No Homogéneas)*
+### Diapositiva 13: Superposición para No Homogéneas
+*(La pantalla muestra: si $y_{p_1}$ resuelve con $g=g_1$ y $y_{p_2}$ con $g=g_2$, entonces $y_{p_1}+y_{p_2}$ resuelve con $g=g_1+g_2$)*
 
 **Lo que debes decir:**
-"Con esto, su arsenal de orden superior tiene ya los tres casos completos: raíces reales distintas, raíz repetida, raíces complejas. Pero hoy trabajamos exclusivamente con el lado derecho igual a cero — el sistema masa-resorte-amortiguador **libre**, sin ninguna fuerza externa empujándolo. ¿Qué pasa cuando alguien sí empuja el sistema — una fuerza periódica, como el paso sincronizado de miles de peatones sobre un puente? Ahí la ecuación deja de ser homogénea, y la solución que encontraron hoy se vuelve solo una pieza de una respuesta más grande. Esa es exactamente la puerta que abrimos la próxima sesión."
+"Una última pieza, y va a ser la más útil en la próxima sesión: si $y_{p_1}$ es una solución particular cuando el lado derecho es $g_1(x)$, y $y_{p_2}$ es una solución particular cuando el lado derecho es $g_2(x)$, entonces $y_{p_1}+y_{p_2}$ es una solución particular cuando el lado derecho es la suma, $g_1(x)+g_2(x)$. En otras palabras: si el forzamiento tiene varios términos distintos —un polinomio más una exponencial, digamos—, pueden resolver **cada término por separado** y sumar los resultados. Esa es la lógica exacta detrás del método que van a aprender en la Sesión 10."
+
+---
+
+### Diapositiva 14: Ojo de Analista — Errores Comunes
+*(La pantalla muestra las trampas típicas de la teoría de orden superior)*
+
+**Lo que debes decir:**
+"Cuatro advertencias antes de pasar a los métodos. Uno: confundir PVI con PVF — un PVI de orden $n$ siempre tiene solución única bajo continuidad; un PVF, **no hay garantía**, revisen el problema completo antes de asumir. Dos: olvidar que el Wronskiano solo detecta independencia entre soluciones de la **misma** ecuación — no lo usen como prueba general para funciones arbitrarias. Tres: creer que $y_c+y_p$ es una suma cualquiera — $y_c$ debe ser la solución general de la homogénea completa, con sus $n$ constantes, no una solución particular más de la homogénea. Cuatro: en un PVI de orden $n$, contar mal las condiciones iniciales — necesitan exactamente $n$, ni una más ni una menos, todas en el mismo punto $x_0$."
+
+---
+
+### Diapositiva 15: Cierre y Próximo Paso
+*(La pantalla muestra la conclusión y el gancho hacia los métodos de solución)*
+
+**Lo que debes decir:**
+"Con esto, tienen las reglas del juego completas: cuándo una solución existe y es única, cómo saber si un grupo de soluciones es genuinamente independiente, y cómo se construye la solución general en ambos casos, homogéneo y no homogéneo. Ninguna fórmula todavía — eso empieza ya. La próxima sesión vamos a fabricar, de manera completamente mecánica, conjuntos fundamentales de soluciones para ecuaciones con coeficientes constantes, y vamos a resolver nuestro primer caso real con valores en la frontera. Nos vemos en la Sesión 10."
 
 ---
