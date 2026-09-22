@@ -13,7 +13,7 @@
 ---
 
 ### Diapositiva 2: Revisión de Tarea — Preguntas al Azar
-*(La pantalla muestra el título "Revisión: Operadores Diferenciales" con las tres preguntas de memoria de la tarea)*
+*(La pantalla muestra el título "Revisión: Operadores Diferenciales" con las cuatro preguntas — sin las respuestas, que solo el profesor conoce)*
 
 **Lo que debes decir:**
 "Antes de arrancar, reviso la tarea de operadores diferenciales — la que cierra la brecha para el anulador de hoy. Voy a elegir al azar a tres o cuatro personas, por lista, así que nadie se relaja pensando que ya le tocó.
