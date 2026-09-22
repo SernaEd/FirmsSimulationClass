@@ -1,0 +1,217 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[most]{tcolorbox}
+\usepackage{parskip}
+
+\definecolor{navy}{HTML}{0F172A}
+\definecolor{cyan}{HTML}{0E7490}
+\definecolor{cyandeep}{HTML}{0891B2}
+\definecolor{slate}{HTML}{475569}
+\definecolor{amber}{HTML}{B45309}
+\definecolor{violet}{HTML}{6D28D9}
+\definecolor{cardbg}{HTML}{F0F9FA}
+\definecolor{solbg}{HTML}{F8FAFC}
+
+\titleformat{\section}{\Large\bfseries\color{navy}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\large\bfseries\color{cyandeep}}{\thesubsection}{0.6em}{}
+\titlespacing{\section}{0pt}{1.4em}{0.8em}
+\titlespacing{\subsection}{0pt}{1.2em}{0.5em}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\small\color{slate} Cálculo III · Sesión 10}
+\fancyhead[R]{\small\color{slate} Operadores Diferenciales — Solucionario}
+\fancyfoot[C]{\small\color{slate}\thepage}
+
+\newtcolorbox{pregunta}{
+  colback=cardbg, colframe=cyandeep, boxrule=0.8pt, arc=2pt,
+  left=8pt, right=8pt, top=6pt, bottom=6pt,
+  fonttitle=\bfseries, coltitle=navy,
+}
+\newtcolorbox{memoria}{
+  colback=solbg, colframe=amber, boxrule=0.8pt, arc=2pt,
+  left=8pt, right=8pt, top=6pt, bottom=6pt,
+}
+\newtcolorbox{clase}{
+  colback=solbg, colframe=violet, boxrule=0.8pt, arc=2pt,
+  left=8pt, right=8pt, top=6pt, bottom=6pt,
+}
+
+\setlist[itemize]{leftmargin=1.4em}
+
+\begin{document}
+
+\begin{center}
+  {\Huge\bfseries\color{navy} Tarea de Investigación}\\[4pt]
+  {\LARGE\color{cyandeep} Operadores Diferenciales — Solucionario}\\[8pt]
+  {\large\color{slate} Cálculo III · Preparación para la Sesión 10}
+\end{center}
+
+\vspace{0.6em}
+\noindent
+Este documento contiene las siete preguntas de la tarea de investigación sobre operadores diferenciales, junto con la explicación detallada de cada respuesta. Se las comparto \textbf{después} de la Sesión 10 para que puedan revisar su propio trabajo, confirmar lo que discutimos en clase y aclarar cualquier duda que haya quedado pendiente. Si su respuesta no coincide con la de aquí, no se preocupen — revisen el razonamiento paso a paso y pregúntenme lo que no les quede claro.
+
+\vspace{0.6em}
+\hrule
+\vspace{0.8em}
+
+\section*{Parte 1 — $D$ como operador}
+
+\subsection*{Pregunta 1}
+\begin{pregunta}
+Investiguen qué significa que $D$ sea un operador diferencial: $D[f](x) = f'(x)$. Dado $f(x)=x^3$, calculen $D[f]$, $D^2[f]$ (aplicar $D$ dos veces) y $D^3[f]$.
+\end{pregunta}
+
+\noindent\textbf{Solución.} Un operador diferencial no es un número: es una \emph{instrucción} que toma una función y regresa otra función. $D$ en particular toma $f$ y regresa su derivada. Aplicarlo dos veces, $D^2[f]$, significa derivar el resultado de la primera derivada — no elevar $f'$ al cuadrado.
+
+Con $f(x)=x^3$:
+\[
+D[f] = 3x^2, \qquad D^2[f] = D[3x^2] = 6x, \qquad D^3[f] = D[6x] = 6.
+\]
+
+\subsection*{Pregunta 2}
+\begin{pregunta}
+Investiguen qué significa un operador polinomial como $D^2-3D+2$. Aplíquenlo a $f(x)=e^{x}$: calculen $D^2[f]-3D[f]+2f$ y simplifiquen.
+\end{pregunta}
+
+\noindent\textbf{Solución.} Un operador polinomial es una combinación lineal de $D$, $D^2$, \dots, con coeficientes constantes, tratada como un solo bloque algebraico. $D^2-3D+2$ significa: deriven dos veces, resten tres veces la primera derivada, sumen dos veces la función original.
+
+Con $f(x)=e^x$: $D[f]=e^x$ y $D^2[f]=e^x$ (la exponencial $e^x$ es su propia derivada, a cualquier orden). Entonces:
+\[
+D^2[f]-3D[f]+2f = e^x - 3e^x + 2e^x = (1-3+2)e^x = 0.
+\]
+El operador \emph{aniquila} a $e^x$ — lo convierte en cero. Esto no es casualidad: van a ver en la Pregunta 4 por qué.
+
+\subsection*{Pregunta 3}
+\begin{pregunta}
+Verifiquen, con un ejemplo numérico propio, que $D^2-3D+2$ se puede factorizar como $(D-1)(D-2)$ — es decir, que aplicar $(D-1)(D-2)$ a su función da el mismo resultado que aplicar $D^2-3D+2$ directamente.
+\end{pregunta}
+
+\noindent\textbf{Solución.} Usemos $f(x)=x^2$ (a propósito, una función que \emph{no} es aniquilada por ninguno de los dos operadores por separado, para que el ejemplo sea más ilustrativo que el de la Pregunta 2).
+
+\textbf{Camino directo}, aplicando $D^2-3D+2$ a $f=x^2$:
+\[
+D[f]=2x, \qquad D^2[f]=2, \qquad D^2[f]-3D[f]+2f = 2 - 3(2x) + 2x^2 = 2x^2-6x+2.
+\]
+
+\textbf{Camino factorizado}, $(D-1)(D-2)$ significa: primero apliquen $(D-2)$ a $f$, y al resultado apliquen $(D-1)$.
+\[
+(D-2)[x^2] = D[x^2] - 2x^2 = 2x-2x^2.
+\]
+Ahora apliquen $(D-1)$ a $g(x)=2x-2x^2$:
+\[
+(D-1)[g] = D[g]-g = (2-4x)-(2x-2x^2) = 2x^2-6x+2.
+\]
+
+Ambos caminos dan $2x^2-6x+2$: la factorización funciona, tal como funciona la factorización de un polinomio ordinario. Esto es lo que hace posible tratar a $D$ ``como si fuera un número'': las mismas reglas de factorización de álgebra aplican, siempre que los coeficientes sean constantes.
+
+\section*{Parte 2 — Por qué un operador ``aniquila'' una función}
+
+\subsection*{Pregunta 4}
+\begin{pregunta}
+Calculen $(D-3)[e^{3x}]$. ¿Qué obtienen? Expliquen por qué cualquier exponencial $e^{rx}$ desaparece bajo el operador $(D-r)$, pero no bajo $(D-s)$ si $s\neq r$.
+\end{pregunta}
+
+\noindent\textbf{Solución.}
+\[
+(D-3)[e^{3x}] = D[e^{3x}] - 3e^{3x} = 3e^{3x} - 3e^{3x} = 0.
+\]
+En general, $D[e^{rx}]=re^{rx}$, así que:
+\[
+(D-r)[e^{rx}] = re^{rx} - re^{rx} = 0 \quad \text{siempre, para cualquier } r.
+\]
+Pero si el operador ``no coincide'' con el exponente, es decir $(D-s)$ con $s\neq r$:
+\[
+(D-s)[e^{rx}] = re^{rx} - se^{rx} = (r-s)\,e^{rx}.
+\]
+Como $e^{rx}$ nunca es cero (para ningún valor real de $x$) y $r-s\neq 0$ por hipótesis, el resultado \textbf{no} es cero. Moraleja: cada anulador $(D-r)$ está ``sintonizado'' exactamente a un exponente $r$, y solo a ese.
+
+\subsection*{Pregunta 5}
+\begin{pregunta}
+Calculen $(D-3)^2[xe^{3x}]$ (apliquen $(D-3)$ dos veces seguidas). Confirmen que da cero. ¿Por qué $(D-3)$ una sola vez no es suficiente para $xe^{3x}$, pero sí lo es para $e^{3x}$ solo?
+\end{pregunta}
+
+\noindent\textbf{Solución.} Primero, una sola aplicación, usando la regla del producto para derivar $xe^{3x}$:
+\[
+D[xe^{3x}] = e^{3x} + 3xe^{3x} \quad\Longrightarrow\quad (D-3)[xe^{3x}] = \big(e^{3x}+3xe^{3x}\big) - 3xe^{3x} = e^{3x}.
+\]
+El resultado \textbf{no} es cero — es $e^{3x}$. Aplicando $(D-3)$ una segunda vez, usando la Pregunta 4:
+\[
+(D-3)\big[e^{3x}\big] = 0.
+\]
+Entonces $(D-3)^2[xe^{3x}] = (D-3)\big[(D-3)[xe^{3x}]\big] = (D-3)[e^{3x}] = 0$, confirmado.
+
+¿Por qué hace falta la segunda aplicación? Porque la regla del producto, al derivar $xe^{3x}$, genera un término extra: el factor $x$ ``se cancela'' al derivarse ($D[x]=1$), pero deja detrás un residuo de la forma $e^{3x}$ pura, que a su vez necesita su propia aplicación de $(D-3)$ para desaparecer. Para $e^{3x}$ sin el factor $x$, no hay ningún residuo — desaparece de un solo golpe, como se vio en la Pregunta 4. Ese es exactamente el patrón detrás de la raíz repetida que vieron en la Sesión 10: si $e^{rx}$ es solución de $(D-r)y=0$, y hace falta una segunda solución independiente para una ecuación de orden 2, esa segunda solución es $xe^{rx}$ — precisamente porque necesita $(D-r)^2$, no solo $(D-r)$, para anularse.
+
+\subsection*{Pregunta 6}
+\begin{pregunta}
+Calculen $D^3[x^2]$ (tres derivadas sucesivas). Expliquen por qué, en general, $D^{k+1}$ siempre aniquila cualquier polinomio de grado $k$.
+\end{pregunta}
+
+\noindent\textbf{Solución.}
+\[
+D[x^2]=2x, \qquad D^2[x^2]=2, \qquad D^3[x^2] = D[2] = 0.
+\]
+Cada derivada de un monomio $x^j$ reduce su grado en uno: $x^j \to jx^{j-1} \to j(j-1)x^{j-2} \to \cdots$. Después de exactamente $j$ derivadas llegan a una constante distinta de cero ($j!$ veces el coeficiente original); una derivada más —la $(j+1)$-ésima— convierte esa constante en cero. Por lo tanto, un monomio de grado $j$ queda aniquilado por $D^{j+1}$.
+
+Un polinomio de grado $k$ es una combinación lineal de monomios de grado $0,1,\dots,k$. Cada uno de esos monomios (el de mayor grado incluido) queda aniquilado por, a lo más, $D^{k+1}$ aplicaciones. Como $D$ es lineal, $D^{k+1}$ aniquila la suma completa —es decir, el polinomio entero— aunque a algunos monomios les hubiera bastado con menos derivadas.
+
+\section*{Parte 3 — Conectando con lo que ya saben}
+
+\subsection*{Pregunta 7}
+\begin{pregunta}
+Con lo investigado en las Partes 1 y 2, propongan qué operador podría aniquilar $g(x) = 3x + e^{2x}$ — una suma de dos términos distintos. Justifiquen su propuesta en una o dos líneas.
+\end{pregunta}
+
+\noindent\textbf{Solución.} Separen $g(x)$ en sus dos términos y anulen cada uno por separado, con las reglas ya establecidas:
+\begin{itemize}
+  \item $3x$ es un polinomio de grado $1$ (es decir, $k=1$) $\Rightarrow$ lo aniquila $D^{k+1}=D^2$ (Pregunta 6).
+  \item $e^{2x}$ es una exponencial pura con $r=2$ $\Rightarrow$ lo aniquila $(D-2)$ (Pregunta 4).
+\end{itemize}
+El operador $D^2(D-2)$ —la \textbf{composición} (el producto) de ambos anuladores— aniquila la suma completa. Esto funciona porque los operadores de coeficientes constantes conmutan (se pueden multiplicar en cualquier orden, igual que un polinomio ordinario en la variable $D$), y porque $D$ es lineal: aplicar $D^2(D-2)$ a $g(x)=3x+e^{2x}$ se distribuye como
+\[
+D^2(D-2)[3x] + D^2(D-2)[e^{2x}].
+\]
+En el segundo término, $(D-2)[e^{2x}]=0$ ya desde el primer factor, así que el resto del operador no hace nada nuevo (aplicar $D^2$ a $0$ sigue siendo $0$). En el primer término, $(D-2)[3x]=3-6x$ —todavía no es cero, porque $(D-2)$ no es el anulador correcto para un polinomio— pero $D^2$ sí termina el trabajo: $D^2[3-6x]=D[-6]=0$. Ambos términos llegan a cero, aunque por ``caminos'' distintos dentro del mismo operador compuesto — y esa es exactamente la lógica que van a usar en el método del anulador de la Sesión 10 cuando el forzamiento tenga varios términos.
+
+\vspace{0.4em}
+\hrule
+\vspace{0.8em}
+
+\section*{Repaso — lo que debían poder responder de memoria}
+
+\begin{memoria}
+\begin{itemize}[itemsep=0.4em]
+  \item \textbf{¿Qué operador aniquila un polinomio de grado $k$?} $D^{k+1}$ — porque cada derivada reduce el grado en uno, y hacen falta $k+1$ derivadas para llegar de un monomio de grado $k$ a cero (Pregunta 6).
+  \item \textbf{¿Qué operador aniquila $e^{rx}$?} $(D-r)$ — porque $D[e^{rx}]=re^{rx}$ cancela exactamente al restar $re^{rx}$ (Pregunta 4).
+  \item \textbf{¿Qué hacen cuando necesitan aniquilar una suma de varios términos distintos?} Combinan —multiplican— los anuladores individuales de cada término; el operador compuesto aniquila la suma completa por linealidad (Pregunta 7).
+\end{itemize}
+\end{memoria}
+
+\section*{Las preguntas que hicimos en clase, al azar}
+
+Estas son las mismas cuatro preguntas que se hicieron al azar durante la revisión de tarea al inicio de la Sesión 10 — sin las respuestas en pantalla, para que quien fuera elegido tuviera que razonarlas en el momento. Aquí están, resueltas con detalle:
+
+\begin{clase}
+\begin{enumerate}[itemsep=0.6em, leftmargin=1.6em]
+  \item \textbf{¿Qué operador aniquila un polinomio de grado $k$?} $\;\Rightarrow\; D^{k+1}$ (ver Pregunta 6).
+  \item \textbf{¿Qué operador aniquila $e^{rx}$?} $\;\Rightarrow\; (D-r)$ (ver Pregunta 4).
+  \item \textbf{Si tengo $xe^{rx}$, ¿por qué $(D-r)$ ya no basta?} $\;\Rightarrow\;$ una sola aplicación deja un residuo $e^{rx}$ (por la regla del producto); hace falta $(D-r)^2$ (ver Pregunta 5).
+  \item \textbf{Si $g(x)=3x+e^{2x}$, ¿cómo aniquilan toda la suma?} $\;\Rightarrow\;$ combinan los anuladores de cada término: $D^2(D-2)$ (ver Pregunta 7).
+\end{enumerate}
+\end{clase}
+
+\vspace{1em}
+\noindent\small\color{slate}
+Cualquier duda sobre este material, o sobre cómo se conecta con el método del anulador visto en clase, pregúntenme antes de la Sesión 11.
+
+\end{document}
