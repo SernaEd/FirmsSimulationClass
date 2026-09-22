@@ -12,25 +12,43 @@
 
 ---
 
-### Diapositiva 2: Revisión de Tarea — Preguntas al Azar
-*(La pantalla muestra el título "Revisión: Operadores Diferenciales" con las cuatro preguntas — sin las respuestas, que solo el profesor conoce)*
+### Diapositiva 2: Revisión de Tarea — Pregunta 1 de 4
+*(La pantalla muestra únicamente la Pregunta 1, sin la respuesta)*
 
 **Lo que debes decir:**
-"Antes de arrancar, reviso la tarea de operadores diferenciales — la que cierra la brecha para el anulador de hoy. Voy a elegir al azar a tres o cuatro personas, por lista, así que nadie se relaja pensando que ya le tocó.
+"Antes de arrancar, reviso la tarea de operadores diferenciales — la que cierra la brecha para el anulador de hoy. Voy a elegir al azar a cuatro personas, una por pregunta, por lista, así que nadie se relaja pensando que ya le tocó.
 
-[Elijan a un alumno al azar] ¿Qué operador aniquila un polinomio de grado $k$? [Esperen la respuesta: $D^{k+1}$].
+[Elijan a un alumno al azar] ¿Qué operador aniquila un polinomio de grado $k$? [Esperen la respuesta: $D^{k+1}$]."
 
-[Elijan a otro alumno al azar] ¿Qué operador aniquila $e^{rx}$? [Esperen la respuesta: $(D-r)$].
+---
 
-[Elijan a otro alumno al azar] Si en vez de $e^{rx}$ tengo $xe^{rx}$, ¿por qué $(D-r)$ ya no alcanza, y qué operador sí lo aniquila? [Esperen la respuesta: $(D-r)$ elimina la parte $e^{rx}$, pero no el factor $x$ adicional; hace falta aplicarlo dos veces, $(D-r)^2$].
+### Diapositiva 3: Revisión de Tarea — Pregunta 2 de 4
+*(La pantalla muestra únicamente la Pregunta 2, sin la respuesta)*
 
-[Elijan a un cuarto alumno al azar] Si $g(x)$ tiene varios términos distintos, como $3x+e^{2x}$, ¿qué hacen para encontrar el operador que aniquila toda la suma? [Esperen la respuesta: combinan —multiplican— los anuladores de cada término por separado: $D^2$ para $3x$, y $(D-2)$ para $e^{2x}$, dando el anulador combinado $D^2(D-2)$].
+**Lo que debes decir:**
+"[Elijan a otro alumno al azar] ¿Qué operador aniquila $e^{rx}$? [Esperen la respuesta: $(D-r)$]."
+
+---
+
+### Diapositiva 4: Revisión de Tarea — Pregunta 3 de 4
+*(La pantalla muestra únicamente la Pregunta 3, sin la respuesta)*
+
+**Lo que debes decir:**
+"[Elijan a otro alumno al azar] Si en vez de $e^{rx}$ tengo $xe^{rx}$, ¿por qué $(D-r)$ ya no alcanza, y qué operador sí lo aniquila? [Esperen la respuesta: $(D-r)$ elimina la parte $e^{rx}$, pero no el factor $x$ adicional; hace falta aplicarlo dos veces, $(D-r)^2$]."
+
+---
+
+### Diapositiva 5: Revisión de Tarea — Pregunta 4 de 4
+*(La pantalla muestra únicamente la Pregunta 4, sin la respuesta)*
+
+**Lo que debes decir:**
+"[Elijan a un cuarto alumno al azar] Si $g(x)$ tiene varios términos distintos, como $3x+e^{2x}$, ¿qué hacen para encontrar el operador que aniquila toda la suma? [Esperen la respuesta: combinan —multiplican— los anuladores de cada término por separado: $D^2$ para $3x$, y $(D-2)$ para $e^{2x}$, dando el anulador combinado $D^2(D-2)$].
 
 Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien más complete la idea. Pero si nadie en el salón puede contestar ninguna, es una señal clara: hay que repasar la tarea antes de seguir, porque todo lo de hoy —empezando por el anulador— la da por sabida."
 
 ---
 
-### Diapositiva 3: Repaso Relámpago — De la Teoría al Método
+### Diapositiva 6: Repaso Relámpago — De la Teoría al Método
 *(La pantalla muestra los tres pilares de la Sesión 9: Existencia y Unicidad, Independencia Lineal, y=yc+yp)*
 
 **Lo que debes decir:**
@@ -38,15 +56,15 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 4: De una Solución a Todas — Reducción de Orden y la Apuesta Exponencial
-*(La pantalla muestra la fórmula de reducción de orden y, al lado, la sustitución $y=e^{rx}$)*
+### Diapositiva 7: De una Solución a Todas — Reducción de Orden y la Apuesta Exponencial
+*(La pantalla muestra el proceso de reducción de orden como cuatro pasos —sin la fórmula cerrada final, que confunde más de lo que aclara— y, al lado, la sustitución $y=e^{rx}$)*
 
 **Lo que debes decir:**
-"Primera pregunta: si ya conocen **una** solución $y_1$ de $y''+P(x)y'+Q(x)y=0$, ¿cómo consiguen una segunda, independiente? La técnica general se llama **reducción de orden**: proponen $y_2=u(x)y_1$, sustituyen, y siempre llegan a $y_2=y_1\displaystyle\int\frac{e^{-\int P\,dx}}{y_1^2}\,dx$. Funciona siempre, pero es laboriosa. Para coeficientes **constantes**, hay un atajo total: en vez de buscar una segunda solución a partir de la primera, **adivinamos todas a la vez** con $y=e^{rx}$. Sustituyendo en $ay''+by'+cy=0$ y factorizando $e^{rx}$ —que nunca es cero— queda pura álgebra: la **ecuación característica**, $ar^2+br+c=0$."
+"Primera pregunta: si ya conocen **una** solución $y_1$ de $y''+P(x)y'+Q(x)y=0$, ¿cómo consiguen una segunda, independiente? La técnica general se llama **reducción de orden**, y funciona en cuatro pasos. Uno: proponen $y_2=u(x)y_1$ — dejan que la segunda solución sea la primera, multiplicada por una función desconocida $u(x)$. Dos: sustituyen en la ecuación original; como $y_1$ ya es solución, la mayoría de los términos con $u$ se cancelan solos. Tres: lo que sobrevive es, sorprendentemente, una ecuación de **primer orden** —mucho más simple— para $u'$, no para $u$. Cuatro: resuelven esa ecuación de primer orden, integran para recuperar $u$, y multiplican por $y_1$ para obtener $y_2$. Funciona siempre, pero son dos integrales y bastante álgebra intermedia — laboriosa. Para coeficientes **constantes**, hay un atajo total: en vez de buscar una segunda solución a partir de la primera, **adivinamos todas a la vez** con $y=e^{rx}$. Sustituyendo en $ay''+by'+cy=0$ y factorizando $e^{rx}$ —que nunca es cero— queda pura álgebra: la **ecuación característica**, $ar^2+br+c=0$."
 
 ---
 
-### Diapositiva 5: La Ecuación Característica — Los Tres Casos
+### Diapositiva 8: La Ecuación Característica — Los Tres Casos
 *(La pantalla muestra las tres familias de solución según el signo del discriminante $b^2-4ac$)*
 
 **Lo que debes decir:**
@@ -54,23 +72,55 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 6: Ejemplo — Raíces Reales Distintas
-*(La pantalla muestra $y''-5y'+6y=0$, $y(0)=1$, $y'(0)=0$, con la solución completa)*
+### Diapositiva 9: Ejemplo — Raíces Reales Distintas (Planteamiento)
+*(La pantalla muestra únicamente $y''-5y'+6y=0$, $y(0)=1$, $y'(0)=0$, sin pasos ni respuesta)*
 
 **Lo que debes decir:**
-"$y''-5y'+6y=0$, con $y(0)=1$, $y'(0)=0$. Ecuación característica: $r^2-5r+6=0$, que factoriza como $(r-2)(r-3)=0$ — raíces $r_1=2$, $r_2=3$. Solución general: $y=C_1e^{2x}+C_2e^{3x}$. Derivando y aplicando las condiciones iniciales: $C_1+C_2=1$ y $2C_1+3C_2=0$. Resolviendo el sistema, $C_1=3$, $C_2=-2$. La solución particular es $y=3e^{2x}-2e^{3x}$ — verifiquen ustedes que $y(0)=1$ y $y'(0)=0$."
+"Vamos con un ejemplo completo: $y''-5y'+6y=0$, con $y(0)=1$, $y'(0)=0$. Encuentren la ecuación característica, sus raíces, la solución general, y usen las condiciones iniciales para hallar la solución particular. Resuélvanlo en su cuaderno — la solución completa está en la siguiente diapositiva."
 
 ---
 
-### Diapositiva 7: Ejemplos Directos — Raíz Repetida y Raíces Complejas
-*(La pantalla muestra, en dos columnas, $y''-6y'+9y=0$ y $y''+4y'+13y=0$, cada una con su solución)*
+### Diapositiva 10: Ejemplo — Raíces Reales Distintas (Solución)
+*(La pantalla muestra los pasos completos y la solución final)*
 
 **Lo que debes decir:**
-"Los otros dos casos, más rápido. Izquierda: $y''-6y'+9y=0$, $y(0)=2$, $y'(0)=1$. Característica: $(r-3)^2=0$, raíz doble $r=3$. Solución general $y=(C_1+C_2x)e^{3x}$; con las condiciones iniciales, $C_1=2$, $C_2=-5$, así que $y=(2-5x)e^{3x}$. Derecha: $y''+4y'+13y=0$, $y(0)=0$, $y'(0)=3$. Característica: $r^2+4r+13=0$, raíces $r=-2\pm3i$. Solución general $y=e^{-2x}(C_1\cos3x+C_2\sin3x)$; con las condiciones iniciales, $C_1=0$, $C_2=1$, así que $y=e^{-2x}\sin(3x)$. Guarden esta última ecuación en la memoria — va a reaparecer."
+"Recapitulemos. Ecuación característica: $r^2-5r+6=0$, que factoriza como $(r-2)(r-3)=0$ — raíces $r_1=2$, $r_2=3$. Solución general: $y=C_1e^{2x}+C_2e^{3x}$. Derivando y aplicando las condiciones iniciales: $C_1+C_2=1$ y $2C_1+3C_2=0$. Resolviendo el sistema, $C_1=3$, $C_2=-2$. La solución particular es $y=3e^{2x}-2e^{3x}$ — verifiquen ustedes que $y(0)=1$ y $y'(0)=0$."
 
 ---
 
-### Diapositiva 8: Cauchy-Euler — La Misma Idea, Otra Apuesta
+### Diapositiva 11: Ejemplo — Raíz Repetida (Planteamiento)
+*(La pantalla muestra únicamente $y''-6y'+9y=0$, $y(0)=2$, $y'(0)=1$, sin pasos ni respuesta)*
+
+**Lo que debes decir:**
+"Los otros dos casos, uno a la vez. Primero: $y''-6y'+9y=0$, con $y(0)=2$, $y'(0)=1$. Encuentren la característica, identifiquen qué tipo de raíz tienen, y hallen la solución particular. Resuélvanlo en su cuaderno."
+
+---
+
+### Diapositiva 12: Ejemplo — Raíz Repetida (Solución)
+*(La pantalla muestra los pasos completos y la solución final)*
+
+**Lo que debes decir:**
+"Característica: $(r-3)^2=0$ — raíz doble $r=3$. Con raíz repetida, la solución general es $y=(C_1+C_2x)e^{3x}$. Aplicando las condiciones iniciales, $C_1=2$, $C_2=-5$, así que $y=(2-5x)e^{3x}$."
+
+---
+
+### Diapositiva 13: Ejemplo — Raíces Complejas (Planteamiento)
+*(La pantalla muestra únicamente $y''+4y'+13y=0$, $y(0)=0$, $y'(0)=3$, sin pasos ni respuesta)*
+
+**Lo que debes decir:**
+"Segundo caso: $y''+4y'+13y=0$, con $y(0)=0$, $y'(0)=3$. Mismo proceso: encuentren la característica, sus raíces, y la solución particular. Resuélvanlo en su cuaderno."
+
+---
+
+### Diapositiva 14: Ejemplo — Raíces Complejas (Solución)
+*(La pantalla muestra los pasos completos y la solución final)*
+
+**Lo que debes decir:**
+"Característica: $r^2+4r+13=0$ — raíces $r=-2\pm3i$. Solución general: $y=e^{-2x}(C_1\cos3x+C_2\sin3x)$. Aplicando las condiciones iniciales, $C_1=0$, $C_2=1$, así que $y=e^{-2x}\sin(3x)$. Guarden esta última ecuación en la memoria — va a reaparecer."
+
+---
+
+### Diapositiva 15: Cauchy-Euler — La Misma Idea, Otra Apuesta
 *(La pantalla muestra la forma general $ax^2y''+bxy'+cy=0$ y la sustitución $y=x^m$)*
 
 **Lo que debes decir:**
@@ -78,15 +128,23 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 9: Cauchy-Euler — Ejemplo
-*(La pantalla muestra $x^2y''+xy'+4y=0$ con la solución completa)*
+### Diapositiva 16: Cauchy-Euler — Ejemplo (Planteamiento)
+*(La pantalla muestra únicamente $x^2y''+xy'+4y=0$, $y(1)=1$, $y'(1)=4$, sin pasos ni respuesta)*
 
 **Lo que debes decir:**
-"$x^2y''+xy'+4y=0$. Ecuación auxiliar: $m(m-1)+m+4=0$, es decir $m^2+4=0$ — raíces complejas, $m=\pm2i$. Para Cauchy-Euler con raíces complejas $m=\alpha\pm\beta i$, la solución general es $y=x^\alpha[C_1\cos(\beta\ln x)+C_2\sin(\beta\ln x)]$; aquí $\alpha=0$, $\beta=2$, así que $y=C_1\cos(2\ln x)+C_2\sin(2\ln x)$. Con $y(1)=1$ y $y'(1)=4$ —noten que $\ln1=0$, así que evaluar en $x=1$ simplifica todo—, se obtiene $C_1=1$, $C_2=2$: $y=\cos(2\ln x)+2\sin(2\ln x)$."
+"$x^2y''+xy'+4y=0$, con $y(1)=1$, $y'(1)=4$. Encuentren la ecuación auxiliar, sus raíces, y la solución particular. Resuélvanlo en su cuaderno — la solución completa está en la siguiente diapositiva."
 
 ---
 
-### Diapositiva 10: El Método del Anulador — ¿Por Qué No Basta con Adivinar?
+### Diapositiva 17: Cauchy-Euler — Ejemplo (Solución)
+*(La pantalla muestra los pasos completos y la solución final)*
+
+**Lo que debes decir:**
+"Ecuación auxiliar: $m(m-1)+m+4=0$, es decir $m^2+4=0$ — raíces complejas, $m=\pm2i$. Para Cauchy-Euler con raíces complejas $m=\alpha\pm\beta i$, la solución general es $y=x^\alpha[C_1\cos(\beta\ln x)+C_2\sin(\beta\ln x)]$; aquí $\alpha=0$, $\beta=2$, así que $y=C_1\cos(2\ln x)+C_2\sin(2\ln x)$. Con $y(1)=1$ y $y'(1)=4$ —noten que $\ln1=0$, así que evaluar en $x=1$ simplifica todo—, se obtiene $C_1=1$, $C_2=2$: $y=\cos(2\ln x)+2\sin(2\ln x)$."
+
+---
+
+### Diapositiva 18: El Método del Anulador — ¿Por Qué No Basta con Adivinar?
 *(La pantalla muestra una ecuación no homogénea y la pregunta de qué forma debería tener $y_p$)*
 
 **Lo que debes decir:**
@@ -94,7 +152,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 11: Operadores D y la Tabla de Anuladores
+### Diapositiva 19: Operadores D y la Tabla de Anuladores
 *(La pantalla muestra la tabla: función → operador que la aniquila)*
 
 **Lo que debes decir:**
@@ -102,7 +160,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 12: El Algoritmo del Anulador, Paso a Paso
+### Diapositiva 20: El Algoritmo del Anulador, Paso a Paso
 *(La pantalla muestra los pasos numerados del método completo)*
 
 **Lo que debes decir:**
@@ -110,7 +168,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 13: Ejemplo — Anulador (Planteamiento)
+### Diapositiva 21: Ejemplo — Anulador (Planteamiento)
 *(La pantalla muestra únicamente $y''-y'-2y=4x^2$, sin pasos ni respuesta)*
 
 **Lo que debes decir:**
@@ -118,7 +176,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 14: Ejemplo — Anulador (Solución)
+### Diapositiva 22: Ejemplo — Anulador (Solución)
 *(La pantalla muestra los cuatro pasos completos y la solución final)*
 
 **Lo que debes decir:**
@@ -126,15 +184,23 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 15: El Caso Real — Masa-Resorte-Amortiguador, Ahora Forzado
-*(La pantalla muestra $x''+4x'+13x=26$, comparándola con la $y''+4y'+13y=0$ de la Diapositiva 7)*
+### Diapositiva 23: El Caso Real — Masa-Resorte-Amortiguador, Ahora Forzado (Planteamiento)
+*(La pantalla muestra el diagrama del sistema y $x''+4x'+13x=26$, comparándola con la $y''+4y'+13y=0$ de la Diapositiva 13)*
 
 **Lo que debes decir:**
-"¿Reconocen esta estructura? Es la misma ecuación característica de hace un momento — solo que ahora el sistema masa-resorte-amortiguador tiene una fuerza constante empujándolo: $x''+4x'+13x=26$, como si de repente colgaran un peso adicional. Ya saben que $x_c=e^{-2t}(C_1\cos3t+C_2\sin3t)$. El anulador de la constante 26 es $D$; aplicando el algoritmo completo, la forma de $x_p$ es simplemente una constante, y sustituyendo se obtiene $x_p=2$. La solución general es $x(t)=e^{-2t}(C_1\cos3t+C_2\sin3t)+2$. Sin importar las condiciones iniciales —sin importar $C_1$ y $C_2$—, el término exponencial decae a cero cuando $t\to\infty$, dejando solamente $x_p=2$: el sistema termina oscilando cada vez menos, hasta asentarse en un **nuevo equilibrio**, desplazado 2 unidades del original. Eso es exactamente lo que $y_c$ y $y_p$ significan físicamente: $y_c$ es la respuesta transitoria que se apaga, $y_p$ es hacia dónde se dirige el sistema a largo plazo."
+"¿Reconocen esta estructura? Es la misma ecuación característica de hace un momento — solo que ahora el sistema masa-resorte-amortiguador tiene una fuerza constante empujándolo: $x''+4x'+13x=26$, como si de repente colgaran un peso adicional. Encuentren $x_c$, el anulador de la constante, la forma de $x_p$, y la solución completa. Resuélvanlo en su cuaderno — la solución está en la siguiente diapositiva."
 
 ---
 
-### Diapositiva 16: Errores Comunes
+### Diapositiva 24: El Caso Real — Masa-Resorte-Amortiguador, Ahora Forzado (Solución)
+*(La pantalla muestra los pasos completos, la solución final, y la interpretación física)*
+
+**Lo que debes decir:**
+"Ya saben que $x_c=e^{-2t}(C_1\cos3t+C_2\sin3t)$. El anulador de la constante 26 es $D$; aplicando el algoritmo completo, la forma de $x_p$ es simplemente una constante, y sustituyendo se obtiene $x_p=2$. La solución general es $x(t)=e^{-2t}(C_1\cos3t+C_2\sin3t)+2$. Sin importar las condiciones iniciales —sin importar $C_1$ y $C_2$—, el término exponencial decae a cero cuando $t\to\infty$, dejando solamente $x_p=2$: el sistema termina oscilando cada vez menos, hasta asentarse en un **nuevo equilibrio**, desplazado 2 unidades del original. Eso es exactamente lo que $y_c$ y $y_p$ significan físicamente: $y_c$ es la respuesta transitoria que se apaga, $y_p$ es hacia dónde se dirige el sistema a largo plazo."
+
+---
+
+### Diapositiva 25: Errores Comunes
 *(La pantalla muestra las trampas típicas de los métodos de hoy)*
 
 **Lo que debes decir:**
@@ -142,7 +208,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 17: Cierre y Próximo Paso
+### Diapositiva 26: Cierre y Próximo Paso
 *(La pantalla muestra la conclusión y el gancho hacia variación de parámetros y sistemas)*
 
 **Lo que debes decir:**
