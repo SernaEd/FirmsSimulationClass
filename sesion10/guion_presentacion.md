@@ -128,7 +128,15 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 16: Cauchy-Euler — Ejemplo (Planteamiento)
+### Diapositiva 16: Cauchy-Euler — Los Tres Casos
+*(La pantalla muestra las tres familias de solución según el discriminante de la ecuación auxiliar)*
+
+**Lo que debes decir:**
+"Tal como la ecuación característica de coeficientes constantes, la ecuación auxiliar de Cauchy-Euler es una cuadrática ordinaria — mismos tres casos, distinta receta. Raíces reales distintas $m_1, m_2$: $y=C_1x^{m_1}+C_2x^{m_2}$ — dos potencias distintas de $x$. Raíz repetida $m$: una sola potencia no basta —perderían una constante—, así que la segunda solución independiente es $x^m\ln x$: $y=(C_1+C_2\ln x)x^m$ — el logaritmo hace aquí el papel que la $x$ sola hacía en coeficientes constantes. Raíces complejas conjugadas $m=\alpha\pm\beta i$: $y=x^\alpha[C_1\cos(\beta\ln x)+C_2\sin(\beta\ln x)]$ — el ángulo ya no es $\beta x$, es $\beta\ln x$. Ingenieros: comparen estas tres fórmulas con las de la Diapositiva 8 — la estructura es idéntica, solo cambian $e^{rx}\to x^m$ y $x\to\ln x$."
+
+---
+
+### Diapositiva 17: Cauchy-Euler — Ejemplo (Planteamiento)
 *(La pantalla muestra únicamente $x^2y''+xy'+4y=0$, $y(1)=1$, $y'(1)=4$, sin pasos ni respuesta)*
 
 **Lo que debes decir:**
@@ -136,7 +144,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 17: Cauchy-Euler — Ejemplo (Solución)
+### Diapositiva 18: Cauchy-Euler — Ejemplo (Solución)
 *(La pantalla muestra los pasos completos y la solución final)*
 
 **Lo que debes decir:**
@@ -144,7 +152,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 18: El Método del Anulador — ¿Por Qué No Basta con Adivinar?
+### Diapositiva 19: El Método del Anulador — ¿Por Qué No Basta con Adivinar?
 *(La pantalla muestra una ecuación no homogénea y la pregunta de qué forma debería tener $y_p$)*
 
 **Lo que debes decir:**
@@ -152,7 +160,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 19: Operadores D y la Tabla de Anuladores
+### Diapositiva 20: Operadores D y la Tabla de Anuladores
 *(La pantalla muestra la tabla: función → operador que la aniquila)*
 
 **Lo que debes decir:**
@@ -160,7 +168,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 20: El Algoritmo del Anulador, Paso a Paso
+### Diapositiva 21: El Algoritmo del Anulador, Paso a Paso
 *(La pantalla muestra los pasos numerados del método completo)*
 
 **Lo que debes decir:**
@@ -168,7 +176,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 21: Ejemplo — Anulador (Planteamiento)
+### Diapositiva 22: Ejemplo — Anulador (Planteamiento)
 *(La pantalla muestra únicamente $y''-y'-2y=4x^2$, sin pasos ni respuesta)*
 
 **Lo que debes decir:**
@@ -176,7 +184,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 22: Ejemplo — Anulador (Solución)
+### Diapositiva 23: Ejemplo — Anulador (Solución)
 *(La pantalla muestra los cuatro pasos completos y la solución final)*
 
 **Lo que debes decir:**
@@ -184,7 +192,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 23: El Caso Real — Masa-Resorte-Amortiguador, Ahora Forzado (Planteamiento)
+### Diapositiva 24: El Caso Real — Masa-Resorte-Amortiguador, Ahora Forzado (Planteamiento)
 *(La pantalla muestra el diagrama del sistema y $x''+4x'+13x=26$, comparándola con la $y''+4y'+13y=0$ de la Diapositiva 13)*
 
 **Lo que debes decir:**
@@ -192,7 +200,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 24: El Caso Real — Masa-Resorte-Amortiguador, Ahora Forzado (Solución)
+### Diapositiva 25: El Caso Real — Masa-Resorte-Amortiguador, Ahora Forzado (Solución)
 *(La pantalla muestra los pasos completos, la solución final, y la interpretación física)*
 
 **Lo que debes decir:**
@@ -200,7 +208,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 25: Errores Comunes
+### Diapositiva 26: Errores Comunes
 *(La pantalla muestra las trampas típicas de los métodos de hoy)*
 
 **Lo que debes decir:**
@@ -208,7 +216,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 26: Cierre y Próximo Paso
+### Diapositiva 27: Cierre y Próximo Paso
 *(La pantalla muestra la conclusión y el gancho hacia variación de parámetros y sistemas)*
 
 **Lo que debes decir:**
