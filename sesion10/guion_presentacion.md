@@ -56,15 +56,23 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 7: De una Solución a Todas — Reducción de Orden y la Apuesta Exponencial
-*(La pantalla muestra el proceso de reducción de orden como cuatro pasos —sin la fórmula cerrada final, que confunde más de lo que aclara— y, al lado, la sustitución $y=e^{rx}$)*
+### Diapositiva 7: Reducción de Orden — El Proceso General
+*(La pantalla muestra el proceso de reducción de orden como cuatro pasos numerados, de $y_2=u(x)y_1$ a la solución final)*
 
 **Lo que debes decir:**
-"Primera pregunta: si ya conocen **una** solución $y_1$ de $y''+P(x)y'+Q(x)y=0$, ¿cómo consiguen una segunda, independiente? La técnica general se llama **reducción de orden**, y funciona en cuatro pasos. Uno: proponen $y_2=u(x)y_1$ — dejan que la segunda solución sea la primera, multiplicada por una función desconocida $u(x)$. Dos: sustituyen en la ecuación original; como $y_1$ ya es solución, la mayoría de los términos con $u$ se cancelan solos. Tres: lo que sobrevive es, sorprendentemente, una ecuación de **primer orden** —mucho más simple— para $u'$, no para $u$. Cuatro: resuelven esa ecuación de primer orden, integran para recuperar $u$, y multiplican por $y_1$ para obtener $y_2$. Funciona siempre, pero son dos integrales y bastante álgebra intermedia — laboriosa. Para coeficientes **constantes**, hay un atajo total: en vez de buscar una segunda solución a partir de la primera, **adivinamos todas a la vez** con $y=e^{rx}$. Sustituyendo en $ay''+by'+cy=0$ y factorizando $e^{rx}$ —que nunca es cero— queda pura álgebra: la **ecuación característica**, $ar^2+br+c=0$."
+"Primera pregunta: si ya conocen **una** solución $y_1$ de $y''+P(x)y'+Q(x)y=0$, ¿cómo consiguen una segunda, independiente? La técnica general se llama **reducción de orden**, y funciona en cuatro pasos. Uno: proponen $y_2=u(x)y_1$ — dejan que la segunda solución sea la primera, multiplicada por una función desconocida $u(x)$. Dos: sustituyen en la ecuación original; como $y_1$ ya es solución, la mayoría de los términos con $u$ se cancelan solos. Tres: lo que sobrevive es, sorprendentemente, una ecuación de **primer orden** —mucho más simple— para $u'$, no para $u$. Cuatro: resuelven esa ecuación de primer orden, integran para recuperar $u$, y multiplican por $y_1$ para obtener $y_2$. Funciona siempre, pero son dos integrales y bastante álgebra intermedia — laboriosa."
 
 ---
 
-### Diapositiva 8: La Ecuación Característica — Los Tres Casos
+### Diapositiva 8: Reducción de Orden — El Atajo Exponencial
+*(La pantalla muestra la sustitución $y=e^{rx}$ y la ecuación característica que resulta)*
+
+**Lo que debes decir:**
+"Para coeficientes **constantes**, hay un atajo total: en vez de buscar una segunda solución a partir de la primera, **adivinamos todas a la vez** con $y=e^{rx}$. Sustituyendo en $ay''+by'+cy=0$ y factorizando $e^{rx}$ —que nunca es cero— queda pura álgebra: la **ecuación característica**, $ar^2+br+c=0$."
+
+---
+
+### Diapositiva 9: La Ecuación Característica — Los Tres Casos
 *(La pantalla muestra las tres familias de solución según el signo del discriminante $b^2-4ac$)*
 
 **Lo que debes decir:**
@@ -72,7 +80,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 9: Ejemplo — Raíces Reales Distintas (Planteamiento)
+### Diapositiva 10: Ejemplo — Raíces Reales Distintas (Planteamiento)
 *(La pantalla muestra únicamente $y''-5y'+6y=0$, $y(0)=1$, $y'(0)=0$, sin pasos ni respuesta)*
 
 **Lo que debes decir:**
@@ -80,7 +88,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 10: Ejemplo — Raíces Reales Distintas (Solución)
+### Diapositiva 11: Ejemplo — Raíces Reales Distintas (Solución)
 *(La pantalla muestra los pasos completos y la solución final)*
 
 **Lo que debes decir:**
@@ -88,7 +96,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 11: Ejemplo — Raíz Repetida (Planteamiento)
+### Diapositiva 12: Ejemplo — Raíz Repetida (Planteamiento)
 *(La pantalla muestra únicamente $y''-6y'+9y=0$, $y(0)=2$, $y'(0)=1$, sin pasos ni respuesta)*
 
 **Lo que debes decir:**
@@ -96,7 +104,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 12: Ejemplo — Raíz Repetida (Solución)
+### Diapositiva 13: Ejemplo — Raíz Repetida (Solución)
 *(La pantalla muestra los pasos completos y la solución final)*
 
 **Lo que debes decir:**
@@ -104,7 +112,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 13: Ejemplo — Raíces Complejas (Planteamiento)
+### Diapositiva 14: Ejemplo — Raíces Complejas (Planteamiento)
 *(La pantalla muestra únicamente $y''+4y'+13y=0$, $y(0)=0$, $y'(0)=3$, sin pasos ni respuesta)*
 
 **Lo que debes decir:**
@@ -112,7 +120,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 14: Ejemplo — Raíces Complejas (Solución)
+### Diapositiva 15: Ejemplo — Raíces Complejas (Solución)
 *(La pantalla muestra los pasos completos y la solución final)*
 
 **Lo que debes decir:**
@@ -120,7 +128,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 15: Cauchy-Euler — La Misma Idea, Otra Apuesta
+### Diapositiva 16: Cauchy-Euler — La Misma Idea, Otra Apuesta
 *(La pantalla muestra la forma general $ax^2y''+bxy'+cy=0$ y la sustitución $y=x^m$)*
 
 **Lo que debes decir:**
@@ -128,15 +136,15 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 16: Cauchy-Euler — Los Tres Casos
+### Diapositiva 17: Cauchy-Euler — Los Tres Casos
 *(La pantalla muestra las tres familias de solución según el discriminante de la ecuación auxiliar)*
 
 **Lo que debes decir:**
-"Tal como la ecuación característica de coeficientes constantes, la ecuación auxiliar de Cauchy-Euler es una cuadrática ordinaria — mismos tres casos, distinta receta. Raíces reales distintas $m_1, m_2$: $y=C_1x^{m_1}+C_2x^{m_2}$ — dos potencias distintas de $x$. Raíz repetida $m$: una sola potencia no basta —perderían una constante—, así que la segunda solución independiente es $x^m\ln x$: $y=(C_1+C_2\ln x)x^m$ — el logaritmo hace aquí el papel que la $x$ sola hacía en coeficientes constantes. Raíces complejas conjugadas $m=\alpha\pm\beta i$: $y=x^\alpha[C_1\cos(\beta\ln x)+C_2\sin(\beta\ln x)]$ — el ángulo ya no es $\beta x$, es $\beta\ln x$. Ingenieros: comparen estas tres fórmulas con las de la Diapositiva 8 — la estructura es idéntica, solo cambian $e^{rx}\to x^m$ y $x\to\ln x$."
+"Tal como la ecuación característica de coeficientes constantes, la ecuación auxiliar de Cauchy-Euler es una cuadrática ordinaria — mismos tres casos, distinta receta. Raíces reales distintas $m_1, m_2$: $y=C_1x^{m_1}+C_2x^{m_2}$ — dos potencias distintas de $x$. Raíz repetida $m$: una sola potencia no basta —perderían una constante—, así que la segunda solución independiente es $x^m\ln x$: $y=(C_1+C_2\ln x)x^m$ — el logaritmo hace aquí el papel que la $x$ sola hacía en coeficientes constantes. Raíces complejas conjugadas $m=\alpha\pm\beta i$: $y=x^\alpha[C_1\cos(\beta\ln x)+C_2\sin(\beta\ln x)]$ — el ángulo ya no es $\beta x$, es $\beta\ln x$. Ingenieros: comparen estas tres fórmulas con las de la Diapositiva 9 — la estructura es idéntica, solo cambian $e^{rx}\to x^m$ y $x\to\ln x$."
 
 ---
 
-### Diapositiva 17: Cauchy-Euler — Ejemplo (Planteamiento)
+### Diapositiva 18: Cauchy-Euler — Ejemplo (Planteamiento)
 *(La pantalla muestra únicamente $x^2y''+xy'+4y=0$, $y(1)=1$, $y'(1)=4$, sin pasos ni respuesta)*
 
 **Lo que debes decir:**
@@ -144,7 +152,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 18: Cauchy-Euler — Ejemplo (Solución)
+### Diapositiva 19: Cauchy-Euler — Ejemplo (Solución)
 *(La pantalla muestra los pasos completos y la solución final)*
 
 **Lo que debes decir:**
@@ -152,7 +160,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 19: El Método del Anulador — ¿Por Qué No Basta con Adivinar?
+### Diapositiva 20: El Método del Anulador — ¿Por Qué No Basta con Adivinar?
 *(La pantalla muestra una ecuación no homogénea y la pregunta de qué forma debería tener $y_p$)*
 
 **Lo que debes decir:**
@@ -160,7 +168,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 20: Operadores D y la Tabla de Anuladores
+### Diapositiva 21: Operadores D y la Tabla de Anuladores
 *(La pantalla muestra la tabla: función → operador que la aniquila)*
 
 **Lo que debes decir:**
@@ -168,7 +176,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 21: El Algoritmo del Anulador, Paso a Paso
+### Diapositiva 22: El Algoritmo del Anulador, Paso a Paso
 *(La pantalla muestra los pasos numerados del método completo)*
 
 **Lo que debes decir:**
@@ -176,7 +184,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 22: Ejemplo — Anulador (Planteamiento)
+### Diapositiva 23: Ejemplo — Anulador (Planteamiento)
 *(La pantalla muestra únicamente $y''-y'-2y=4x^2$, sin pasos ni respuesta)*
 
 **Lo que debes decir:**
@@ -184,7 +192,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 23: Ejemplo — Anulador (Solución)
+### Diapositiva 24: Ejemplo — Anulador (Solución)
 *(La pantalla muestra los cuatro pasos completos y la solución final)*
 
 **Lo que debes decir:**
@@ -192,15 +200,23 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 24: El Caso Real — Masa-Resorte-Amortiguador, Ahora Forzado (Planteamiento)
-*(La pantalla muestra el diagrama del sistema y $x''+4x'+13x=26$, comparándola con la $y''+4y'+13y=0$ de la Diapositiva 13)*
+### Diapositiva 25: El Caso Real — De la Física a la Ecuación Diferencial
+*(La pantalla muestra el diagrama masa-resorte-amortiguador con los valores numéricos de cada componente, tres pasos de derivación, y la Segunda Ley de Newton llevando a $x''+4x'+13x=26$)*
 
 **Lo que debes decir:**
-"¿Reconocen esta estructura? Es la misma ecuación característica de hace un momento — solo que ahora el sistema masa-resorte-amortiguador tiene una fuerza constante empujándolo: $x''+4x'+13x=26$, como si de repente colgaran un peso adicional. Encuentren $x_c$, el anulador de la constante, la forma de $x_p$, y la solución completa. Resuélvanlo en su cuaderno — la solución está en la siguiente diapositiva."
+"Antes de resolver, vale la pena ver de dónde sale esta ecuación — no cae del cielo. Empezamos con la segunda ley de Newton: la fuerza neta sobre la masa es igual a masa por aceleración. En este sistema, dos fuerzas se oponen al movimiento — el resorte, con fuerza restauradora $-kx$, y el amortiguador, con fuerza de fricción $-cx'$ — y ahora agregamos una tercera: una fuerza aplicada, constante, $F_0$, empujando la masa. Sumando las tres fuerzas: $mx''=-kx-cx'+F_0$, que reacomodamos como $mx''+cx'+kx=F_0$ — la ecuación general de un sistema masa-resorte-amortiguador forzado. Sustituyendo los valores de este problema —masa $m=1$, amortiguamiento $c=4$, rigidez $k=13$, fuerza $F_0=26$— obtenemos $x''+4x'+13x=26$. Fíjense: la parte homogénea, $x''+4x'+13x=0$, es exactamente la misma ecuación característica que resolvimos en la Diapositiva 14 — no es coincidencia, la elegí así a propósito para que reconozcan el trabajo que ya hicieron."
 
 ---
 
-### Diapositiva 25: El Caso Real — Masa-Resorte-Amortiguador, Ahora Forzado (Solución)
+### Diapositiva 26: El Caso Real — Masa-Resorte-Amortiguador, Ahora Forzado (Planteamiento)
+*(La pantalla muestra únicamente $x''+4x'+13x=26$, sin pasos ni respuesta)*
+
+**Lo que debes decir:**
+"Ya vimos de dónde sale esta ecuación. Ahora resuélvanla: encuentren $x_c$, el anulador de la constante, la forma de $x_p$, y la solución completa. Resuélvanlo en su cuaderno — la solución está en la siguiente diapositiva."
+
+---
+
+### Diapositiva 27: El Caso Real — Masa-Resorte-Amortiguador, Ahora Forzado (Solución)
 *(La pantalla muestra los pasos completos, la solución final, y la interpretación física)*
 
 **Lo que debes decir:**
@@ -208,7 +224,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 26: Errores Comunes
+### Diapositiva 28: Errores Comunes
 *(La pantalla muestra las trampas típicas de los métodos de hoy)*
 
 **Lo que debes decir:**
@@ -216,7 +232,7 @@ Si alguien se traba, no lo dejen ahí — pregúntenle al grupo, que alguien má
 
 ---
 
-### Diapositiva 27: Cierre y Próximo Paso
+### Diapositiva 29: Cierre y Próximo Paso
 *(La pantalla muestra la conclusión y el gancho hacia variación de parámetros y sistemas)*
 
 **Lo que debes decir:**
